@@ -40,6 +40,25 @@ describe('which floor models X-ray loads', () => {
     });
 });
 
+describe('which existing buildings get estimated layouts as the camera moves', () => {
+    const row = [at('a', 20), at('b', 60), at('c', 150), at('d', 190)];
+    it('plans nothing from afar, then the nearest as the camera comes in, and drops those left well behind', () => {
+        expect(plan({ camera: [0, 0, 600], candidates: row, maxResident: 3 }).load).toEqual([]);
+        expect(plan({ candidates: row, maxResident: 3 }).load).toEqual(['a', 'b']);
+        // Planned: a, b, c (cap 3). The camera moves 400 m east: a and b are beyond 300 m, c is kept.
+        const moved = plan({ camera: [400, 0, 30], candidates: [...row, at('e', 420)], maxResident: 3,
+            loaded: new Map([['a', {}], ['b', {}], ['c', null]]) });
+        expect(moved.unload).toEqual(['a', 'b']);
+        expect(moved.load).toEqual(['e']);
+    });
+    it('plans the building being shown first, within the radius, also when the cap is reached', () => {
+        expect(plan({ candidates: row, maxResident: 2, first: 'd' }).load).toEqual(['d', 'a']);
+        expect(plan({ candidates: row, maxResident: 2, loaded: new Map([['a', {}], ['b', {}]]), first: 'd' }))
+            .toEqual({ load: ['d'], cancel: [], unload: ['b'] });
+        expect(plan({ candidates: [at('a', 20), at('far', 260)], first: 'far' }).load).toEqual(['a']);
+    });
+});
+
 describe('which floor-plan groups the scene adds or removes', () => {
     const shells = new Map([['a', {}], ['b', {}], ['c', {}]]);
     it("adds only the building whose model arrived, and removes only the one that left", () => {

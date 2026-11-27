@@ -16,7 +16,10 @@
      *   camera: [x, y, z] metres in the scene's local frame (z = height above ground),
      *   candidates: [{ key, x, y }] marked buildings, ground centres in the same frame,
      *   loaded: Set|Map keys with an answer (a model or none), pending: Set|Map keys being requested,
-     *   loadRadiusM, unloadRadiusM, maxConcurrent }
+     *   loadRadiusM, unloadRadiusM, maxConcurrent, maxResident,
+     *   first: optional key ordered before every other within its radius (the building being shown) }
+     * Also decides which existing buildings get estimated layouts (three-mode.js
+     * updateSuggestedExistingLayouts): the same nearest-first, bounded, hysteretic rule.
      * @returns { load: keys to request now, nearest first; cancel: pending keys to abandon;
      *            unload: loaded keys to drop }
      */
@@ -27,10 +30,12 @@
         const [cx, cy, cz] = state.camera;
         const byKey = new Map((state.candidates || []).map(candidate => [candidate.key, candidate]));
         const distance = candidate => Math.hypot(candidate.x - cx, candidate.y - cy, cz || 0);
+        const nearestFirst = (a, b) => Number(b.key === options.first) - Number(a.key === options.first)
+            || a.distance - b.distance || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0);
         const wanted = new Set([...byKey.values()]
             .map(candidate => ({ key: candidate.key, distance: distance(candidate) }))
             .filter(item => item.distance <= (state.loaded.has(item.key) || state.pending.has(item.key) ? options.unloadRadiusM : options.loadRadiusM))
-            .sort((a,b) => a.distance - b.distance || String(a.key).localeCompare(String(b.key)))
+            .sort(nearestFirst)
             .slice(0, options.maxResident).map(item => item.key));
         const beyond = key => !wanted.has(key);
         const unload = loaded.filter(beyond);
@@ -40,7 +45,7 @@
             .filter(candidate => wanted.has(candidate.key) && !state.loaded.has(candidate.key) && !state.pending.has(candidate.key))
             .map(candidate => ({ key: candidate.key, distance: distance(candidate) }))
             .filter(entry => entry.distance <= options.loadRadiusM)
-            .sort((a, b) => a.distance - b.distance || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0))
+            .sort(nearestFirst)
             .slice(0, slots).map(entry => entry.key);
         return { load, cancel, unload };
     }
