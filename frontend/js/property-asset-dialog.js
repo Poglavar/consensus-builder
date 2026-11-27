@@ -144,6 +144,7 @@
             else rows.value.propertyOffers.forEach(row => list.append(offerRow(row, r => { dialog.close(); void openRow(r); })));
         };
         dialog = root.CbDialog.open({ title: D().assetLabel(asset), size: 'md', className: 'property-offer-dialog', body, actions: [] });
+        void render();
         root.KeyLabel.loadNames().then(() => render());
         return dialog;
     }
@@ -171,7 +172,7 @@
             });
             if (requests.status === 'rejected') askList.append(el('li', 'sheet-note', requests.reason.message));
             else if (!requests.value.holdingRequests?.length) askList.append(el('li', 'sheet-note', t('nothingWaiting', 'Nothing waits for you.')));
-            else for (const request of requests.value.holdingRequests) {
+            else for (const request of requests.value.holdingRequests.map(row => ({ ...row.request, id: row.id }))) {
                 const item = el('li', 'property-market__row');
                 item.append(el('span', 'property-market__what', D().assetLabel(request.asset)), keyEl(request.claimant, mine));
                 if (request.note) item.append(el('span', 'sheet-note', request.note));
@@ -184,6 +185,7 @@
         };
         const unsubscribe = root.solanaWalletManager?.on?.('stateChanged', () => void render());
         dialog = root.CbDialog.open({ title: t('requestsTitle', 'Lens requests'), size: 'md', className: 'property-offer-dialog', body, actions: [], onClose: () => unsubscribe?.() });
+        void render();
         root.KeyLabel.loadNames().then(() => render());
         return dialog;
     }

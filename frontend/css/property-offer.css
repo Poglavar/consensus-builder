@@ -55,6 +55,7 @@
 .property-offer-form__lensMembers { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); }
 .property-offer-form__empty { color: var(--cb-text-muted); }
 .property-offer-form__threshold { display: inline-flex; align-items: center; gap: var(--cb-space-2); }
+.property-offer-form__threshold[hidden] { display: none; }
 /* The Market sheet (js/property-market.js). */
 .property-market { display: grid; gap: var(--cb-space-3); }
 .property-market__tools, .property-market__toggles { display: flex; flex-wrap: wrap; gap: var(--cb-space-2); }
@@ -62,6 +63,7 @@
 .property-market__row { display: grid; grid-template-columns: 1fr auto; gap: var(--cb-space-1) var(--cb-space-2); align-items: center; padding: var(--cb-space-2); border: 1px solid var(--cb-line); border-radius: var(--cb-radius-sm); }
 .property-market__what { font-weight: var(--cb-weight-semibold); overflow-wrap: anywhere; }
 .property-market__price { justify-self: end; }
+.property-market__state { justify-self: start; }
 .property-market__title { grid-column: 1 / -1; }
 .property-market__status { margin: 0; color: var(--cb-text-muted); }
 .property-market__status:empty { display: none; }
