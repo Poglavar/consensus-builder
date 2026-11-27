@@ -1,82 +1,61 @@
 # Purchase and sale offers
 
-A standalone `property-offer/v1` names one whole X-ray apartment or a bundle of source-qualified parcels, a fixed price in SOL, a deadline and the maker’s chosen lens. A bid opens the seller role. A listing opens the buyer role.
+A `property-offer/v2` offers to buy or sell one plot or one flat for a fixed price in SOL or devnet
+USDC, until a deadline. The plot is named as its parcel source gives it (source and id); the flat by
+its [flat address](vocabulary.md#flat-address). Ownership is not a token: lens members state it, and
+each reader sees it through the lens members they trust ([holder according to a lens](vocabulary.md#holder-according-to-a-lens)).
 
-## Apartment offers
+## Making, taking and settling an offer
 
-From the selected apartment in **X-ray**, choose **Offer to buy apartment** or **Offer to sell apartment**. The same actions appear under **Independent offers in SOL** on the apartment row of an open funding agreement. Enter the price, select a lens, and mint the offer. A seller specifies the payout schedule. A buyer’s offer receives its schedule at acceptance.
+1. **Make.** From a plot (Actions → Ownership: Put up for sale, Offer to buy) or a flat in X-ray
+   (Put up for sale, Offer to buy), choose USDC or SOL, the price and the deadline. A buyer names the
+   lens members it trusts to confirm the seller holds the asset (its lens, one to eight lens members
+   and how many must confirm; the person's lens preference fills it in). A seller may name lens
+   members who must qualify the buyer, or none. Minting publishes the terms (their CID) and creates
+   the offer on Solana in one wallet approval; a buyer's price goes into escrow in the same approval.
+2. **Take.** A buyer taking a listing names its lens and pays into escrow; a seller accepting a bid
+   names its payout and, optionally, a lens that qualifies the buyer. One approval.
+3. **Wait for the lenses.** Nothing approves by default. Each lens member confirms from its own
+   wallet (Lens requests, or the offer sheet's Confirm). A buyer's-lens member confirms only when its
+   own statements name the seller as holder; its confirmation sits at an address fixed by the asset
+   and the holding sold, so it cannot confirm a second sale of the same holding. The confirmation
+   that completes both lenses also pays the schedule, in the same approval.
+4. **End.** The maker withdraws an offer nobody has taken; after the deadline anyone ends an unsettled
+   offer and any escrow returns to the buyer.
 
-The mint transaction creates the offer and creates or reuses the apartment’s ownerless address. Every offer for the same X-ray building and unit shares that address. Anyone can pay the creation cost. The address stays fixed when a different wallet proposes an offer or a sale settles. The proposer’s lens sets the qualification criteria for the other party.
+## First holders and self-declarations
 
-**Find apartment offers** in X-ray lists live standalone bids and listings and also finds USDC reservation agreements for the same unit. The USDC link opens the developer’s agreement with the unit selected. Its deposit and contract stay with that agreement. [Developer crowdfunding](developer-crowdfunding.md)
+A lens member states who first holds an asset with a `PropertyHolding-v1` statement (basis: the
+developer of a new building, the holder's own declaration it checked, or an official register), from
+the asset's sheet ("State who holds it"). A person asks lens members for one with a signed request
+("Ask lens members to confirm you hold it"); the request is listed for those lens members under Lens
+requests, and nothing happens until one of them states it. A lens member withdraws its own statement
+from the same sheet.
 
-Acceptance sessions, operator qualification of a counterparty and the lens service's offer routes are gone. In v2 the counterparty commits on chain naming its own lens, the lens members confirm with `PropertyOfferConfirmation-v1` attestations from their wallets, and the offer pays out once both lenses are met or expires.
+## Where offers are listed
 
-## Parcel offer workflow
+The Market sheet lists offers for sale or wanted, flats or plots, in the map area or the whole city
+(`GET /property-offers`). A plot's or a flat's sheet lists the offers on that asset and who holds it
+according to the reader's lens. Lens requests lists the committed offers and the self-declaration
+requests that wait for the connected wallet (`GET /property-offers/awaiting`, `GET /holding-requests`).
 
-1. Select one parcel or a parcel set. In its **Actions → Ownership** group, choose **Offer to buy**
-   or **Offer to sell**. Connect the proposer’s Solana wallet, enter total SOL price, deadline and
-   the ownership lens. A sale includes an explicit payout schedule totaling the price.
-2. Select **Mint offer**. This publishes the exact terms and requests the Solana mint in one action.
-   Before publishing, the browser verifies the network/program, the live lens service, its registered
-   active SAS credential/schema and complete ownership coverage. A sale must name an owner as proposer
-   and pay the exact owner union. A preflight failure leaves the form editable. If a later mint fails
-   or the wallet declines, the published offer remains available for retry without changing its terms.
-   Publication alone does not create an on-chain offer or escrow.
-3. Find the offer in **Lists → Agreements**. Share opens `/property-offers/<cid>`; Download exports
-   the canonical JSON and the Agreements import accepts it. An imported or unfinished offer uses
-   the same **Mint offer** action to complete publication and minting.
-4. The counterparty commits on chain (a buyer names its lens and pays the price into escrow; a seller
-   of a buy offer names the payout schedule). The lens members confirm from their wallets, and the
-   offer pays the schedule once both lenses are met. An open offer can be cancelled by its maker; an
-   unsettled offer expires after its deadline and refunds the buyer.
+## Identity and index
 
-The review panel lists exact parcel references with map navigation, full buyer/seller wallets,
-payout recipients and amounts, and the Solana account. Refresh can recover a confirmed account whose
-index update failed; changing the connected wallet updates the available actions.
+The CID commits the canonical terms; the program commits their SHA-256 and the offer address is
+`["property-offer", maker, sha256(cid)]`. `consensus.property_offer` indexes published offers with
+the asset kind, identity hash and map location, and mirrors the chain account only as the server
+reads it itself (`POST /property-offers/:cid/onchain`); a browser's status claim is never accepted.
+`consensus.holding_request` keeps signed self-declaration requests; whether one was answered is read
+from chain. `backend/scripts/migrate-property-offers-v2.mjs --apply` replaces the v1 tables.
 
-Parcel anchors remain ownerless and non-transferable; registered title comes from the land registry.
-Who holds an asset is what a lens member's statements say: its `PropertyHolding-v1` first-holder
-statement and its sale confirmations (plan step 5). The server keeps no transfer evidence.
+## Solana
 
-## Identity and persistence
-
-The CID commits canonical immutable terms: direction, proposer, open counterparty role, city,
-creation and expiry, lens, exact property and whole-lamport price. The property is either `parcels` or one `apartment` with `xrayBuilding`, `unit`, `at` and optional estimated-layout `access`. The apartment PDA uses the seeds `"apartment"` and the SHA-256 of the UTF-8 JSON array `["apartment/v1", xrayBuilding, unit]` under the parcel anchor program. Camera, terms, developer and payer are outside its identity. Sell terms
-also commit sorted payout rows. There are at most 200 distinct parcels and 16 distinct recipients;
-amounts are positive u64 decimal strings and the payout sum must equal the price exactly.
-
-`consensus.property_offer` (v2) indexes published terms separately from plan agreements, with the
-asset kind, hash and location, the status and the lens members. `/property-offers/:cid/onchain`
-independently reads the expected Solana PDA and checks its program, CID, terms hash, maker, side,
-currency, price, deadline, the maker's lens and a sale's payouts before mirroring state; browser
-status claims are never accepted as evidence. `consensus.holding_request` holds people's signed
-requests that lens members state they hold a plot or a flat (`POST/GET /holding-requests`).
-`scripts/migrate-property-offers-v2.mjs` drops the v1 tables before the v2 DDL is applied.
-
-Whole-building offers would need their own building-scoped identity. The current standalone asset choices are apartments and parcel bundles.
-
-## Solana and lens runtime
-
-The devnet `property_offer` program is `blockchain/solana/programs/property_offer`, with browser codec
-`frontend/js/solana/property-offer-client.js` and address
-`BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp`. The bridge checks that this program is executable on the
-selected Solana network before it builds an offer instruction. The existing `agreement` program remains
-the program for plan agreements.
-
-The SAS schema is `PropertyOfferDecision` v2. It binds the offer CID and account, canonical terms hash,
-ordered payout hash, buyer, seller, affirmative counterparty qualification and observation time. The
-[program contract](../blockchain/solana/programs/property_offer/README.md) defines its byte layout.
-
-The lens service no longer serves property-offer routes: lens members confirm offers from their own
-wallets. The developer-round apartment reservation qualification
-(`/lens/agreements/:cid/apartments/:unitId/qualify`) is a separate flow and stays.
-
-Apply `db/property-offer-ddl.sql` and the updated `routes/lens-member-ddl.sql` with the usual backend
-DDL process. A live lens needs the registered SAS schema `PropertyOfferDecision-v2`. Its affirmative field is `counterpartyQualified`. A v1 ownership decision cannot authorize a new acceptance. API/bridge devnet
-connections verify the devnet genesis hash. Localnet indexing is available only when
-`SOLANA_LOCALNET_RPC_URL` explicitly names a loopback endpoint; the browser likewise needs an explicit
-`SOLANA_RPC_URLS.localnet`. No public-network deployment or transaction is implicit in local tests.
+`programs/property_offer` v2 at `HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH` on devnet
+([program contract](../blockchain/solana/programs/property_offer/README.md)). It checks the lens
+members' `PropertyOfferConfirmation-v1` statements against the offer and pays the schedule; it does
+not know what is sold or who holds it. Lens members' statements are SAS attestations under their own
+`LensMember` credential, built in the browser by `frontend/js/solana/property-statements.js`;
+`frontend/js/property-holders.js` reads a holder back from derived addresses only.
 
 ## MCP editing
 
