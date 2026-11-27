@@ -119,3 +119,27 @@ for (const width of [1280, 390]) {
     await page.screenshot({ path: testInfo.outputPath('plan-timestamp.png') });
   });
 }
+
+test('on a phone, layers loading do not block the reload, and work the person started releases it when done', async ({ mockApi: page }) => {
+  await page.setViewportSize({ width: 390, height: 844 }); await runningBuild(page);
+  await page.route('**/release.json?*', route => route.fulfill({ json: manifest(13) }));
+  await openCity(page);
+  await createSpace(page, 'park');
+  await page.keyboard.press('Escape');
+  // The layer-loading ring is busy for a moment after every pan; the update check is work the person started.
+  await page.evaluate(() => {
+    const w = window as any;
+    document.getElementById('planning-views-button')!.setAttribute('aria-busy', 'true');
+    w.BusyControl.track(document.getElementById('app-update-check'), new Promise(resolve => { w.__finishCheck = resolve; }));
+  });
+  await page.locator('#app-update-notice [data-app-update-reload]').click();
+  const review = page.locator('.app-update-review');
+  await expect(review.locator('[role="status"]')).toHaveText(/^Wait for this operation to finish/);
+  await expect(review).not.toContainText('Buildings and massing');
+  const reload = page.getByRole('button', { name: 'Reload and keep drafts', exact: true });
+  await expect(reload).toBeDisabled();
+  await page.evaluate(() => (window as any).__finishCheck());
+  await expect(reload).toBeEnabled();
+  await expect(review.locator('[role="status"]')).toBeHidden();
+  await Promise.all([page.waitForEvent('domcontentloaded'), reload.click()]);
+});

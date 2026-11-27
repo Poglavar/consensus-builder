@@ -61,9 +61,18 @@ describe('app update page wiring', () => {
         expect(h.location.reload).not.toHaveBeenCalled();
         expect(h.el('app-update-blocked').textContent).toContain('Finish or cancel editing: Current editor');
         h.__mapEditLock.isHeld.mockReturnValue(false);
-        h.el('app-update-check').setAttribute('aria-busy', 'true'); reload.click();
+        let finish;
+        const work = h.BusyControl.track(h.el('app-update-check'), new Promise(resolve => { finish = resolve; }));
+        reload.click();
         expect(h.location.reload).not.toHaveBeenCalled();
-        h.el('app-update-check').removeAttribute('aria-busy'); reload.click();
+        finish(); await work; reload.click();
+        expect(h.location.reload).toHaveBeenCalledTimes(1);
+    });
+    it('does not let map layers loading in the background block a reload', async () => {
+        const h = fixture(); await settled(h);
+        h.el('app-update-state').setAttribute('aria-busy', 'true');
+        h.document.querySelector('[data-app-update-reload]').click();
+        expect(h.el('app-update-blocked').textContent).toBe('');
         expect(h.location.reload).toHaveBeenCalledTimes(1);
     });
 });

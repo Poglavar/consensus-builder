@@ -68,20 +68,24 @@
             if (!dialogs.length && !reviewDialog && win.MapShell?.isBlockingDialogOpen()) dialogs.push('');
             const editor = doc.getElementById('proposal-editor-shell');
             const editing = !!(win.__mapEditLock?.isHeld() || win.roadDrawingMode || win.OnMapEditor?.isActive() || editor?.classList.contains('is-open'));
-            const busy = [...doc.querySelectorAll('[aria-busy="true"]')].filter(el => !reviewDialog?.overlay.contains(el))
+            // Only work the person started blocks: controls the shared busy helpers mark (.cb-busy) and
+            // locked sheet sections (.is-busy). Map layers loading in the background carry aria-busy
+            // too, for a second or two after every pan, and a reload loses none of that.
+            const busy = [...doc.querySelectorAll('[aria-busy="true"].cb-busy, [aria-busy="true"].is-busy')].filter(el => !reviewDialog?.overlay.contains(el))
                 .map(el => label(el) || el.textContent.trim());
             return win.ReleaseUpdates.reloadReasons({ editing, editorTitle: win.__mapEditLock?.label?.() || (editor?.classList.contains('is-open') ? label(editor) : ''), busy, dialogs });
         }
         function reviewWork(groups, blockers) {
             if (reviewDialog || !win.CbDialog) return;
             const body = doc.createElement('div'); body.className = 'app-update-review';
-            if (blockers.length) {
-                const list = doc.createElement('ul'); list.setAttribute('role', 'status');
-                for (const reason of blockers) {
-                    const item = doc.createElement('li'); item.textContent = reasonText(reason); list.append(item);
-                }
-                body.append(list);
-            }
+            const blockerList = doc.createElement('ul'); blockerList.setAttribute('role', 'status');
+            const showBlockers = () => {
+                blockerList.replaceChildren(...blockers.map(reason => {
+                    const item = doc.createElement('li'); item.textContent = reasonText(reason); return item;
+                }));
+                blockerList.hidden = !blockers.length;
+            };
+            showBlockers(); body.append(blockerList);
             const note = doc.createElement('p'); note.textContent = t('appUpdates.savedDrafts'); body.append(note);
             const kindKeys = { designs: 'clickStackNavigation.designs', plans: 'clickStackNavigation.plans', agreements: 'clickStackNavigation.agreements' };
             const actions = [];
@@ -103,8 +107,28 @@
             actions.push({ id: 'back', label: t('appUpdates.backToWork'), onClick: () => reviewDialog.close() });
             actions.push({ id: 'reload', label: t('appUpdates.reloadKeepDrafts'), role: 'primary', disabled: blockers.length > 0,
                 onClick: () => { reviewDialog.close(); reload(true); } });
+            // An operation that finishes while the review is open releases the reload: the reasons are
+            // checked again whenever a control's busy state changes.
+            let recheck = 0;
+            const watcher = new win.MutationObserver(() => {
+                if (recheck) return;
+                recheck = win.requestAnimationFrame(() => {
+                    recheck = 0;
+                    if (!reviewDialog) return;
+                    blockers = reloadState(); reasons = blockers; blocked = blockers.length > 0;
+                    showBlockers(); render();
+                    for (const action of actions) {
+                        if (action.id === 'back') continue;
+                        const button = reviewDialog.getActionButton(action.id);
+                        if (button) button.disabled = blocked;
+                    }
+                });
+            });
+            watcher.observe(doc.body, { subtree: true, attributes: true, attributeFilter: ['aria-busy'] });
             reviewDialog = win.CbDialog.open({ title: t('appUpdates.review'), confirm: true, body, actions, autoCloseActions: false,
-                className: 'app-update-review-dialog', onClose: () => { reviewDialog = null; } });
+                className: 'app-update-review-dialog', onClose: () => {
+                    watcher.disconnect(); if (recheck) win.cancelAnimationFrame(recheck); reviewDialog = null;
+                } });
         }
         function reload(keepDrafts = false) {
             reasons = reloadState(); blocked = reasons.length > 0; render();
