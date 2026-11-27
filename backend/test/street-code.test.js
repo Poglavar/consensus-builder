@@ -30,7 +30,7 @@ describe('Strong Suburbs street code', () => {
     it('is a street code that the Strong Suburbs ballot rule carries, not a building card eligibility', () => {
         expect(set).toMatchObject({ kind: 'street-code', ballotRules: ['gb-street-vote-strong-suburbs'] });
         expect(Eligibility.forCity(['gb-eng-planning']).map(s => s.id)).toEqual(['gb-living-tradition-mansards']);
-        expect(Eligibility.forCity(['gb-eng-planning'], { kind: 'street-code' }).map(s => s.id)).toEqual(['gb-strong-suburbs-street-code']);
+        expect(Eligibility.forCity(['gb-eng-planning'], { kind: 'street-code' }).map(s => s.id)).toEqual(['gb-strong-suburbs-street-code', 'gb-create-mews-block-code']);
         expect(Eligibility.codesForBallot({ id: 'gb-street-vote-strong-suburbs' }).map(s => s.id)).toEqual(['gb-strong-suburbs-street-code']);
     });
     it('caps storeys by density bands, the lower end taking the lower cap (para 30)', () => {
@@ -150,7 +150,8 @@ describe('Strong Suburbs street code', () => {
         const t = (key, params = {}) => `${key}(${Object.values(params).join('|')})`;
         const [row] = StreetCode.describe(set, outcome, t)[0].tests;
         expect(row).toMatchObject({ cite: '30', status: 'fail', text: 'eligibility.fact.proposedStoreys(3) · eligibility.fact.storeyCap(2|15|B)' });
-        expect(StreetCode.unchecked(set).map(test => test.cite)).toEqual(['14', '35', '36.2', '39', '41', '42', '51', '52']);
+        // Paras 35 and 52 are light planes the check reads (light-planes.js), no longer listed as unchecked.
+        expect(StreetCode.unchecked(set).map(test => test.cite)).toEqual(['14', '36.2', '39', '41', '42', '51']);
     });
 });
 
@@ -165,7 +166,7 @@ describe('the street code check a street vote records', () => {
     const record = outcome => Eligibility.codeEvidence(set, outcome, { planCid: PLAN_CID, street: reference }, '2026-11-27T15:00:00.000Z');
     it('tells a building the code excludes from one that breaks it and one not known yet', async () => {
         const breaks = record(await run());
-        expect(breaks.buildings).toEqual([{ design: 0, index: 0, factId: 'osm:way/36', kind: 'existing', verdict: 'breaks', failing: ['ssStoreys'], excluded: [], unknown: ['ssCeilingMin', 'ssSetbackCeiling'] }]);
+        expect(breaks.buildings).toEqual([{ design: 0, index: 0, factId: 'osm:way/36', kind: 'existing', verdict: 'breaks', failing: ['ssStoreys'], excluded: [], unknown: ['ssLightPlanes', 'ssCeilingMin', 'ssSetbackCeiling', 'ssDetached'] }]);
         const listed = record(await run({ contract: contract({ heritage: { ...notListed, value: { listed: true, grade: 'II' } } }) }));
         expect(listed.buildings[0]).toMatchObject({ verdict: 'excluded', excluded: ['ssListed'], failing: ['ssStoreys'] });
         const unknown = record(await run({ street: null }));
@@ -197,4 +198,106 @@ describe('the street code check a street vote records', () => {
         expect(() => Eligibility.normalizeCodeEvidence({ ...breaks, planCid: 'not-a-cid' })).toThrow('by CID');
         expect(() => Eligibility.normalizeCodeEvidence({ ...breaks, note: 'x' })).toThrow('malformed');
     });
+});
+
+// Light planes in a street code (light-planes.js through street-code.js planeFacts): Create Mews' block
+// plan code (2022) on a block of four plots with a mews in the back gardens, and Strong Suburbs' paras
+// 35 and 52, with the protected plots' owners named where a plane is pierced, which they may waive.
+describe('light planes in a street code', () => {
+    const mews = Eligibility.get('gb-create-mews-block-code', '2022');
+    const plot = (id, w, s, e, n) => ({ id, geometry: box(w, s, e, n) });
+    // A block 48 m wide and 80 m deep, streets all round: two plots on the south street (y 0–40), two on the north.
+    const blockPlots = [plot('A', 0, 0, 24, 40), plot('B', 24, 0, 48, 40), plot('C', 0, 40, 24, 80), plot('D', 24, 40, 48, 80)];
+    const block = { parcelSourceId: 'test', parcelIds: ['A', 'B', 'C', 'D'] };
+    const houses = [['h1', 4, 2, 20, 12, 9], ['h2', 28, 2, 44, 12, 9], ['h3', 4, 68, 20, 78, 9], ['h4', 28, 68, 44, 78, 9]]
+        .map(([id, w, s, e, n, height]) => ({ id: `w${id.slice(1)}`, geometry: box(w, s, e, n), height }));
+    // A 5 m cottage on plot A: 14 m from the west street (20° plane 5.1 m), 6 m from B (40°: 5.03 m), 8 m from C.
+    const cottage = (props = {}, at = [14, 26, 18, 32]) => ({ type: 'Feature', geometry: box(...at),
+        properties: { type: 'proposedBuilding', height: 5, floors: 2, floorHeightM: 2.5, roof: null, ...props } });
+    const factsOf = (heights = true) => async ids => new Map(ids.map(id => [id, { found: true, facts: { height_m: heights ? fact(houses.find(h => `osm:way/${h.id.slice(1)}` === id)?.height ?? null) : null } }]));
+    const runMews = (options = {}) => StreetCode.check(mews, { designs: [{ geometry: { buildings: options.buildings || [cottage()] } }], street: null, block: 'block' in options ? options.block : block,
+        read: { plots: async query => (query.parcelIds ? blockPlots.filter(p => query.parcelIds.includes(p.id)) : blockPlots), buildingsNear: async () => houses.map(h => ({ type: 'Feature', id: h.id, geometry: h.geometry, properties: {} })),
+            facts: options.facts || factsOf(), designations: async () => [] } });
+
+    it('passes a two-storey mews cottage in the back gardens under every plane, as no building breaks it', async () => {
+        const outcome = await runMews();
+        const result = outcome.buildings[0].result;
+        expect(statuses(result)).toMatchObject({ cmStreetPlane: 'pass', cmPlotPlane: 'pass', cmPrivacyPlane: 'pass', cmTallest: 'pass', cmBlockSize: 'unchecked' });
+        // Only its ceilings stay unknown (the design states storey heights, not ceilings, para 28).
+        expect(Eligibility.codeVerdict(mews, result)).toBe('unknown');
+        expect(result.tests.filter(test => test.status === 'unknown').map(test => test.id)).toEqual(['cmCeilingMin']);
+        // A 2.4 m storey is under 2.5 m floor to floor, so it breaks para 28 for certain.
+        const low = (await runMews({ buildings: [cottage({ floorHeightM: 2.4, height: 4.8 })] })).buildings[0].result;
+        expect(statuses(low).cmCeilingMin).toBe('fail');
+        expect(Eligibility.codeVerdict(mews, low)).toBe('breaks');
+    });
+    it('names the plots whose owners may waive the 70° and 40° planes a cottage on the boundary pierces (26e, 26f)', async () => {
+        // On plot A, against plot B's boundary at x = 24: the 70° plane is 0 m high there.
+        const outcome = await runMews({ buildings: [cottage({}, [18, 26, 24, 32])] });
+        const result = outcome.buildings[0].result;
+        expect(statuses(result)).toMatchObject({ cmPlotPlane: 'fail', cmPrivacyPlane: 'fail', cmStreetPlane: 'pass' });
+        expect(result.tests.find(test => test.id === 'cmPlotPlane').parcels).toEqual(['B']);
+        expect(Eligibility.codeVerdict(mews, result)).toBe('waivable');
+        expect(Eligibility.waiverPlots(mews, result).map(row => [row.cite, row.parcels])).toEqual([['26e', ['B']], ['26f', ['B']]]);
+        // A waivable building does not hold the vote back.
+        const recorded = Eligibility.codeEvidence(mews, outcome, { planCid: Eligibility.blockKey(block), block }, '2026-11-27T12:00:00.000Z');
+        expect(recorded.buildings[0].verdict).toBe('waivable');
+        expect(Eligibility.normalizeCodeEvidence(recorded)).toEqual(recorded);
+    });
+    it('leaves the 20° street plane unknown while a building between could raise it (26a), and caps height 9 m over the tallest (26h)', async () => {
+        // 13 m tall, 14 m from the west street: over its 20° line (5.1 m) whatever stands in between,
+        // so with the houses' heights known it breaks the code; with one unknown it is not known yet.
+        const tall = [cottage({ height: 13, floors: 5, floorHeightM: 2.6 }, [14, 16, 18, 20])];
+        expect(statuses((await runMews({ buildings: tall })).buildings[0].result)).toMatchObject({ cmStreetPlane: 'fail', cmTallest: 'pass' });
+        expect(statuses((await runMews({ buildings: tall, facts: factsOf(false) })).buildings[0].result)).toMatchObject({ cmStreetPlane: 'unknown', cmTallest: 'unknown' });
+        const tower = [cottage({ height: 19, floors: 6, floorHeightM: 3.1 })];
+        expect(statuses((await runMews({ buildings: tower })).buildings[0].result)).toMatchObject({ cmTallest: 'fail' });
+        expect(statuses((await runMews({ block: null })).buildings[0].result)).toMatchObject({ cmStreetPlane: 'unknown', cmPlotPlane: 'unknown', cmTallest: 'unknown' });
+    });
+    it('keys a block vote\'s check by its plots, so another block is stale', async () => {
+        const plan = { cid: Eligibility.blockKey(block), content: { codes: [{ id: mews.id, version: mews.version }] } };
+        const recorded = Eligibility.codeEvidence(mews, await runMews(), { planCid: plan.cid, block }, '2026-11-27T12:00:00.000Z');
+        expect(Eligibility.codeIssues(mews, recorded, { plan, block: { ...block, parcelIds: ['D', 'C', 'B', 'A'] } })).toEqual([]);
+        expect(Eligibility.codeIssues(mews, recorded, { plan, block: { ...block, parcelIds: ['A', 'B'] } }).map(issue => issue.code)).toEqual(['street-code-stale']);
+    });
+    it('reads Strong Suburbs para 52 only against a neighbour not attached, and para 35 only against plots off the voted street', async () => {
+        // The house of `house()` (30–36 east, 5–15 north) on plot P, a detached neighbour on Q to the east.
+        // Plots front the street 4 m from its centre line; R behind P fronts another street.
+        const plots = [plot('P', 26, 4, 38, 30), plot('Q', 38, 4, 50, 30), plot('R', 26, 30, 38, 60)];
+        const near = [{ type: 'Feature', id: 'w36', geometry: box(30, 5, 36, 15), properties: {} }, { type: 'Feature', id: 'w40', geometry: box(42, 5, 48, 15), properties: {} }];
+        const raised = house({ height: 9, floorHeightM: 3, existingHeight: 6, roof: null, geometry: undefined });
+        const runSs = (building, extra = {}) => StreetCode.check(set, { designs: [{ geometry: { buildings: [building] } }], street,
+            read: { density: async () => ({ areas, sources: [] }), facts: async () => contract({}), designations: async () => [], buildingsNear: async () => near, plots: async () => plots, ...extra } });
+        const outcome = await runSs({ ...raised, geometry: box(30, 5, 38, 25) });
+        const result = outcome.buildings[0].result;
+        // Built to Q's boundary and 5 m from R's, raised from 6 m to 9 m: over 70° from Q (detached),
+        // and over 35° from R, a plot off the street (Q, on the street, is no para 35 neighbour).
+        expect(statuses(result)).toMatchObject({ ssDetached: 'fail', ssLightPlanes: 'fail' });
+        expect(result.tests.find(test => test.id === 'ssDetached').parcels).toEqual(['Q']);
+        expect(result.tests.find(test => test.id === 'ssLightPlanes').parcels).toEqual(['R']);
+        // Attached to the house on Q, para 52 does not protect Q.
+        const attached = await runSs({ ...raised, geometry: box(30, 5, 38, 25) }, { buildingsNear: async () => [near[0], { ...near[1], geometry: box(38, 5, 48, 15) }] });
+        expect(statuses(attached.buildings[0].result).ssDetached).toBe('pass');
+        // Its kept volume (6 m) is never judged: a raise that stays under the planes passes.
+        const low = await runSs({ ...raised, properties: { ...raised.properties, height: 6.5 }, geometry: box(30, 5, 34, 15) });
+        expect(statuses(low.buildings[0].result)).toMatchObject({ ssDetached: 'pass', ssLightPlanes: 'pass' });
+    });
+    // Alone it takes ~165 ms in ~19 slices of at most ~16 ms; the bound is loose so a busy machine (other
+    // test files in parallel) does not fail it, while a check that ran a whole street in one go would.
+    it('checks a street of 77 houses in slices that hand back the thread', async () => {
+        const row = Array.from({ length: 77 }, (_, i) => ({ type: 'Feature', geometry: box(i * 8, 5, i * 8 + 7, 15),
+            properties: { type: 'proposedBuilding', basedOnExisting: true, sourceBuildingId: `w${1000 + i}`, height: 7, floors: 2, floorHeightM: 3.5, existingHeight: 6, roof: 'mansard' } }));
+        const lots = row.map((_, i) => plot(`L${i}`, i * 8, 0, i * 8 + 8, 30)).concat(row.map((_, i) => plot(`M${i}`, i * 8, 30, i * 8 + 8, 60)));
+        const longStreet = [[at(0, 0), at(620, 0)]];
+        const slicer = require('../../frontend/js/work-slicer.js').createSlicer({ budgetMs: 8, yieldNow: () => new Promise(resolve => setImmediate(resolve)) });
+        const started = performance.now();
+        const outcome = await StreetCode.check(set, { designs: [{ geometry: { buildings: row } }], street: longStreet, slicer,
+            read: { density: async () => ({ areas, sources: [] }), facts: async () => new Map(), designations: async () => [], buildingsNear: async () => [], plots: async () => lots } });
+        const totalMs = performance.now() - started;
+        console.log(`[street-code] 77 houses: ${Math.round(totalMs)} ms total, ${slicer.pauses} yields, longest slice ${Math.round(slicer.longestSliceMs)} ms`);
+        expect(outcome.buildings).toHaveLength(77);
+        expect(slicer.pauses).toBeGreaterThan(0);
+        expect(slicer.pauses).toBeGreaterThan(5);
+        expect(slicer.longestSliceMs).toBeLessThan(250);
+    }, 60000);
 });

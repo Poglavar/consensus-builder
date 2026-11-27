@@ -53,7 +53,7 @@
         const v1 = raw?.schema === 'community-voting/v1';
         const keys = raw && typeof raw === 'object' ? Object.keys(raw) : [];
         if (!(v1 ? exact(raw, ['schema', 'id', 'codeHashes']) : raw?.schema === SCHEMA
-            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule', 'eligibility', 'streetCode', 'street'].includes(key)))
+            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'longResidents', 'rule', 'eligibility', 'streetCode', 'street', 'block'].includes(key)))
             || !UUID.test(raw.id)
             || !Array.isArray(raw.codeHashes) || !raw.codeHashes.length || raw.codeHashes.length > MAX_ENTRIES
             || raw.codeHashes.some(hash => typeof hash !== 'string' || !HASH.test(hash))
@@ -71,6 +71,14 @@
             }
             const households = raw.households.map(group => [...group].sort()).sort((a, b) => (a[0] < b[0] ? -1 : 1));
             if (households.some(group => group.length > 1)) result.households = households;
+        }
+        // The codes of residents registered at their address for at least a rule's `longResidentYears`
+        // (Create Mews para 6 (c)): a subset of the eligible codes, sorted, like households only hashes.
+        if (raw.longResidents != null) {
+            const eligible = new Set(codeHashes);
+            if (!Array.isArray(raw.longResidents) || !raw.longResidents.length || raw.longResidents.some(hash => !eligible.has(hash))
+                || new Set(raw.longResidents).size !== raw.longResidents.length) fail('Long residents must be eligible codes, each once.');
+            result.longResidents = [...raw.longResidents].sort();
         }
         if (raw.rule != null) {
             if (!exact(raw.rule, ['id', 'version']) || !rules().get(raw.rule.id, raw.rule.version)) fail('Choose a ballot rule from the list.');
@@ -100,7 +108,32 @@
         if (raw.street != null) {
             try { result.street = streets().normaliseReference(raw.street); } catch (error) { fail(error.message); }
         }
+        // The block whose residents vote (a rule with `unit: 'block'`): its plots as a parcel set, the
+        // parcel source and the sorted parcel ids (a detected parcel block, or ugt_select_parcels block).
+        if (raw.block != null) result.block = normaliseBlock(raw.block);
         return result;
+    }
+    // What a voting record still lacks for its ballot rule, checked when the agreement is saved (the
+    // record itself can be built up step by step): the rule's minimum of households (`minHouseholds`),
+    // the long residents a `long-resident-support` test counts, and the block a rule held on a block
+    // (`unit: 'block'`) needs. Returns [{ code, ...params }], empty when nothing is missing.
+    function ruleIssues(config) {
+        const rule = config?.rule ? rules().get(config.rule.id, config.rule.version) : null;
+        if (!rule) return [];
+        const issues = [];
+        const households = config.households ? config.households.length : config.codeHashes.length;
+        if (Number.isInteger(rule.minHouseholds) && households < rule.minHouseholds) issues.push({ code: 'households-too-few', min: rule.minHouseholds, households });
+        if (rules().needsLongResidents(rule) && !config.longResidents) issues.push({ code: 'long-residents-missing', years: rule.longResidentYears });
+        if (rule.unit === 'block' && !config.block) issues.push({ code: 'block-missing' });
+        return issues;
+    }
+    function normaliseBlock(raw) {
+        if (!exact(raw, ['parcelSourceId', 'parcelIds']) || typeof raw.parcelSourceId !== 'string' || !raw.parcelSourceId || raw.parcelSourceId.length > 3507
+            || !Array.isArray(raw.parcelIds) || !raw.parcelIds.length || raw.parcelIds.length > 500
+            || raw.parcelIds.some(id => typeof id !== 'string' || !id || id.length > 250) || new Set(raw.parcelIds).size !== raw.parcelIds.length) {
+            fail('A block is its parcel source and 1–500 distinct parcel ids.');
+        }
+        return { parcelSourceId: raw.parcelSourceId, parcelIds: [...raw.parcelIds].sort() };
     }
     // The household partition of local entries: codes sharing a household label are one household;
     // a code without one is a household of its own.
@@ -113,7 +146,21 @@
         });
         return [...groups.values()];
     }
-    // Resident rows from a CSV with Person and Household columns (header names are case-insensitive).
+    // The codes of the entries whose holders have lived at their address at least `years` (an entry's
+    // `years`, a local label like its household): the voting record's `longResidents`, or null if none.
+    function longResidentsOf(entries, years) {
+        const long = entries.filter(row => Number.isFinite(row.years) && row.years >= years).map(row => row.codeHash).sort();
+        return long.length ? long : null;
+    }
+    // Years at the address from a CSV cell or a local file: a whole number 0–150, or null when empty.
+    function yearsOf(value) {
+        if (value === null || value === undefined || String(value).trim() === '') return null;
+        const years = Number(String(value).trim());
+        if (!Number.isInteger(years) || years < 0 || years > 150) fail('Years at the address must be a whole number of years.');
+        return years;
+    }
+    // Resident rows from a CSV with Person and Household columns, and an optional Years column (years
+    // at the address; header names are case-insensitive).
     function residentsCsv(text) {
         if (typeof text !== 'string') fail('The CSV needs Person and Household columns.');
         // The separator is the header's: a comma, or the semicolon or tab some spreadsheets export.
@@ -135,11 +182,11 @@
         if (cell || row.length) { row.push(cell); rows.push(row); }
         const [head = [], ...body] = rows.filter(r => r.some(value => value.trim()));
         const names = head.map(value => value.trim().replace(/^﻿/, '').toLowerCase());
-        const person = names.indexOf('person'), household = names.indexOf('household');
+        const person = names.indexOf('person'), household = names.indexOf('household'), years = names.indexOf('years');
         if (person < 0 || household < 0) fail('The CSV needs Person and Household columns.');
         if (!body.length || body.length > MAX_ENTRIES) fail('The CSV needs between 1 and 10,000 residents.');
         return body.map(r => ({ label: (r[person] || '').trim().replace(/^'(?=[=+@\-\t\r])/, ''),
-            household: (r[household] || '').trim().replace(/^'(?=[=+@\-\t\r])/, '') }))
+            household: (r[household] || '').trim().replace(/^'(?=[=+@\-\t\r])/, ''), ...(years >= 0 ? { years: yearsOf(r[years]) } : {}) }))
             .map(r => { if (r.label.length > 500 || r.household.length > 500) fail('Invalid resident row.'); return r; });
     }
     // labels: strings, or { label, household } resident rows. household is a local grouping label.
@@ -148,29 +195,30 @@
         if (!rows.length || rows.length > MAX_BATCH || rows.some(row => !row || typeof row.label !== 'string' || row.label.length > 500
             || typeof (row.household ?? '') !== 'string' || (row.household || '').length > 500)) fail('Generate between 1 and 100 codes at a time.');
         const used = new Set(), entries = [];
-        for (const { label, household } of rows) {
+        for (const { label, household, years = null } of rows) {
             let code;
             do { code = generateCode(crypto); } while (used.has(code));
             used.add(code);
-            entries.push({ label, household: household || '', code, codeHash: await codeHash(votingId, code, crypto) });
+            entries.push({ label, household: household || '', years: yearsOf(years), code, codeHash: await codeHash(votingId, code, crypto) });
             progress(entries.length, rows.length);
         }
         return entries;
     }
     function localFile(votingId, entries) {
-        return { schema: 'ugt-local-voter-list/v1', votingId, entries: entries.map(({ label, household, code }) => ({ label, ...(household ? { household } : {}), code })) };
+        return { schema: 'ugt-local-voter-list/v1', votingId, entries: entries.map(({ label, household, years = null, code }) => ({ label, ...(household ? { household } : {}), ...(Number.isFinite(years) ? { years } : {}), code })) };
     }
     async function importLocalFile(raw, progress = () => {}) {
         if (!exact(raw, ['schema', 'votingId', 'entries']) || raw.schema !== 'ugt-local-voter-list/v1' || !UUID.test(raw.votingId)
             || !Array.isArray(raw.entries) || !raw.entries.length || raw.entries.length > MAX_ENTRIES) fail('Not a local voter-list file.');
         const hashes = new Set(), entries = [];
         for (const row of raw.entries) {
-            // household is optional: files saved before households existed have none.
-            if (!(exact(row, ['label', 'code']) || exact(row, ['label', 'household', 'code'])) || typeof row.label !== 'string' || row.label.length > 500
+            // household and years are optional: a list without them has none.
+            const keys = row && typeof row === 'object' ? Object.keys(row) : [];
+            if (!(['label', 'code'].every(key => keys.includes(key)) && keys.every(key => ['label', 'household', 'years', 'code'].includes(key))) || typeof row.label !== 'string' || row.label.length > 500
                 || typeof (row.household ?? '') !== 'string' || (row.household || '').length > 500) fail('Invalid local voter entry.');
             const code = formatCode(row.code), hash = await codeHash(raw.votingId, code);
             if (hashes.has(hash)) fail('Duplicate voting code.');
-            hashes.add(hash); entries.push({ label: row.label, household: row.household || '', code, codeHash: hash });
+            hashes.add(hash); entries.push({ label: row.label, household: row.household || '', years: yearsOf(row.years), code, codeHash: hash });
             progress(entries.length, raw.entries.length);
         }
         return { votingId: raw.votingId, entries };
@@ -178,8 +226,9 @@
     function distributionCsv(entries) {
         // Text cells cannot become executable spreadsheet formulas when the organiser opens the CSV.
         const cell = text => '"' + (/^[=+@\-\t\r]/.test(text) ? "'" + text : text).replace(/"/g, '""') + '"';
-        return 'Person,Household,Code\r\n' + entries.map(row => `${cell(row.label)},${cell(row.household || '')},${cell(row.code)}`).join('\r\n');
+        const years = entries.some(row => Number.isFinite(row.years));
+        return `Person,Household,${years ? 'Years,' : ''}Code\r\n` + entries.map(row => `${cell(row.label)},${cell(row.household || '')},${years ? `${Number.isFinite(row.years) ? row.years : ''},` : ''}${cell(row.code)}`).join('\r\n');
     }
     return { ALPHABET, CODE_LENGTH, MAX_ENTRIES, MAX_BATCH, ITERATIONS, CHOICES, HASH, UUID, SCHEMA, exact, normalizeCode, formatCode,
-        generateCode, codeHash, configuration, householdsOf, residentsCsv, generateEntries, localFile, importLocalFile, distributionCsv };
+        generateCode, codeHash, configuration, ruleIssues, normaliseBlock, householdsOf, longResidentsOf, residentsCsv, generateEntries, localFile, importLocalFile, distributionCsv };
 });

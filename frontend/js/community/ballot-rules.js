@@ -22,7 +22,11 @@
     //   eligible-support:  codes voting Support / all eligible codes
     //   household-turnout: households where any code voted / all households
     //   household-support: households where any code voted Support / households where any code voted
-    const MEASURES = ['cast-support', 'eligible-support', 'household-turnout', 'household-support'];
+    //   household-eligible-support: households where any code voted Support / all households
+    //   long-resident-support: long-resident codes voting Support / all long-resident codes (the voting
+    //     record's `longResidents`: the codes of residents registered at the address for at least the
+    //     rule's `longResidentYears`)
+    const MEASURES = ['cast-support', 'eligible-support', 'household-turnout', 'household-support', 'household-eligible-support', 'long-resident-support'];
     const test = (measure, threshold) => ({ measure, ...threshold });
 
     // English text is the fallback for the `voting.ballotRules.<id>.*` i18n keys.
@@ -71,6 +75,21 @@
                 name: 'Street vote — Living Tradition mansards',
                 source: 'Proposed in Samuel Hughes’s Living Tradition (Create Streets, 2021): at least 50% of votes cast in favour, residents of at least half the households voting, and a yes from a resident in at least half of the voting households. Only houses that meet its eligibility conditions (para. 17) may be covered.'
             }
+        },
+        {
+            // Create Mews' block plan vote, held on a block (`unit: 'block'`, the voting record's `block`):
+            // para 6 (a) two-thirds of eligible voters in favour, (b) a resident of at least half the
+            // eligible households in favour, (c) at least half of those registered at their address for
+            // three years or more in favour; para 5, at least twenty households; para 4, only on a plan
+            // that complies with the rules (its block plan code).
+            id: 'gb-block-vote-create-mews', version: '2026-11-27', country: 'GB', unit: 'block', minHouseholds: 20, longResidentYears: 3,
+            tests: [test('eligible-support', atLeast(2, 3)), test('household-eligible-support', atLeast(1, 2)), test('long-resident-support', atLeast(1, 2))],
+            requires: { streetCode: { id: 'gb-create-mews-block-code', version: '2022' } },
+            sources: [{ label: 'Ben Southwood and Samuel Hughes, Create Mews (Create Streets, 2022), paras 4–6, pp. 48–49', url: 'https://www.createstreets.com/wp-content/uploads/2022/02/Create-Mews.pdf' }],
+            text: {
+                name: 'Block vote — Create Mews',
+                source: 'Proposed in Create Streets’ Create Mews (2022): a block of at least twenty households adopts a block plan when at least two-thirds of eligible voters vote in favour, a resident of at least half the households votes in favour, and at least half of those registered at their address for three years or more vote in favour.'
+            }
         }
     ];
     const byKey = new Map(RULES.map(rule => [`${rule.id}@${rule.version}`, rule]));
@@ -81,6 +100,7 @@
     function list() { return RULES.filter(rule => latest(rule.id) === rule); }
     function get(id, version) { return byKey.get(`${id}@${version}`) || null; }
     const needsHouseholds = rule => !!rule?.tests.some(row => row.measure.startsWith('household-'));
+    const needsLongResidents = rule => !!rule?.tests.some(row => row.measure === 'long-resident-support');
 
     // Households of a voting configuration: its partition, or one household per code.
     const householdsOf = config => config.households || config.codeHashes.map(hash => [hash]);
@@ -88,7 +108,7 @@
     /**
      * Counts a vote's latest ballots against a rule. Pure, aggregates only.
      * @param {object|null} rule a RULES entry (null: households only, no tests)
-     * @param {{ codeHashes: string[], households?: string[][] }} config the normalized voting record
+     * @param {{ codeHashes: string[], households?: string[][], longResidents?: string[] }} config the normalized voting record
      * @param {Array<{ codeHash: string, choice: string|null }>} ballots each code's latest choice
      * @returns {{ households: { eligible, voted, supporting }, tests: Array<{ measure, count, total,
      *   numerator, denominator, strict, needed, met }>, passed: boolean|null }}
@@ -102,11 +122,14 @@
         const groups = householdsOf(config);
         const voted = groups.filter(group => group.some(hash => choice.has(hash))).length;
         const supporting = groups.filter(group => group.some(hash => choice.get(hash) === 'support')).length;
+        const long = config.longResidents || [];
         const totals = {
             'cast-support': [support, choice.size],
             'eligible-support': [support, eligible.size],
             'household-turnout': [voted, groups.length],
-            'household-support': [supporting, voted]
+            'household-support': [supporting, voted],
+            'household-eligible-support': [supporting, groups.length],
+            'long-resident-support': [long.filter(hash => choice.get(hash) === 'support').length, long.length]
         };
         const A = approval();
         const tests = (rule?.tests || []).map(row => {
@@ -118,5 +141,5 @@
         return { households: { eligible: groups.length, voted, supporting }, tests, passed: rule ? tests.every(row => row.met) : null };
     }
 
-    return { CHECKED, MEASURES, RULES, list, get, latest, needsHouseholds, householdsOf, evaluate };
+    return { CHECKED, MEASURES, RULES, list, get, latest, needsHouseholds, needsLongResidents, householdsOf, evaluate };
 });

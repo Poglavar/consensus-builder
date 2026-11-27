@@ -616,6 +616,9 @@
         'voting-eligibility-failed': () => t('agreement.errors.eligibilityFailed', 'Not every covered house is known to be eligible yet: see Covered houses.'),
         'voting-street-code-missing': () => t('agreement.errors.streetCodeMissing', 'Check the plan against the street code before creating this street vote.'),
         'voting-street-code-stale': () => t('agreement.errors.streetCodeStale', 'The plan or the street changed since the last street code check: check again.'),
+        'voting-households-too-few': issue => t('agreement.errors.householdsTooFew', 'This ballot rule needs at least {{min}} households; the voter list has {{households}}.', { min: issue.min, households: issue.households }),
+        'voting-long-residents-missing': issue => t('agreement.errors.longResidentsMissing', 'This ballot rule counts the residents registered at their address for at least {{years}} years: give their years at the address in the voter list.', { years: issue.years }),
+        'voting-block-missing': () => t('agreement.errors.blockMissing', 'This ballot rule is held on a block: form the block that holds the plan’s land with Detect block on the map, then name it here.'),
         'rule-invalid': reason => t('agreement.errors.ruleInvalid', 'The decision rule is incomplete: {{reason}}', { reason }),
         'rule-community-binding': () => t('agreement.errors.ruleCommunityBinding', 'A community vote cannot be binding.'),
         'deadline-invalid': () => t('agreement.errors.deadlineInvalid', 'The deadline must be a date in the future.'),
@@ -674,6 +677,7 @@
         const word = ISSUE_TEXT[code];
         if (code.startsWith('scheme-')) return word(schemeIssueText(issue));
         if (code === 'voting-street-code-unclaimed' || code === 'voting-street-code-failed') return streetCodeIssueText(issue);
+        if (code === 'voting-households-too-few' || code === 'voting-long-residents-missing') return word(issue);
         if (!word) return idOf(issue && issue.message) || code;
         if (!NEEDS_REASON.has(code)) return word();
         // The engine's readiness code when there is one (rule-not-ready), else the validator's own
@@ -1189,7 +1193,11 @@
             state.values.voting = withStreet(state.values.voting);
             renderStreet(); codeChanged(); issues();
         };
-        state.afterLand = decideStreet;
+        // Once the plan's land is read, the street is decided and the formed block holding it found.
+        state.afterLand = () => {
+            decideStreet();
+            if (blockRule(state.values.voting) && !chosenBlock) { state.values.voting = withEligibility(state.values.voting); renderBlock(); codeChanged(); issues(); }
+        };
         const withStreet = value => {
             if (!value) return value;
             const { street: _old, ...rest } = value;
@@ -1207,7 +1215,60 @@
             const { streetCode: _old, ...rest } = value;
             return requiredCode(rest) && code.evidence ? { ...rest, streetCode: code.evidence } : rest;
         };
-        const withEligibility = value => withCode(withStreet(value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value));
+        // The block a vote held on a block covers (a ballot rule with `unit: 'block'`, Create Mews): the
+        // record's own, else the parcel block formed on the map (Detect block) that holds the plan's land.
+        const blockNode = doc.createElement('section');
+        blockNode.className = 'voting-block';
+        blockNode.hidden = true;
+        streetNode.after(blockNode);
+        const blockRule = value => {
+            const rule = value?.rule ? root.CommunityBallotRules?.get(value.rule.id, value.rule.version) : null;
+            return rule?.unit === 'block' ? rule : null;
+        };
+        let chosenBlock = state.values.voting?.block || null;
+        const formedBlock = () => {
+            const names = new Set([...landIds()].map(id => root.blockStorage?.blockNameForParcel?.(id)).filter(Boolean));
+            if (names.size !== 1) return null;
+            const formed = root.blockStorage.blocks.get([...names][0]);
+            const city = state.plan?.content?.view?.city || root.CityConfigManager?.getCurrentCityId?.() || null;
+            const sourceId = root.DesignSync?.parcelSourceIdOf?.(city);
+            return formed?.parcelIds?.length && sourceId ? { parcelSourceId: String(sourceId), parcelIds: [...new Set(formed.parcelIds.map(String))].sort() } : null;
+        };
+        const withBlock = value => {
+            if (!value) return value;
+            const { block: _old, ...rest } = value;
+            if (blockRule(rest) && !chosenBlock) chosenBlock = formedBlock();
+            return blockRule(rest) && chosenBlock ? { ...rest, block: chosenBlock } : rest;
+        };
+        function renderBlock() {
+            blockNode.hidden = !blockRule(state.values.voting);
+            if (blockNode.hidden) { blockNode.replaceChildren(); return; }
+            const block = state.values.voting.block;
+            blockNode.innerHTML = `<h4>${esc(t('voting.block.title', 'Block'))}</h4>`
+                + (block ? `<p role="status">${esc(t('voting.block.named', 'The vote covers the block of {{count}} plots that holds the plan’s land.', { count: block.parcelIds.length }))}</p>`
+                    : `<p role="alert">${esc(t('voting.block.none', 'This ballot rule is held on a block. Form the block that holds the plan’s land with Detect block on the map, then use it here.'))}</p>`)
+                + `<p class="agreement-hint">${esc(t('voting.block.hint', 'The record keeps the block’s plots by parcel id. Its residents vote, and the code’s light planes rise from its edge and its plots.'))}</p>`
+                + `<button type="button" class="btn btn-secondary" data-voting-block>${esc(t('voting.block.use', 'Use the formed block'))}</button>`;
+            blockNode.querySelector('[data-voting-block]').addEventListener('click', () => {
+                chosenBlock = formedBlock();
+                log(chosenBlock ? `voting block: ${chosenBlock.parcelIds.length} plots` : 'voting block: no formed block holds the plan land');
+                state.values.voting = withEligibility(state.values.voting);
+                renderBlock(); codeChanged(); issues();
+            });
+        }
+        // Plots for the code's light planes: by id through the cadastral repository, or every plot of
+        // a box from the live parcel fabric once the repository has loaded it.
+        async function readPlots(query) {
+            const repository = root.CadastralParcelRepository, fabric = root.LiveParcelFabric;
+            if (query.parcelIds) {
+                const loaded = await repository.ensureIds(query.parcelIds, { retainOnly: true });
+                return loaded.features.map(feature => ({ id: String(fabric.featureId(feature)), geometry: feature.geometry }));
+            }
+            const [w, s, e, n] = query.bbox, bounds = root.L.latLngBounds([s, w], [n, e]);
+            await repository.ensureBounds(bounds);
+            return (fabric.peekBounds(bounds) || []).map(feature => ({ id: String(fabric.featureId(feature) ?? ''), geometry: feature.geometry })).filter(row => row.id && row.geometry);
+        }
+        const withEligibility = value => withCode(withStreet(withBlock(value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value)));
         function renderStreet() {
             streetNode.hidden = !street.reference || !state.values.voting;
             if (streetNode.hidden) { streetNode.replaceChildren(); return; }
@@ -1250,7 +1311,7 @@
         };
         const codeKey = () => {
             const set = claimedCode();
-            return set ? `${set.id}@${set.version}|${state.plan?.cid}|${street.included === true ? JSON.stringify(street.reference) : ''}|${requiredCode(state.values.voting) ? 'required' : 'advice'}` : null;
+            return set ? `${set.id}@${set.version}|${state.plan?.cid}|${street.included === true ? JSON.stringify(street.reference) : ''}|${JSON.stringify(state.values.voting?.block || null)}|${requiredCode(state.values.voting) ? 'required' : 'advice'}` : null;
         };
         function codeChanged() {
             const key = codeKey();
@@ -1277,12 +1338,12 @@
                 const city = state.plan?.content?.view?.city || root.CityConfigManager?.getCurrentCityId?.() || null;
                 const read = root.StreetCode.readers({ fetch: (url, init) => root.fetch(url, init), backendBase: String(root.getBackendBase?.() || '').replace(/\/$/, ''),
                     sharedApi: root.BuildingFacts.apiRoot(), config: await root.PlanningRestrictionFeed.config(), ruleSetIds: root.PlanningRestrictionFeed.ruleSetIds(city),
-                    readFacts: ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) }) });
+                    readFacts: ids => root.BuildingFacts.readMany(ids, { fresh: Boolean(control) }), readPlots });
                 const reference = street.included === true ? street.reference : null;
-                code.outcome = await root.StreetCode.checkPlan(set, { designs, reference, read });
+                code.outcome = await root.StreetCode.checkPlan(set, { designs, reference, block: state.values.voting?.block || null, read });
                 for (const error of code.outcome.errors) console.warn(`[${new Date().toISOString()}] [AgreementEditor] street code: ${error.read} not read: ${error.message}`);
                 setEvidence(requiredCode(state.values.voting) && state.plan?.cid
-                    ? root.BuildingEligibility.codeEvidence(set, code.outcome, { planCid: state.plan.cid, street: reference }, new Date().toISOString()) : null);
+                    ? root.BuildingEligibility.codeEvidence(set, code.outcome, { planCid: state.plan.cid, street: reference, block: state.values.voting?.block || null }, new Date().toISOString()) : null);
             };
             try { await (control ? root.BusyControl.track(control, work) : work()); } catch (error) {
                 code.error = error.message;
@@ -1292,9 +1353,12 @@
         }
         // Literal keys, so the locale coverage test sees each one.
         const CODE_VERDICT = { meets: () => t('voting.streetCode.verdict.eligible', 'Meets the code'), breaks: () => t('voting.streetCode.verdict.ineligible', 'Breaks the code'),
-            excluded: () => t('voting.streetCode.verdict.excluded', 'Excluded by the code'), unknown: () => t('voting.streetCode.verdict.unknown', 'Not known yet') };
+            excluded: () => t('voting.streetCode.verdict.excluded', 'Excluded by the code'), unknown: () => t('voting.streetCode.verdict.unknown', 'Not known yet'),
+            waivable: () => t('voting.streetCode.verdict.waivable', 'Meets the code if neighbours waive') };
         function codePlaceHtml(outcome) {
             const cap = outcome.cap, historic = outcome.historic;
+            // A code without a density cap or historic limit (Create Mews) has no place line.
+            if (!cap || !historic) return '';
             const capText = Number.isFinite(cap.value) ? t('voting.streetCode.cap', 'Storey cap {{cap}} (para 30): lowest density {{density}} people/ha, in {{area}}.', { cap: cap.value, density: Math.round(cap.lowest.densityPerHa), area: cap.lowest.name || cap.lowest.code })
                 : planningText(`eligibility.fact.storeyCapUnknown.${cap.reason}`, { cap: cap.bound ?? '?' });
             const historicText = historic.value === false ? planningText('eligibility.fact.historicNone', { count: historic.before1918, unknown: historic.unknownDates })
@@ -1331,7 +1395,10 @@
                         + `<span>${esc(`${test.cite} ${test.label}: ${test.statusText}`)}</span>` + (test.text ? ` <span>${esc(test.text)}</span>` : '')
                         + (test.reason ? ` <span class="agreement-hint">${esc(test.reason)}</span>` : '')
                         + (test.link ? ` <a class="cb-link cb-link--external" href="${esc(test.link.url)}" target="_blank" rel="noopener">${esc(test.link.text)}</a>` : '') + '</li>').join('');
+                    // The plots whose owners may waive the light planes the building pierces.
+                    const waivers = verdict === 'waivable' ? root.BuildingEligibility.waiverPlots(set, building.result).map(row => `<li>${esc(t('voting.streetCode.waiver', '{{cite}}: the owners of {{parcels}} may waive it', { cite: row.cite, parcels: row.parcels.join(', ') || '?' }))}</li>`).join('') : '';
                     return `<li data-verdict="${esc(verdict)}"><span>${esc(name(building))}</span> <strong>${esc(CODE_VERDICT[verdict]())}</strong>`
+                        + (waivers ? `<ul class="voting-eligibility__tests">${waivers}</ul><p class="agreement-hint">${esc(t('voting.streetCode.waiverHint', 'Their waivers are given in the owners’ agreement on this plan: add those plots under Neighbours as a waiver.'))}</p>` : '')
                         + (items ? `<ul class="voting-eligibility__tests" aria-label="${esc(t('voting.eligibility.testsOf', 'Tests not passed by {{house}}', { house: name(building) }))}">${items}</ul>` : '') + '</li>';
                 }).join('')}</ul>` : outcome ? `<p class="agreement-hint">${esc(t('voting.streetCode.noBuildings', 'The plan has no buildings to check.'))}</p>` : '')
                 + `<details class="voting-street-code__unchecked"><summary>${esc(t('voting.streetCode.unchecked', 'Rules the app does not check'))}</summary><ul>${unchecked}</ul></details>`
@@ -1342,7 +1409,7 @@
         const roster = root.CommunityVotingRoster?.mount(part('[data-voting-roster]'), {
             value: state.values.voting,
             changed: (value, pending) => {
-                state.values.voting = withEligibility(value); rosterPending = pending; renderStreet();
+                state.values.voting = withEligibility(value); rosterPending = pending; renderStreet(); renderBlock();
                 const set = requiredSet(value), key = set ? `${set.id}@${set.version}` : null;
                 if (key !== eligibility.key) { eligibility.key = key; eligibility.evidence = null; eligibility.judged = null; if (set) checkEligibility(); }
                 renderEligibility(); codeChanged(); issues();
@@ -1496,6 +1563,7 @@
         }
         renderEligibility();
         renderStreet();
+        renderBlock();
         decideStreet();
         codeChanged();
         // A reopened draft under such a rule is checked again: its houses' facts may have changed.

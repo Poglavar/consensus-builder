@@ -29,7 +29,11 @@ const voting = z.union([
         households: z.array(z.array(codeHash).min(1)).min(1).max(10000).optional()
             .describe('Partition of codeHashes by household, each code exactly once. Omit when every household has one code.'),
         rule: z.object({ id: z.enum([...new Set(BallotRules.RULES.map(rule => rule.id))]), version: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) }).strict().optional()
-            .describe('Ballot rule by id and version (ugt_capabilities community-code-voting lists them). gb-street-vote-living-tradition drafts only when every existing building the plan raises with a mansard is eligible (para. 17) by the shared building facts; gb-street-vote-strong-suburbs@2026-11-27 drafts only on a plan claiming the Strong Suburbs street code in which no building breaks it or is excluded by it (para. 2; unknown rules do not refuse). The server records each check, and a refusal names each house or building with its blocking tests.'),
+            .describe('Ballot rule by id and version (ugt_capabilities community-code-voting lists them). gb-street-vote-living-tradition drafts only when every existing building the plan raises with a mansard is eligible (para. 17) by the shared building facts; gb-street-vote-strong-suburbs@2026-11-27 drafts only on a plan claiming the Strong Suburbs street code in which no building breaks it or is excluded by it (para. 2; unknown rules do not refuse); gb-block-vote-create-mews likewise on the Create Mews block code, held on a block (block) of at least 20 households with longResidents. A building that fails only planes a neighbour may waive is waivable, never refused. The server records each check, and a refusal names each house or building with its blocking tests.'),
+        longResidents: z.array(codeHash).min(1).max(10000).optional()
+            .describe('The codes of residents at their address for at least the rule\'s longResidentYears (Create Mews: 3), a subset of codeHashes.'),
+        block: z.object({ parcelSourceId: z.string().min(1).max(3507), parcelIds: z.array(z.string().min(1).max(250)).min(1).max(500) }).strict().optional()
+            .describe('The block whose residents vote (a rule held on a block): its plots, e.g. from ugt_select_parcels action block.'),
         street: streetReference.optional() }).strict()
 ]);
 const consultation = z.object({ organiser: z.string().max(2048).nullable(), participationUrl: z.string().max(2048).nullable(), voting: voting.optional() }).strict().nullable().optional();

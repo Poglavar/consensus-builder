@@ -27,11 +27,14 @@ describe('tool-only MCP discovery', () => {
         });
         expect(result.features.find(row => row.feature === 'review').validate).toBe('ugt_validate_plan');
         expect(result.features.find(row => row.feature === 'community-code-voting').ballotRules.map(row => `${row.rule.id}@${row.rule.version}`))
-            .toEqual(['gb-street-vote-strong-suburbs@2026-11-27', 'gb-street-vote-consultation-2023@2026-11-25', 'gb-street-vote-living-tradition@2026-11-27']);
+            .toEqual(['gb-street-vote-strong-suburbs@2026-11-27', 'gb-street-vote-consultation-2023@2026-11-25', 'gb-street-vote-living-tradition@2026-11-27', 'gb-block-vote-create-mews@2026-11-27']);
         // A rule that covers only eligible buildings, or that is held only on a plan complying with a
         // street code, names its rule set, so an agent knows the check it faces.
-        expect(result.features.find(row => row.feature === 'community-code-voting').ballotRules.at(-1).requires)
+        expect(result.features.find(row => row.feature === 'community-code-voting').ballotRules.at(-2).requires)
             .toEqual({ eligibility: { id: 'gb-living-tradition-mansards', version: '2026-11-27' } });
+        // Create Mews' block vote names its code, its voting unit, its households and long-resident years.
+        expect(result.features.find(row => row.feature === 'community-code-voting').ballotRules.at(-1))
+            .toMatchObject({ requires: { streetCode: { id: 'gb-create-mews-block-code', version: '2022' } }, unit: 'block', minHouseholds: 20, longResidentYears: 3 });
         expect(result.features.find(row => row.feature === 'community-code-voting').ballotRules[0].requires)
             .toEqual({ streetCode: { id: 'gb-strong-suburbs-street-code', version: '2021' } });
         expect(result.features.find(row => row.feature === 'imports')).toMatchObject({ modelKinds: expect.arrayContaining(['furniture']),

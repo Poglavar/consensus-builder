@@ -138,11 +138,11 @@ A group of voting codes whose holders live at one address, committed as `consult
 
 ### Ballot rule
 
-A dated threshold set a code electorate can pin as `consultation.voting.rule = { id, version }` (`frontend/js/community/ballot-rules.js`). Each test is an exact fraction, at least or more than, of one measure: Support among votes cast (Abstain counts as a vote cast), Support among all eligible codes, households where any code voted among all households, or households with a Support vote among households that voted. A shipped version is never edited; a re-check adds a new version, and a new vote chooses the newest version of each rule while older versions stay readable for the records that pinned them. A rule can require a check of the plan before the vote may be created (`requires`): building eligibility (`requires.eligibility`) or a [street code](#street-code) (`requires.streetCode`); the voting record keeps that check. The API evaluates the rule over the latest ballots and returns only aggregates: each test's count, total, needed count and whether it is met, and whether the rule passes. The result is provisional until the deadline and final after it. A rule counts the resident ballots only and does not make the community agreement binding.
+A dated threshold set a code electorate can pin as `consultation.voting.rule = { id, version }` (`frontend/js/community/ballot-rules.js`). Each test is an exact fraction, at least or more than, of one measure: Support among votes cast (Abstain counts as a vote cast), Support among all eligible codes, households where any code voted among all households, households with a Support vote among households that voted, households with a Support vote among all households, or Support among the long residents (`consultation.voting.longResidents`: the codes of residents registered at their address for at least the rule's `longResidentYears`, a subset of the eligible codes, committed like households while the years stay in the organiser's voter list). A rule may also state a minimum of households (`minHouseholds`) and a voting unit: `unit: 'block'` holds the vote on a block, named in `consultation.voting.block` (the block's plots, as a [detected parcel block](#detected-parcel-block)'s parcel ids). What a record still lacks for its rule (households, long residents, the block) holds the agreement back when it is saved. A shipped version is never edited; a re-check adds a new version, and a new vote chooses the newest version of each rule while older versions stay readable for the records that pinned them. A rule can require a check of the plan before the vote may be created (`requires`): building eligibility (`requires.eligibility`) or a [street code](#street-code) (`requires.streetCode`); the voting record keeps that check. The API evaluates the rule over the latest ballots and returns only aggregates: each test's count, total, needed count and whether it is met, and whether the rule passes. The result is provisional until the deadline and final after it. A rule counts the resident ballots only and does not make the community agreement binding.
 
 ### Street vote
 
-A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Three rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, and Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards. A rule can carry a [street code](#street-code) the plan claims: Strong Suburbs' code is checked per building of the plan in the agreement editor and by `ugt_draft_agreement`. Strong Suburbs `@2026-11-27` (para 2: the vote is held "if the proposal complies with the rules applying to street votes") requires the code: the plan must claim `gb-strong-suburbs-street-code@2021`, and the vote cannot be created while a building of the plan breaks the code or is excluded by it; a building whose rules are not known yet, and the rules the app does not check, do not hold it back. The voting record keeps that check (`streetCode`: the code, when, the plan CID and the street it read, and each building with its verdict and the rules it breaks, is excluded by or leaves unknown). Strong Suburbs `@2026-11-25` only advises and stays readable for the votes that pinned it. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records. The voting record can name the [street](#street) it covers (`consultation.voting.street`): the street's name, its OSM way ids, whole street or one [segment](#segment) with each end (its kind, the roads branching there or the house number, and its point), the [side](#side), and the official id where a source gives one. It comes from the street picked with Street here (or `ugt_select_parcels` action `street`), offered in the agreement editor while its parcels are among the plan's land; the person can leave it out. A plan or design never names a street.
+A community code vote of the residents of one street on a plan for it, decided by a street-vote ballot rule. Four rules ship, all proposals for England that are not in force: Policy Exchange's Strong Suburbs (2021), the government's December 2023 street vote development orders consultation, Samuel Hughes's Living Tradition (Create Streets, 2021) for mansards, and Create Mews' block vote (Create Streets, 2022), held on a block of at least twenty households: two-thirds of all eligible voters, a yes from a resident of half of all households and from half of the residents of three years or more, on a plan that complies with its block plan code. A rule can carry a [street code](#street-code) the plan claims: Strong Suburbs' code is checked per building of the plan in the agreement editor and by `ugt_draft_agreement`. Strong Suburbs `@2026-11-27` (para 2: the vote is held "if the proposal complies with the rules applying to street votes") requires the code: the plan must claim `gb-strong-suburbs-street-code@2021`, and the vote cannot be created while a building of the plan breaks the code or is excluded by it; a building whose rules are not known yet, and the rules the app does not check, do not hold it back. The voting record keeps that check (`streetCode`: the code, when, the plan CID and the street it read, and each building with its verdict and the rules it breaks, is excluded by or leaves unknown). Strong Suburbs `@2026-11-25` only advises and stays readable for the votes that pinned it. A rule can require [building eligibility](#building-eligibility): Living Tradition's covers only the houses the plan raises with a mansard, and its agreement cannot be created until each one is eligible; the voting record keeps that check (each house, its verdict, the failing or unknown tests and the source version read). Owner sign-off is not part of the street vote: owners decide in a separate owners' agreement on the same plan, and the community agreement's voting panel lists those agreements beside the resident result without reading or changing their records. The voting record can name the [street](#street) it covers (`consultation.voting.street`): the street's name, its OSM way ids, whole street or one [segment](#segment) with each end (its kind, the roads branching there or the house number, and its point), the [side](#side), and the official id where a source gives one. It comes from the street picked with Street here (or `ugt_select_parcels` action `street`), offered in the agreement editor while its parcels are among the plan's land; the person can leave it out. A plan or design never names a street.
 
 ### Agreement input
 
@@ -287,7 +287,7 @@ A canonical sorted set of parcel IDs with its parcel-source descriptor. Its `set
 
 ### Detected parcel block
 
-A temporary selection derived from one seed parcel and one complete surface enclosure. The enclosure uses loaded OSM highways other than pedestrian ways (footway, path, steps, cycleway, bridleway and the like: a separately mapped sidewalk runs through the lots it borders), railway tracks and waterways, plus `natural=coastline` and `natural=water` ways; a street mapped to stop within 10 m of another enclosure way is carried on to it, since its ground still divides the blocks on either side; current applied surface-level corridor boundaries may also participate. Bridges, tunnels and other non-ground features do not divide surface blocks. Railway facilities such as workshops, stations and platforms are not track boundaries; proposed and razed tracks are excluded. A seed and every member must fit wholly inside one enclosure; representative points do not decide membership and geometry is never clipped. Any parcel touched by an eligible OSM street or track is a border parcel, including touches on its outer or hole boundaries, and cannot seed or join a block; a pedestrian way, service way or farm track (`highway=track`) touching a parcel does not make it one. A rejected enclosing parcel also excludes parcels enclosed by its holes or outline. The Road/track layer in Layers draws every eligible OSM transport line as a thick black line, pedestrian and service ways included. Known road and track ground is excluded from membership, including source parcels marked by the configured road classification and their disconnected cadastral pieces. Authored plots do not inherit road use solely through source ancestry. Detection requires complete OSM boundary, parcel and available road-classification coverage. More than 100 members is refused; the first 100 are shown as a temporary preview without changing the current selection or persisting a block record.
+A temporary selection derived from one seed parcel and one complete surface enclosure. The enclosure uses loaded OSM highways other than pedestrian ways (footway, path, steps, cycleway, bridleway and the like: a separately mapped sidewalk runs through the lots it borders), railway tracks and waterways, plus `natural=coastline` and `natural=water` ways; a street mapped to stop within 10 m of another enclosure way is carried on to it, since its ground still divides the blocks on either side; current applied surface-level corridor boundaries may also participate. Bridges, tunnels and other non-ground features do not divide surface blocks. Railway facilities such as workshops, stations and platforms are not track boundaries; proposed and razed tracks are excluded. A seed and every member must fit wholly inside one enclosure; representative points do not decide membership and geometry is never clipped. Any parcel touched by an eligible OSM street or track is a border parcel, including touches on its outer or hole boundaries, and cannot seed or join a block; a pedestrian way, service way or farm track (`highway=track`) touching a parcel does not make it one. A rejected enclosing parcel also excludes parcels enclosed by its holes or outline. The Road/track layer in Layers draws every eligible OSM transport line as a thick black line, pedestrian and service ways included. Known road and track ground is excluded from membership, including source parcels marked by the configured road classification and their disconnected cadastral pieces. Authored plots do not inherit road use solely through source ancestry. Detection requires complete OSM boundary, parcel and available road-classification coverage. More than 100 members is refused; the first 100 are shown as a temporary preview without changing the current selection or persisting a block record. A street vote held on a block records the formed block holding the plan's land as its voting unit (`consultation.voting.block`: parcel source and sorted parcel ids; agents pick it with `ugt_select_parcels` action `block`).
 
 ### Road parcel
 
@@ -725,26 +725,43 @@ the limits a street plan's buildings must keep, any jurisdiction can author as d
 id, a citation (the source's paragraph), an applicability (`existing`: a raised existing building, `new`,
 `setback`: a building with a setback storey, or every building), a test from the evaluator's closed set of
 operators, and a failure effect (`excluded`: the building is outside what a street vote may change;
-otherwise the plan breaks the code). A test that does not apply is "does not apply"; a rule the app
-cannot measure is listed as not checked, with its reason, never assumed.
+`waivable`: a neighbour the rule protects may waive it; otherwise the plan breaks the code). A test that
+does not apply is "does not apply"; a rule the app cannot measure is listed as not checked, with its
+reason, never assumed.
 
 A plan names the codes it claims to respect by exact revision (`plan/v1` `codes: [{ id, version }]`,
 chosen in the plan dialog or with `ugt_draft_plan`/`ugt_edit_plan` `codes`). A claim is checked, never
 trusted: where a street vote's ballot rule carries the code (`ballotRules`), the agreement editor checks
 every building of the plan (`frontend/js/planning/street-code.js`) and shows each failing or unknown
 rule with the facts it read; `ugt_draft_agreement` returns the same check as `streetCode`. A building's
-verdict is "meets the code", "breaks the code" (a rule without the `excluded` effect fails), "excluded by
-the code" (an `excluded` rule fails) or "not known yet". Under a ballot rule that only carries the code
+verdict is "meets the code", "breaks the code" (a rule that is neither `excluded` nor `waivable` fails),
+"excluded by the code" (an `excluded` rule fails), "meets the code if neighbours waive" (only `waivable`
+rules fail; the check names, per rule, the plots whose owners may waive it, and their
+[waivers](#waiver) are given in the owners' agreement on the same plan) or "not known yet". A waivable
+building does not hold a vote back. Under a ballot rule that only carries the code
 the check advises and is not kept. Under one that requires it (`requires.streetCode`, Strong Suburbs
 `@2026-11-27`) the plan must claim the code, the voting record keeps the check (`consultation.voting.streetCode`,
-current only for the plan CID and street it read), and a building that breaks the code or is excluded by
+current only for the plan CID and the street or [block](#detected-parcel-block) it read, keyed in its
+`street` field), and a building that breaks the code or is excluded by
 it holds the agreement back in the editor and refuses `ugt_draft_agreement`; "not known yet" and the
 rules not checked do not.
 
 The facts a code is judged on are the plan's (storeys counted only from a stated storey height, the
-setback storey, the storey height), the place's (from source adapters: the density of the small areas
-near the street, the buildings built before 1918 near it, the designations a building lies in) and a
-raised building's [building facts](#building-facts).
+setback storey, the storey height, the building's massing with its pitched or mansard roof), the place's
+(from source adapters: the density of the small areas near the street, the buildings built before 1918
+near it, the designations a building lies in, the plots around and the existing buildings with their
+heights where a source states them) and a raised building's [building facts](#building-facts). Only the
+parts a code states are read (a code with no density bands reads no density).
+
+A **light plane** is a code's `planes` entry: a plane rising at an angle (or at an angle that depends on
+the compass direction of the line, Strong Suburbs 35.1) from a base, and a building must stay under every
+line from every base point (`frontend/js/planning/light-planes.js`). Bases: the block's edge (its plots'
+boundaries not shared with another of its plots; `raisedBy: 'existing'` lifts the line, without rotating
+it, over a building in between until it clears its top, and while such a building's height is unknown a
+building over the bare line is not known yet), the block's other plots, the plots beside a building not
+attached to it, and the plots near the plan not on the voted street. An existing building the plan raises
+keeps its existing volume: only what rises above its existing height is judged, and while that height is
+unknown a piercing is not known yet. The check runs in slices that hand the browser back its thread.
 
 The first is `gb-strong-suburbs-street-code@2021`, Strong Suburbs (Hughes and Southwood, Policy Exchange
 2021) for the Strong Suburbs street vote:
@@ -766,11 +783,29 @@ The first is `gb-strong-suburbs-street-code@2021`, Strong Suburbs (Hughes and So
 - **Historic streets (37):** ten or more buildings built before 1918 within 100 m of the street limit it
   to 3+1 storeys; undated buildings that could change the count leave it unknown; where half the
   buildings along the street (within 40 m) already exceed it, the existing total applies (not measured).
-- **Not checked:** light planes from plots on other streets (35), building back toward them (39), front
-  doors (41), side windows (42), the consent of semi-detached and detached neighbours (51–52), added
-  floors against the highest existing floor (36.2).
+- **Light planes (35, 52), waivable:** from the boundary of each plot near the plan that is not on the
+  voted street, 45° on a line running north of due east or west, else 35° plus a ninth of its angle from
+  due south (35); 70° from the boundary of a neighbour whose house is not attached (52).
+- **Not checked:** building back toward other streets' plots (39), front doors (41), side windows (42),
+  the consent of semi-detached neighbours (51), added floors against the highest existing floor (36.2).
 - **Compensation (54–57):** the code's `neighbourGuides.boundary` (30°) adds a reading to Effects on
   neighbours for an owners' agreement on a plan claiming it; see [Agreement](#agreement) affected parcels.
+
+The second is `gb-create-mews-block-code@2022`, Create Mews' block plan code (Southwood and Hughes,
+Create Streets 2022) for the Create Mews block vote, whose voting unit is a block (para 5 calls it "this
+form of street vote"):
+
+- **Exclusions (11–14):** as Strong Suburbs': listed and pre-1918 buildings, undeveloped Green Belt, a
+  National Park, AONB or SSSI. Parks and farmland are not checked.
+- **Light planes (26):** a. 20° from the block's boundary with its streets, raised over a building in
+  between; e. 70° from each other plot of the block and f. 40° (above it, terraces set back and windows
+  translucent), both waivable by the owners of the plot protected.
+- **Height (26h):** at most 9 m above the block's tallest existing building (its source heights; with
+  one unknown the tallest is known only as a lower bound, and a building within that bound plus 9 m
+  passes).
+- **Ceilings (28):** a storey under 2.5 m floor to floor breaks it; others are unknown.
+- **Not checked:** six homes on the block (1), street fronts (26b), infill (26c), railways and motorways
+  (26d), buffers (26g).
 
 ### Proposed building
 
