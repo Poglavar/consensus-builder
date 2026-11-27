@@ -120,13 +120,15 @@ assign(['ugt_import_model'], mcpResultSchema.extend({ cid: cid.optional(), asset
             context.addIssue({ code: 'custom', path: issue.path, message: issue.message });
     }));
 assign(['ugt_render_preview'], mcpResultSchema.extend({ ready: z.literal(true), publication: z.literal('private'), provenance: z.object({ renderer: z.enum(['app-map-preview-2d', 'app-scene-3d']), designCids: z.array(cid).min(1), persisted: z.literal(false) }), metrics: z.object({ width: z.number().int().positive(), height: z.number().int().positive(), designCount: count }).passthrough() }));
-// money: null when unknown (a measurement error says why); its amounts are null where a price or area is.
+// money: null when unknown (a measurement error says why); its amounts are null where a price or area is,
+// and the new floor area's cost, profit and rent are null with noNewFloorArea when nothing is built.
 const amount = z.number().finite().nullable();
 const comparedMoney = z.object({ currency: z.string().regex(/^[A-Z]{3}$/), unit: z.literal('m2-floor'),
     prices: z.object({ sale: object.nullable(), construction: object.nullable(), land: object.nullable(), saleTax: object.nullable(), rent: object.nullable() }),
     floorAreaM2: amount, keptFloorAreaM2: amount.optional(), builtFloorAreaM2: amount.optional(),
     plots: z.array(z.object({ landAreaM2: amount, replacedFloorAreaM2: amount })).nullable(), value: amount, constructionCost: amount, acquisitionCost: amount,
-    saleTax: amount, taxReclaimed: amount, totalCost: amount, profit: amount, profitShare: amount, annualRent: amount, rentYieldOnCost: amount });
+    saleTax: amount, taxReclaimed: amount, totalCost: amount, profit: amount, profitShare: amount, annualRent: amount, rentYieldOnCost: amount,
+    noNewFloorArea: z.literal(true).optional() });
 assign(['ugt_compare'], mcpResultSchema.extend({ alternatives: z.array(z.object({ cid, areaBasis: z.literal('authored-geometry'), measurementErrors: z.array(object),
     money: comparedMoney.nullable() }).passthrough()).min(2), warnings: z.array(z.union([z.string(), object])) }));
 

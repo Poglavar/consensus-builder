@@ -153,8 +153,11 @@ describe('MCP comparison money', () => {
         expect(built.money.profitShare).toBeCloseTo(built.money.profit / built.money.value);
         expect(built.money.annualRent).toBeCloseTo(built.floorAreaM2 * rent * 12);
         expect(built.money.rentYieldOnCost).toBeCloseTo(built.money.annualRent / built.money.totalCost);
-        // The park builds nothing: it still buys the plot it clears.
-        expect(result.alternatives[0].money.profit).toBeCloseTo(-(siteM2 * land));
+        // The park builds nothing: it still buys the plot it clears, and has no cost, profit or rent of
+        // new floor area (Plan stats: "No new floor area").
+        expect(result.alternatives[0].money.acquisitionCost).toBeCloseTo(siteM2 * land);
+        expect(result.alternatives[0].money).toMatchObject({ noNewFloorArea: true, totalCost: null, profit: null, profitShare: null, annualRent: null, rentYieldOnCost: null });
+        expect(built.money).not.toHaveProperty('noNewFloorArea');
         expect(result.warnings.some(text => text.startsWith('Money is a model'))).toBe(true);
     });
 

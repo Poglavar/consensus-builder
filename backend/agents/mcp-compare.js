@@ -112,6 +112,9 @@ export function existingFloorArea(geometry, building) {
 // keptFloorAreaM2: the floor area extended buildings already had, which is not built, sold or replaced
 // (builtFloorAreaM2 is the rest). plots (plotsOf): [{ landAreaM2, replacedFloorAreaM2 }], each bought
 // once at the higher of its land value and the value of the floor area removed there; null: unknown.
+// An alternative that builds nothing (builtFloorAreaM2 0) has no cost, profit or rent of new floor
+// area: noNewFloorArea is true and those amounts are null, as Plan stats shows "No new floor area";
+// what it buys stays in acquisitionCost.
 export function moneyOf({ city, floorAreaM2, keptFloorAreaM2 = 0, plots, at = null, prices = {} }) {
     const { currency, rates, unavailable, reason } = cityEconomics(city, at);
     if (unavailable) throw fail('city-money-unavailable', reason);
@@ -123,11 +126,13 @@ export function moneyOf({ city, floorAreaM2, keptFloorAreaM2 = 0, plots, at = nu
         land: price('land', prices.landPerM2), saleTax: price('saleTax', prices.saleTaxShare), rent: price('rent', prices.rentPerM2Month),
         devCharge: price('devCharge', prices.devChargePerM2) };
     const amountOf = metric => (used[metric] ? used[metric].amount : null);
-    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, keptFloorAreaM2, plots: plots ?? null,
-        ...cityMoney(city).newBuildMoney({ floorAreaM2, keptFloorAreaM2, plots: plots ?? null, salePerM2: amountOf('sale'),
-            constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
-            constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent'),
-            devChargePerM2: amountOf('devCharge') }) };
+    const money = cityMoney(city).newBuildMoney({ floorAreaM2, keptFloorAreaM2, plots: plots ?? null, salePerM2: amountOf('sale'),
+        constructionPerM2: amountOf('construction'), landPerM2: amountOf('land'), saleTaxShare: amountOf('saleTax'),
+        constructionTaxIncluded: used.construction?.taxIncluded === true, rentPerM2Month: amountOf('rent'),
+        devChargePerM2: amountOf('devCharge') });
+    const noNewFloorArea = money.builtFloorAreaM2 === 0;
+    return { currency, unit: 'm2-floor', prices: used, floorAreaM2, keptFloorAreaM2, plots: plots ?? null, ...money,
+        ...(noNewFloorArea ? { noNewFloorArea, totalCost: null, profit: null, profitShare: null, annualRent: null, rentYieldOnCost: null } : {}) };
 }
 
 // The plots an alternative buys, as Plan stats does (plan-decision.js acquisitionPlots): each parcel
@@ -340,7 +345,7 @@ export function createMcpComparison({ read, resolveDesign, appOrigin, resolveDra
         }
         warnings.push('Areas describe authored geometry; they are not a prediction of construction. The party ledger is the app’s modeled allocation, not proof of ownership or compensation.');
         warnings.push('Permitted checks each new building against the zones of the city\'s Permitted source where it stands (or planningSource); planning designations of rule sets are not applied here and limits relative to the existing context read unknown. Crowdfunding progress under backing is read from Solana when this server has a connection, never from the index.');
-        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, the development charge on new floor area, the acquisition of each plot, a parcel or open ground, at the higher of its land value and the value of the floor area removed there, the sale tax inside the value), profit, annual rent and its yield on the cost without the sale tax. It is not an appraisal; fees and finance are not in it.');
+        warnings.push('Money is a model at prices each with its source: value of the new floor area, its all-in cost (construction, the development charge on new floor area, the acquisition of each plot, a parcel or open ground, at the higher of its land value and the value of the floor area removed there, the sale tax inside the value), profit, annual rent and its yield on the cost without the sale tax; an alternative with no new floor area (noNewFloorArea) has none of these, only its acquisition. It is not an appraisal; fees and finance are not in it.');
         return { alternatives, warnings };
     };
 }
