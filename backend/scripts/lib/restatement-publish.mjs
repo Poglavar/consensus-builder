@@ -280,7 +280,7 @@ export function capturePageScript(config) {
         console.log('[restatement-capture] ' + line);
     };
     const fail = message => { throw new Error(message); };
-    const NEEDED = ['map', 'handleSharedDesignRoute', 'DesignSync', 'DesignRecord', 'AgreementGround', 'AgreementDialog',
+    const NEEDED = ['map', 'handleSharedDesignRoute', 'DesignSync', 'DesignRecord', 'AgreementGround',
         'LiveParcelFabric', 'CadastralParcelRepository', 'proposalStorage', 'PersistentStorage', 'agentStorage', 'isApplied', 'turf'];
     (async () => {
         note('waiting for the app');

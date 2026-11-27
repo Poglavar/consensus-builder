@@ -340,8 +340,9 @@ describe('capturePageScript (the job --capture runs in the app)', () => {
             DesignRecord: { cidOf: record => here(record.cid) },
             LiveParcelFabric: { featureId: feature => feature.id },
             CadastralParcelRepository: { ensureIds: async ids => ({ features: ids.map(id => ({ id })) }) },
-            AgreementDialog: { inputParcelIds: () => ['A', 'B', 'C'], originalsById: features => new Map(features.map(feature => [feature.id, feature])) },
             AgreementGround: {
+                inputParcelIds: () => ['A', 'B', 'C'],
+                originalsById: features => new Map(features.map(feature => [feature.id, feature])),
                 derive: ({ designs, originals, area }) => ({
                     inputs: { parcels: [...originals.keys()].map(parcelId => ({ parcelId, areaM2: area({}) })), openGroundM2: 0 },
                     outputs: [

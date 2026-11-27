@@ -503,9 +503,10 @@ describe('panel HTML', () => {
             document: doc,
             AgreementStore: store,
             AgreementRecord: record,
-            AgreementDialog: { sponsorLine: () => null, inputParcelIds: () => [], originalsById: () => [] },
+            AgreementDialog: { sponsorLine: () => null },
             NamedPlans: { link: cid => `/plans/${cid}` },
             AgreementGround: {
+                inputParcelIds: () => [], originalsById: () => new Map(),
                 check: async () => ({ current: false, reasons: [] }), localHolders: () => () => null, areaOf: () => null
             },
             AgreementSync: { fetchAgreement: async () => ({ status: 'active' }) },
