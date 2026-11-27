@@ -171,6 +171,11 @@ one district's failure never stops the others). A copy reads area edges strictly
 server includes parcels up to about half a metre outside the box. A district without a copy fails
 as before.
 
+Because a copy hides a block from visitors, `GET /health/kz-cadastre` asks the live view itself (about
+300 m of Alatau, at most every 10 minutes) and answers 200 with a parcel count, or 503 with the
+reason; it also reports how many reads a copy has answered since the API started. An hourly
+alerts-server check watches it.
+
 If the layer addresses close too, the map's image service (`/geoserver/egkn/wms`, which the viewer
 itself uses) still answered on 2026-11-27: `GetFeatureInfo` with `INFO_FORMAT=application/json`
 returns full parcel outlines with gid and cadastral number (a tiny image with a pixel buffer covers an

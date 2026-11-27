@@ -91,6 +91,9 @@ export function createPkkSnapshotStore({ directory = process.env.KZ_PKK_SNAPSHOT
     return { answer };
 }
 
+// Reads answered from a copy since this process started, for /health/kz-cadastre.
+export const copyAnswers = { count: 0, last: null };
+
 let sharedStore = null;
 const defaultStore = () => (sharedStore ||= createPkkSnapshotStore());
 
@@ -117,6 +120,7 @@ export function withPkkSnapshotFallback(fetchImpl, { store = defaultStore(), liv
         const saved = await store.answer(href).catch(error => { log('saved copy unreadable:', error.message); return null; });
         if (!saved) { if (failure) throw failure; return live; }
         live?.body?.cancel?.().catch(() => {});
+        copyAnswers.count++; copyAnswers.last = new Date().toISOString();
         log(`live cadastre ${failure ? failure.name || 'error' : `HTTP ${live.status}`}; answered from the copy saved ${saved.savedAt}`);
         return new Response(JSON.stringify(saved.page), { status: 200,
             headers: { 'content-type': 'application/json', 'x-parcel-snapshot': saved.savedAt } });
