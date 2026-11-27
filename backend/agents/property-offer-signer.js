@@ -4,8 +4,9 @@
 // counterparty commits (naming its lens; a buyer pays into escrow), lens members confirm with a
 // PropertyOfferConfirmation-v1 attestation, anyone executes once both lenses are met, the maker
 // cancels while open, anyone expires after the deadline; and a lens member states a first holder
-// (PropertyHolding-v1). Every step reads the chain account first and checks it against the published
-// terms with the index's own check (property-offers/onchain.js), refuses before signing what the
+// (PropertyHolding-v1). confirmSale is the buyer's-lens confirmation with the browser's holder check
+// (the member's own statements must name the seller). Every step reads the chain account first and
+// checks it against the published terms with the index's own check (property-offers/onchain.js), refuses before signing what the
 // program would refuse, signs nothing on a replay, and then records the chain reference in the index
 // through the injected `recordOnchain(ref, cid)` (createOnchainRecorder is the HTTP one).
 import { createRequire } from 'node:module';
@@ -15,6 +16,7 @@ const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
 const Offer = require('../../frontend/js/property-offer-record.js');
 const Statements = require('../../frontend/js/solana/property-statements.js').configure({ web3 });
+const Holders = require('../../frontend/js/property-holders.js');
 
 const DEVNET_GENESIS = 'EtWTRABZaYq6iMfeYKouRu166VU2xqa1wcaWoxPkrZBG';
 const { PROPERTY_OFFER_PROGRAM_ID } = client.constants;
@@ -123,36 +125,68 @@ export function commitOffer({ lens = { members: [], threshold: 0 }, payouts, ...
  * Role 1 (the seller's lens: the buyer qualifies). `role` picks one when the member sits in both.
  */
 export function confirmOffer({ role, holding, ...options } = {}) {
-    return mutate(options, async (ctx, chain, nowSeconds) => {
-        if (chain.status !== 'Committed') {
-            if (chain.status === 'Settled' && [chain.buyerLens, chain.sellerLens].some(lens => lens.confirmed.includes(ctx.signer))) return null;
-            refuse(`The offer is ${chain.status}; lens members confirm a committed offer`);
-        }
-        beforeDeadline(chain, nowSeconds, 'confirmed');
-        const roles = [[0, chain.buyerLens], [1, chain.sellerLens]].filter(([r, lens]) => lens.members.includes(ctx.signer) && (role === undefined || role === r));
-        if (!roles.length) refuse(`${ctx.signer} is not a lens member of this offer${role === undefined ? '' : ` in role ${role}`}`);
-        const open = roles.find(([, lens]) => !lens.confirmed.includes(ctx.signer));
-        if (!open) return null;
-        const [chosen, lens] = open;
-        const assetHash = Offer.assetHash(ctx.row.content.asset);
-        if (chosen === 0 && (typeof holding !== 'string' || !holding)) refuse('Confirming that the seller holds the asset needs holding: the statement address through which the seller holds it');
-        const statementHolding = chosen === 0 ? holding : '';
-        const nonce = client.decisionNonce({ role: chosen, assetHash, holding: statementHolding, offer: ctx.address });
-        const issued = Statements.buildCreateAttestationIx({ payer: ctx.signer, authority: ctx.signer, kind: 'confirmation', nonce,
-            payload: client.encodeDecisionPayload({ cid: chain.cid, offer: ctx.address, termsHash: chain.termsHash, payoutsHash: chain.payoutsHash, buyer: chain.buyer, seller: chain.seller,
-                role: chosen, assetHash, holding: statementHolding, observedAt: nowSeconds }),
-            expiry: nowSeconds + Statements.constants.STATEMENT_EXPIRY_SECONDS });
-        const existing = await ctx.connection.getAccountInfo(new web3.PublicKey(issued.attestation), 'confirmed');
-        if (existing) {
-            const prior = client.readDecisionAttestation(new Uint8Array(existing.data), issued.attestation);
-            if (prior.fields.offer !== ctx.address) refuse(`You have confirmed another sale of this holding (offer ${prior.fields.offer}); withdraw that confirmation first`);
-        }
-        const setup = await Statements.setupIxs(ctx.connection, { payer: ctx.signer, authority: ctx.signer, kinds: ['confirmation'] });
-        const other = chosen === 0 ? chain.sellerLens : chain.buyerLens;
-        const completes = lens.confirmed.length + 1 >= lens.threshold && other.met && chain.escrow === chain.price;
-        return [...setup, ...(existing ? [] : [issued.instruction]), client.buildConfirmIx({ offer: ctx.address, attestation: issued.attestation, credential: issued.credential }),
-            ...(completes ? executeIxs(ctx, chain) : [])];
-    });
+    return mutate(options, (ctx, chain, nowSeconds) => planConfirmation(ctx, chain, nowSeconds, role, () => holding));
+}
+
+/**
+ * One lens member's view of an asset, read from chain: its first-holder statement followed through
+ * the sales it confirmed that settled (frontend/js/property-holders.js viewOf). `getAccount` may be a
+ * caching reader shared across several views.
+ */
+export function memberView({ connection, member, asset, getAccount }) {
+    const read = getAccount || (async address => (await connection.getAccountInfo(new web3.PublicKey(address), 'confirmed'))?.data || null);
+    return Holders.viewOf({ member, assetHash: Offer.assetHash(asset), getAccount: read, statements: Statements, offers: client });
+}
+
+/**
+ * The buyer's-lens confirmation as the browser's offer sheet takes it (property-offer-bridge.js
+ * confirm, role 0): the signing lens member confirms only when its own statements name the seller as
+ * holder, through the holding they name, and no other sale of that holding it confirmed is open or
+ * left unwithdrawn. Anything else is refused before signing, so the offer waits and expires.
+ */
+export function confirmSale(options = {}) {
+    return mutate(options, (ctx, chain, nowSeconds) => planConfirmation(ctx, chain, nowSeconds, 0, async () => {
+        const view = await memberView({ connection: ctx.connection, member: ctx.signer, asset: ctx.row.content.asset });
+        if (!view.holder) refuse('Your statements name no holder of this asset; state the first holder before confirming a sale');
+        if (view.holder !== chain.seller) refuse(`Your statements say ${view.holder} holds this, not the seller ${chain.seller}`);
+        if (view.pending && view.pending.offer !== ctx.address) refuse(`You have confirmed another sale of this holding that is still open (offer ${view.pending.offer})`);
+        if (view.stale) refuse(`Withdraw your confirmation of the earlier sale that did not complete (offer ${view.stale.offer}) first`);
+        return view.holding;
+    }));
+}
+
+// The confirm step shared by confirmOffer and confirmSale; `holdingOf()` gives the holding a role-0
+// confirmation names and is asked only when this member still has a confirmation to add.
+async function planConfirmation(ctx, chain, nowSeconds, role, holdingOf) {
+    if (chain.status !== 'Committed') {
+        if (chain.status === 'Settled' && [chain.buyerLens, chain.sellerLens].some(lens => lens.confirmed.includes(ctx.signer))) return null;
+        refuse(`The offer is ${chain.status}; lens members confirm a committed offer`);
+    }
+    beforeDeadline(chain, nowSeconds, 'confirmed');
+    const roles = [[0, chain.buyerLens], [1, chain.sellerLens]].filter(([r, lens]) => lens.members.includes(ctx.signer) && (role === undefined || role === r));
+    if (!roles.length) refuse(`${ctx.signer} is not a lens member of this offer${role === undefined ? '' : ` in role ${role}`}`);
+    const open = roles.find(([, lens]) => !lens.confirmed.includes(ctx.signer));
+    if (!open) return null;
+    const [chosen, lens] = open;
+    const assetHash = Offer.assetHash(ctx.row.content.asset);
+    const holding = chosen === 0 ? await holdingOf() : '';
+    if (chosen === 0 && (typeof holding !== 'string' || !holding)) refuse('Confirming that the seller holds the asset needs holding: the statement address through which the seller holds it');
+    const statementHolding = chosen === 0 ? holding : '';
+    const nonce = client.decisionNonce({ role: chosen, assetHash, holding: statementHolding, offer: ctx.address });
+    const issued = Statements.buildCreateAttestationIx({ payer: ctx.signer, authority: ctx.signer, kind: 'confirmation', nonce,
+        payload: client.encodeDecisionPayload({ cid: chain.cid, offer: ctx.address, termsHash: chain.termsHash, payoutsHash: chain.payoutsHash, buyer: chain.buyer, seller: chain.seller,
+            role: chosen, assetHash, holding: statementHolding, observedAt: nowSeconds }),
+        expiry: nowSeconds + Statements.constants.STATEMENT_EXPIRY_SECONDS });
+    const existing = await ctx.connection.getAccountInfo(new web3.PublicKey(issued.attestation), 'confirmed');
+    if (existing) {
+        const prior = client.readDecisionAttestation(new Uint8Array(existing.data), issued.attestation);
+        if (prior.fields.offer !== ctx.address) refuse(`You have confirmed another sale of this holding (offer ${prior.fields.offer}); withdraw that confirmation first`);
+    }
+    const setup = await Statements.setupIxs(ctx.connection, { payer: ctx.signer, authority: ctx.signer, kinds: ['confirmation'] });
+    const other = chosen === 0 ? chain.sellerLens : chain.buyerLens;
+    const completes = lens.confirmed.length + 1 >= lens.threshold && other.met && chain.escrow === chain.price;
+    return [...setup, ...(existing ? [] : [issued.instruction]), client.buildConfirmIx({ offer: ctx.address, attestation: issued.attestation, credential: issued.credential }),
+        ...(completes ? executeIxs(ctx, chain) : [])];
 }
 
 /** Pays the escrow to the schedule once both lenses are met (permissionless; the signer pays fees and any token accounts). */

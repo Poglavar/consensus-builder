@@ -8,7 +8,7 @@ import { readFileSync } from 'node:fs';
 import { Keypair, PublicKey } from '@solana/web3.js';
 import { canonicalBytes } from '../cid.js';
 import { client } from '../property-offers/onchain.js';
-import { cancelOffer, commitOffer, confirmOffer, createOfferOnChain, createOnchainRecorder, executeOffer, expireOffer, stateHolding } from '../agents/property-offer-signer.js';
+import { cancelOffer, commitOffer, confirmOffer, confirmSale, createOfferOnChain, createOnchainRecorder, executeOffer, expireOffer, stateHolding } from '../agents/property-offer-signer.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -147,6 +147,41 @@ describe('confirm', () => {
         const sendAndConfirm = sender();
         expect((await confirmOffer({ ...base(chain, row, memberKp), holding: HOLDING, nowSeconds: NOW, sendAndConfirm })).replayed).toBe(true);
         expect(sendAndConfirm).not.toHaveBeenCalled();
+    });
+});
+
+// The member's own first-holder statement for FLAT naming `holder`, as SAS stores it (signer = member).
+function holdingStatement(chain, holder) {
+    const address = Statements.holdingAddress(member, Offer.assetHash(FLAT));
+    const payload = Buffer.from(Statements.encodeHoldingPayload({ assetHash: Offer.assetHash(FLAT), asset: Offer.assetKey(FLAT), holder, basis: 'developer', observedAt: 1 }));
+    const length = Buffer.alloc(4); length.writeUInt32LE(payload.length);
+    chain.put(address, SAS, Buffer.concat([Buffer.from([2]), Buffer.alloc(96), length, payload, memberKp.publicKey.toBuffer(), Buffer.alloc(8, 0x7f)]));
+    return address.toBase58();
+}
+
+describe('confirm a sale as the buyer’s lens (confirmSale)', () => {
+    it('confirms only when the member’s own statements name the seller, through that holding, and executes in the same transaction', async () => {
+        const row = offerRow({ currency: 'USDC' }), chain = fakeChain(row);
+        await committedSell(row, chain);
+        const none = sender();
+        await expect(confirmSale({ ...base(chain, row, memberKp), nowSeconds: NOW, sendAndConfirm: none })).rejects.toThrow(/name no holder/);
+        holdingStatement(chain, buyer);
+        await expect(confirmSale({ ...base(chain, row, memberKp), nowSeconds: NOW, sendAndConfirm: none })).rejects.toThrow(/not the seller/);
+        expect(none).not.toHaveBeenCalled();
+        const first = holdingStatement(chain, seller);
+        const sendAndConfirm = sender(() => chain.set({ status: { Settled: {} } }));
+        expect((await confirmSale({ ...base(chain, row, memberKp), nowSeconds: NOW, sendAndConfirm })).status).toBe('settled');
+        const instructions = sendAndConfirm.mock.calls[0][1].instructions;
+        const nonce = client.decisionNonce({ role: 0, assetHash: Offer.assetHash(FLAT), holding: first, offer: chain.address });
+        expect(instructions[2].keys[4].pubkey.toBase58()).toBe(Statements.confirmationAddress(member, nonce).toBase58());
+        expect(Buffer.from(instructions[2].data).subarray(1 + 32 + 4).includes(Buffer.from(first))).toBe(true);
+        expect(instructions.slice(3).map(ix => Buffer.from(ix.data).subarray(0, 8))).toContainEqual(disc('execute'));
+    });
+    it('a member outside the buyer’s lens is refused', async () => {
+        const row = offerRow(), chain = fakeChain(row);
+        await committedSell(row, chain, { buyer_lens: lensOf([seller], 1) });
+        holdingStatement(chain, seller);
+        await expect(confirmSale({ ...base(chain, row, memberKp), nowSeconds: NOW, sendAndConfirm: sender() })).rejects.toThrow(/not a lens member of this offer in role 0/);
     });
 });
 
