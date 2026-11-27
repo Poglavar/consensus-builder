@@ -72,13 +72,19 @@ export async function streetCodeCheck(consultation, plan, designContents, { read
         throw Object.assign(new Error(`This ballot rule (${rule.id}@${rule.version}) holds the vote only on a plan that claims the street code ${required.id}@${required.version}; the plan claims ${(plan?.codes || []).map(code => `${code.id}@${code.version}`).join(', ') || 'no code'}.`),
             { code: 'street-code-unclaimed', next: { action: `Add { id: '${required.id}', version: '${required.version}' } to the plan's codes with ugt_edit_plan, then draft again.` } });
     }
-    const outcome = await StreetCode.checkPlan(set, { designs: designContents, reference: voting.street || null, read: readers(plan) });
+    const outcome = await StreetCode.checkPlan(set, { designs: designContents, reference: voting.street || null, block: voting.block || null, read: readers(plan) });
     const words = (key, params) => cardText(key, params);
     const count = verdict => outcome.buildings.filter(building => Eligibility.codeVerdict(set, building.result) === verdict).length;
     const report = { code: { id: set.id, version: set.version, source: set.source }, claimed: true, required: Boolean(required),
-        summary: { buildings: outcome.buildings.length, meet: count('meets'), break: count('breaks'), excluded: count('excluded'), unknown: count('unknown') },
-        storeyCap: { value: outcome.cap.value, bound: outcome.cap.bound, reason: outcome.cap.reason, areas: outcome.cap.areas, streetApproximate: outcome.streetApproximate },
-        historic: outcome.historic, buildings: StreetCode.describe(set, outcome, words).map((row, index) => ({ ...row, verdict: Eligibility.codeVerdict(set, outcome.buildings[index].result) })),
+        summary: { buildings: outcome.buildings.length, meet: count('meets'), break: count('breaks'), excluded: count('excluded'), unknown: count('unknown'), waivable: count('waivable') },
+        ...(outcome.cap ? { storeyCap: { value: outcome.cap.value, bound: outcome.cap.bound, reason: outcome.cap.reason, areas: outcome.cap.areas, streetApproximate: outcome.streetApproximate } } : {}),
+        ...(outcome.historic ? { historic: outcome.historic } : {}),
+        // A waivable building names, per light plane it pierces, the plots whose owners may waive it:
+        // add them as waivers (affected parcels) in the owners' agreement on the same plan.
+        buildings: StreetCode.describe(set, outcome, words).map((row, index) => {
+            const verdict = Eligibility.codeVerdict(set, outcome.buildings[index].result);
+            return { ...row, verdict, ...(verdict === 'waivable' ? { waivers: Eligibility.waiverPlots(set, outcome.buildings[index].result) } : {}) };
+        }),
         notChecked: StreetCode.unchecked(set).map(test => ({ cite: test.cite, rule: words(`eligibility.test.${test.id}`), why: words(`eligibility.notChecked.${test.reason}`) })),
         unread: outcome.errors };
     if (!required) return report;
@@ -90,7 +96,7 @@ export async function streetCodeCheck(consultation, plan, designContents, { read
             { code: 'street-code-failed', constraints: { streetCode: report },
                 next: { action: 'Revise the buildings in constraints.streetCode that break the code (storeys, setback storeys, storey heights) with ugt_edit_design or ugt_edit_plan, or leave out the ones the code excludes, then draft again.' } });
     }
-    return { ...report, recorded: Eligibility.codeEvidence(set, outcome, { planCid, street: voting.street || null }, new Date().toISOString()) };
+    return { ...report, recorded: Eligibility.codeEvidence(set, outcome, { planCid, street: voting.street || null, block: voting.block || null }, new Date().toISOString()) };
 }
 
 // The place's readers on the agents' server: the app's own routes through the MCP read client, the
@@ -102,8 +108,17 @@ function serverReaders(read, readFacts) {
         const data = await read.request(parsed.pathname, Object.fromEntries(parsed.searchParams));
         return { ok: true, status: 200, json: async () => data };
     };
+    // Plots from the city's parcel source: by id (a vote's block) or every plot in a box.
+    const readPlots = plan => async query => {
+        const city = plan?.view?.city;
+        const answer = query.parcelIds ? await read.parcels({ city, parcelSourceId: query.parcelSourceId, parcelIds: query.parcelIds })
+            : await read.parcels({ city, geometry: { type: 'Polygon', coordinates: [[[query.bbox[0], query.bbox[1]], [query.bbox[2], query.bbox[1]], [query.bbox[2], query.bbox[3]], [query.bbox[0], query.bbox[3]], [query.bbox[0], query.bbox[1]]]] } });
+        if (answer.truncated || !Array.isArray(answer.features) || (query.bbox && answer.complete !== true)) throw new Error('The plots could not all be read.');
+        const idOf = feature => feature?.id ?? feature?.properties?.parcelId ?? feature?.properties?.parcel_id ?? feature?.properties?.id;
+        return answer.features.filter(feature => idOf(feature) != null).map(feature => ({ id: String(idOf(feature)), geometry: feature.geometry }));
+    };
     return plan => StreetCode.readers({ fetch: appFetch, backendBase: '', sharedApi: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT,
-        config: PLANNING_SOURCES, ruleSetIds: cityPlanningRuleSetIds(plan?.view?.city), readFacts });
+        config: PLANNING_SOURCES, ruleSetIds: cityPlanningRuleSetIds(plan?.view?.city), readFacts, readPlots: readPlots(plan) });
 }
 
 export function createMcpAgreementTools({ read, drafts, appOrigin, readFacts = ids => BuildingFacts.readMany(ids, { base: process.env.BUILDING_FACTS_API || BuildingFacts.API_ROOT, fresh: true }) }) {

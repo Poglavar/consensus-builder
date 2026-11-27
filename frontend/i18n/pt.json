@@ -2522,7 +2522,10 @@
             "valuationUnknown": "Um valor por m² indica uma parcela ou porção que não faz parte deste acordo.",
             "valuationZero": "Para liquidar por valor, o terreno de entrada tem de ter um valor superior a zero.",
             "valuationUnused": "Os valores do terreno aplicam-se apenas à liquidação por valor.",
-            "schemeRule": "{{reason}}"
+            "schemeRule": "{{reason}}",
+            "householdsTooFew": "Esta regra de votação precisa de pelo menos {{min}} agregados; a lista tem {{households}}.",
+            "longResidentsMissing": "Esta regra conta os residentes registados na sua morada há pelo menos {{years}} anos: indique os seus anos na morada na lista.",
+            "blockMissing": "Esta regra aplica-se a um quarteirão: forme o quarteirão com o terreno do plano com Detetar quarteirão no mapa e indique-o aqui."
         },
         "warnings": {
             "ruleNotReady": "Ainda não é possível avaliar a regra: {{reason}}",
@@ -9689,7 +9692,8 @@
         "eligibility": {
             "set": {
                 "gb-living-tradition-mansards": "Mansardas segundo Living Tradition",
-                "gb-strong-suburbs-street-code": "Código de rua Strong Suburbs"
+                "gb-strong-suburbs-street-code": "Código de rua Strong Suburbs",
+                "gb-create-mews-block-code": "Código de plano de quarteirão Create Mews"
             },
             "verdict": {
                 "eligible": "Cumpre todas as condições que a aplicação consegue verificar",
@@ -9733,7 +9737,22 @@
                 "ssFrontDoors": "No máximo 15 m entre portas de entrada",
                 "ssSideWindows": "Janelas laterais a pelo menos 2 m da estrema",
                 "ssSemiDetached": "Ambas as casas de um par geminado consentem",
-                "ssDetached": "Sob um plano de 70° a partir da estrema de um vizinho isolado"
+                "ssDetached": "Sob um plano de 70° a partir da estrema de um vizinho isolado",
+                "cmListed": "Não é um edifício classificado",
+                "cmPre1918": "Construído em 1918 ou depois",
+                "cmGreenBelt": "Não em terreno não urbanizado do cinturão verde",
+                "cmOpenLand": "Não em parques nem terras agrícolas",
+                "cmNature": "Não num Parque Nacional, AONB nem SSSI",
+                "cmBlockSize": "Pelo menos seis habitações no quarteirão",
+                "cmStreetPlane": "Sob o plano de 20° a partir das ruas à volta do quarteirão",
+                "cmStreetFronts": "Fachadas viradas para a rua inalteradas",
+                "cmInfill": "Preenchimento entre edifícios dentro dos seus limites",
+                "cmRailways": "Sob o plano de 20° além de uma ferrovia ou autoestrada",
+                "cmPlotPlane": "Sob os planos de 70° a partir dos outros lotes",
+                "cmPrivacyPlane": "Sob os planos de privacidade de 40° a partir dos outros lotes",
+                "cmBuffers": "Sob o plano de 30° a partir de uma faixa de separação",
+                "cmTallest": "No máximo 9 m acima do edifício mais alto do quarteirão",
+                "cmCeilingMin": "Tetos de pelo menos 2,5 m"
             },
             "fact": {
                 "proposedStoreys": "{{storeys}} pisos propostos",
@@ -9760,16 +9779,28 @@
                 "storeyHeight": "pisos de {{metres}} m de pavimento a pavimento; um teto fica mais baixo pela espessura da laje, que o projeto não indica",
                 "setbackRise": "o piso recuado sobe {{metres}} m",
                 "designations": "fica em: {{datasets}}",
-                "designationsUnread": "Não foi possível ler as designações"
+                "designationsUnread": "Não foi possível ler as designações",
+                "planeClear": "sob o plano de {{degrees}}°",
+                "planePierced": "{{metres}} m acima do plano de {{degrees}}° (lotes protegidos: {{parcels}})",
+                "planeUnknown": { "noBlock": "A votação não indica nenhum quarteirão, por isso os planos a partir do seu limite e lotes não são lidos", "plotsUnread": "Não foi possível ler os lotes à volta", "noStreet": "A votação não indica nenhuma rua, por isso os lotes de outras ruas não são conhecidos", "raisersUnknown": "Acima do plano, a menos que um edifício intermédio de altura desconhecida o eleve", "ownPlotUnknown": "Não se conhece o lote onde o edifício está", "topUnknown": "Não se conhece a altura do edifício" },
+                "proposedTop": "{{metres}} m de altura",
+                "tallestExisting": "edifício mais alto do quarteirão {{metres}} m",
+                "tallestPartly": "o mais alto conhecido do quarteirão {{metres}} m, {{unknown}} de altura desconhecida",
+                "tallestUnread": "não foi possível ler os edifícios do quarteirão"
             },
             "notChecked": {
                 "noSource": "planning.data.gov.uk ainda não publica Metropolitan Open Land",
-                "otherStreets": "exige saber que lotes vizinhos ficam noutras ruas",
                 "ceilings": "o projeto não indica pés-direitos",
                 "plotUse": "exige a implantação construída na primeira votação e os lotes de outras ruas",
                 "doors": "o projeto não coloca portas",
                 "windows": "o projeto não coloca janelas laterais",
-                "consent": "o consentimento de um vizinho dá-se num acordo, não se mede"
+                "consent": "o consentimento de um vizinho dá-se num acordo, não se mede",
+                "parksFarmland": "ainda não se lê nenhuma fonte de parques e terras agrícolas",
+                "blockBuildings": "precisa de saber que edifícios do quarteirão são habitações",
+                "fronts": "precisa de saber que fachadas dão para uma rua",
+                "infill": "precisa das vedações e sebes à volta de um vazio",
+                "railways": "precisa dos lotes além de uma ferrovia ou autoestrada",
+                "buffers": "a aplicação não divide quarteirões por faixas de separação"
             }
         },
         "survey": "Levantamento de alturas",
@@ -10375,7 +10406,8 @@
             "gb-street-vote-living-tradition": {
                 "name": "Votação de rua — mansardas segundo Living Tradition",
                 "source": "Proposto em Living Tradition de Samuel Hughes (Create Streets, 2021): pelo menos 50% dos votos expressos a favor, residentes de pelo menos metade das habitações a votar, e um sim de um residente em pelo menos metade das habitações votantes. Só podem ser abrangidas casas que cumpram as suas condições (par. 17)."
-            }
+            },
+            "gb-block-vote-create-mews": { "name": "Votação de quarteirão — Create Mews", "source": "Proposto em Create Mews da Create Streets (2022): um quarteirão de pelo menos vinte agregados adota um plano de quarteirão quando pelo menos dois terços dos eleitores votam a favor, um residente de pelo menos metade dos agregados vota a favor e pelo menos metade dos registados na sua morada há três anos ou mais vota a favor." }
         },
         "eligibility": {
             "title": "Casas abrangidas",
@@ -10414,14 +10446,22 @@
                 "eligible": "Cumpre o código",
                 "ineligible": "Viola o código",
                 "excluded": "Excluído pelo código",
-                "unknown": "Ainda por saber"
+                "unknown": "Ainda por saber",
+                "waivable": "Cumpre o código se os vizinhos renunciarem"
             },
             "unclaimed": "Esta regra de votação só permite a votação num plano que declara cumprir este código, e este plano não o declara. Adicione-o aos códigos de rua do plano com Editar plano, ou escolha outra regra de votação.",
             "required": "Esta regra de votação só permite a votação num plano que cumpre o código: um edifício que o viola ou que ele exclui impede que este acordo seja guardado. Regras ainda por saber ou não verificadas não o impedem. A votação regista esta verificação.",
             "noBuildings": "O plano não tem edifícios a verificar.",
             "unchecked": "Regras que a aplicação não verifica",
-            "check": "Verificar o código"
-        }
+            "check": "Verificar o código",
+            "waiver": "{{cite}}: os proprietários de {{parcels}} podem renunciar",
+            "waiverHint": "As suas renúncias são dadas no acordo dos proprietários sobre este plano: adicione esses lotes em Vizinhos como renúncia."
+        },
+        "block": { "title": "Quarteirão", "named": "A votação abrange o quarteirão de {{count}} lotes onde está o terreno do plano.", "none": "Esta regra de votação aplica-se a um quarteirão. Forme o quarteirão com o terreno do plano com Detetar quarteirão no mapa e use-o aqui.", "hint": "O registo guarda os lotes do quarteirão pelo id. Votam os seus residentes, e os planos de luz do código sobem do seu limite e dos seus lotes.", "use": "Usar o quarteirão formado" },
+        "yearsHint": "Uma coluna Years opcional dá os anos de cada residente na morada, para uma regra que conta os residentes antigos. Os anos também ficam locais.",
+        "years": "Anos na morada (apenas local)",
+        "yearsOf": "Anos na morada de {{person}}",
+        "ruleBlock": "Realiza-se num quarteirão de pelo menos {{min}} agregados. Indique os anos de cada residente na morada: a regra conta quem lá está há {{years}} anos ou mais."
     },
     "criticTour": {
         "skip": "Saltar animação",

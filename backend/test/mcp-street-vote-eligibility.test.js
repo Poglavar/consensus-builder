@@ -2,7 +2,10 @@
 // the server judges the plan's raised houses from building facts as the app's editor does, refuses
 // with each house's failing or unknown tests, and records the check when every house passes.
 import { describe, expect, it, vi } from 'vitest';
+import { createRequire } from 'node:module';
 import { votingWithEligibility } from '../agents/mcp-ground.js';
+// The same module instance the server requires: a second import would rebind the browser global.
+const Eligibility = createRequire(import.meta.url)('../../frontend/js/planning/eligibility.js');
 
 const fact = value => ({ value, source: 'osm', key: 'k', raw: String(value) });
 const notListed = { value: { listed: false, grade: null, register: 'National Heritage List for England', reference: null, name: null, url: 'https://www.planning.data.gov.uk/dataset/listed-building', basis: 'none' }, source: 'gb-eng-nhle', key: 'listed-building', raw: 'no entry' };
@@ -78,7 +81,9 @@ describe('agent street votes on a plan claiming a street code', async () => {
         expect(report.recorded).toBeUndefined();
         expect(report.buildings[0].tests[0]).toMatchObject({ cite: '30', status: 'fail', label: 'Storeys within the density cap' });
         expect(report.buildings[0].tests[0].text).toContain('3 storeys');
-        expect(report.notChecked.map(row => row.cite)).toContain('35');
+        // Para 35's light planes are read now (from the plots around; none here, so not known), 51 is not.
+        expect(report.notChecked.map(row => row.cite)).toEqual(expect.arrayContaining(['51']));
+        expect(report.notChecked.map(row => row.cite)).not.toContain('35');
     });
     it('checks nothing when the plan claims no code or the ballot rule carries none', async () => {
         expect(await streetCodeCheck(voting(STRONG_SUBURBS), { ...plan, codes: undefined }, [], { readers })).toBeNull();
@@ -112,5 +117,41 @@ describe('agent street votes on a plan claiming a street code', async () => {
         const report = await streetCodeCheck(voting(REQUIRED), plan, [{ geometry: { buildings: [low] } }], { readers, planCid });
         expect(report).toMatchObject({ required: true, summary: { buildings: 1, break: 0, excluded: 0, unknown: 1 } });
         expect(report.recorded).toMatchObject({ set: CODE, planCid, street: null, buildings: [{ factId: 'osm:way/36', verdict: 'unknown', failing: [], excluded: [] }] });
+    });
+});
+
+// Agent parity for Create Mews (mcp-ground.js streetCodeCheck with a block): a block vote on a plan
+// claiming the block code records the check keyed by the block, and names the plots whose owners may
+// waive a plane a building pierces.
+describe('agent block votes on a plan claiming the Create Mews code', async () => {
+    const { streetCodeCheck } = await import('../agents/mcp-ground.js');
+    const Cid = (await import('../../frontend/js/cid.js')).default;
+    const RULE = { id: 'gb-block-vote-create-mews', version: '2026-11-27' };
+    const CODE = { id: 'gb-create-mews-block-code', version: '2022' };
+    const M_LNG = 1 / (111320 * Math.cos(51.5 * Math.PI / 180)), M_LAT = 1 / 110540;
+    const at = (e, n) => [-0.2 + e * M_LNG, 51.5 + n * M_LAT];
+    const box = (w, s, e, n) => ({ type: 'Polygon', coordinates: [[at(w, s), at(e, s), at(e, n), at(w, n), at(w, s)]] });
+    const plots = [['A', 0, 0, 24, 40], ['B', 24, 0, 48, 40], ['C', 0, 40, 24, 80], ['D', 24, 40, 48, 80]].map(([id, ...b]) => ({ id, geometry: box(...b) }));
+    const block = { parcelSourceId: 'gb-hmlr-browser-v1', parcelIds: ['A', 'B', 'C', 'D'] };
+    const plan = { schema: 'plan/v1', title: 'Mews', designCids: [], view: { at: '51.5,-0.2,17', mode: '2d', city: 'london' }, codes: [CODE] };
+    const planCid = Cid.cidOfObject(plan);
+    const readers = () => ({ facts: async ids => new Map(ids.map(id => [id, { found: true, facts: { height_m: fact(9) } }])),
+        designations: async () => [], buildingsNear: async () => [{ type: 'Feature', id: 'w1', geometry: box(4, 2, 20, 12), properties: {} }],
+        plots: async query => plots.filter(plot => !query.parcelIds || query.parcelIds.includes(plot.id)) });
+    const cottage = geometry => ({ type: 'Feature', geometry, properties: { type: 'proposedBuilding', height: 5, floors: 2, floorHeightM: 2.5, roof: null } });
+    const blockVoting = extra => ({ organiser: null, participationUrl: null, voting: { schema: 'community-voting/v2', id: '0b6f6a52-2f43-4c3e-9a51-0c0d6b1e2f11', codeHashes: ['a'.repeat(64)], rule: RULE, block, ...extra } });
+    it('records a waivable cottage on the boundary, naming the plot whose owners may waive each plane', async () => {
+        const report = await streetCodeCheck(blockVoting(), plan, [{ geometry: { buildings: [cottage(box(18, 26, 24, 32))] } }], { readers, planCid });
+        expect(report.summary).toMatchObject({ buildings: 1, break: 0, waivable: 1 });
+        expect(report.buildings[0].waivers.map(row => [row.cite, row.parcels])).toEqual([['26e', ['B']], ['26f', ['B']]]);
+        expect(report.recorded).toMatchObject({ set: CODE, planCid, street: Eligibility.blockKey(block), buildings: [{ verdict: 'waivable', failing: ['cmPlotPlane', 'cmPrivacyPlane'] }] });
+        expect(report.storeyCap).toBeUndefined();
+    });
+    it('refuses a cottage over the 20° street plane, and reads no planes without the block', async () => {
+        const error = await streetCodeCheck(blockVoting(), plan, [{ geometry: { buildings: [cottage(box(2, 26, 6, 32))] } }], { readers, planCid }).catch(e => e);
+        expect(error.code).toBe('street-code-failed');
+        expect(error.message).toContain('26a');
+        const report = await streetCodeCheck(blockVoting({ block: undefined }), plan, [{ geometry: { buildings: [cottage(box(14, 26, 18, 32))] } }], { readers, planCid });
+        expect(report.summary).toMatchObject({ unknown: 1 });
     });
 });

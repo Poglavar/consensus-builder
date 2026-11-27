@@ -39,12 +39,17 @@ describe('shipped ballot rules', () => {
                 { measure: 'cast-support', numerator: 1, denominator: 2, strict: false },
                 { measure: 'household-turnout', numerator: 1, denominator: 2, strict: false },
                 { measure: 'household-support', numerator: 1, denominator: 2, strict: false }],
-            sources: ['https://www.createstreets.com/wp-content/uploads/2025/07/Living-Tradition.pdf'] }
+            sources: ['https://www.createstreets.com/wp-content/uploads/2025/07/Living-Tradition.pdf'] },
+            { key: 'gb-block-vote-create-mews@2026-11-27', tests: [
+                { measure: 'eligible-support', numerator: 2, denominator: 3, strict: false },
+                { measure: 'household-eligible-support', numerator: 1, denominator: 2, strict: false },
+                { measure: 'long-resident-support', numerator: 1, denominator: 2, strict: false }],
+            sources: ['https://www.createstreets.com/wp-content/uploads/2022/02/Create-Mews.pdf'] }
         ]);
         // A new vote chooses the newest version of each rule; the 2026-11-25 Strong Suburbs version
         // stays readable for the records that pinned it.
         expect(Rules.list().map(rule => `${rule.id}@${rule.version}`)).toEqual(['gb-street-vote-strong-suburbs@2026-11-27',
-            'gb-street-vote-consultation-2023@2026-11-25', 'gb-street-vote-living-tradition@2026-11-27']);
+            'gb-street-vote-consultation-2023@2026-11-25', 'gb-street-vote-living-tradition@2026-11-27', 'gb-block-vote-create-mews@2026-11-27']);
         expect(Rules.get('gb-street-vote-strong-suburbs', '2026-11-25')).toBe(SS);
         // Para 2: the 2026-11-27 version is held only on a plan that complies with the Strong Suburbs street code.
         expect(Rules.latest('gb-street-vote-strong-suburbs').requires).toEqual({ streetCode: { id: 'gb-strong-suburbs-street-code', version: '2021' } });
@@ -140,4 +145,55 @@ describe('voting record v2', () => {
         expect(V.distributionCsv([row])).toBe(`Person,Household,Code\r\n"Jo","12","${row.code}"`);
         expect((await V.importLocalFile(V.localFile(ID, [row]))).entries).toEqual([row]);
     });
+});
+
+// Create Mews' block vote (paras 4–6): two-thirds of all eligible voters, a yes in half of all the
+// households, half of the residents of three years or more; twenty households; held on a block.
+describe('Create Mews block vote', () => {
+    const CM = Rules.get('gb-block-vote-create-mews', '2026-11-27');
+    const block = { parcelSourceId: 'gb-hmlr-browser-v1', parcelIds: ['p2', 'p1'] };
+    // 40 residents in 20 households of two; residents 1–10 have lived there three years or more.
+    const codes = Array.from({ length: 40 }, (_, i) => h(i + 1));
+    const households = Array.from({ length: 20 }, (_, i) => [codes[2 * i], codes[2 * i + 1]]);
+    const record = (extra = {}) => ({ schema: 'community-voting/v2', id: ID, codeHashes: codes, households, longResidents: codes.slice(0, 10), rule: { id: CM.id, version: CM.version }, block, ...extra });
+    it('records the block and the long residents, and refuses a vote without them or under twenty households', () => {
+        const config = V.configuration(record());
+        expect(config.block).toEqual({ parcelSourceId: 'gb-hmlr-browser-v1', parcelIds: ['p1', 'p2'] });
+        expect(config.longResidents).toEqual(codes.slice(0, 10).sort());
+        expect(CM.requires).toEqual({ streetCode: { id: 'gb-create-mews-block-code', version: '2022' } });
+        expect(V.ruleIssues(config)).toEqual([]);
+        // The record can be built up step by step; what the rule still lacks is an issue at saving.
+        expect(V.ruleIssues(V.configuration(record({ block: undefined })))).toEqual([{ code: 'block-missing' }]);
+        expect(V.ruleIssues(V.configuration(record({ longResidents: undefined })))).toEqual([{ code: 'long-residents-missing', years: 3 }]);
+        expect(() => V.configuration(record({ longResidents: [h(99)] }))).toThrow('Long residents');
+        const few = codes.slice(0, 38);
+        expect(V.ruleIssues(V.configuration(record({ codeHashes: few, households: Array.from({ length: 19 }, (_, i) => [few[2 * i], few[2 * i + 1]]), longResidents: few.slice(0, 10) }))))
+            .toEqual([{ code: 'households-too-few', min: 20, households: 19 }]);
+        expect(() => V.configuration(record({ block: { parcelSourceId: 's', parcelIds: ['a', 'a'] } }))).toThrow('distinct parcel ids');
+    });
+    it('counts two-thirds of all eligible voters, a yes in half of all households and half the long residents', () => {
+        const config = V.configuration(record());
+        // 27 of 40 support (≥ 2/3 needs 27), spread so 14 of 20 households have a yes; 5 of 10 long residents.
+        const yes = [...codes.slice(0, 5), ...codes.slice(10, 32)];
+        const result = Rules.evaluate(CM, config, yes.map(codeHash => ({ codeHash, choice: 'support' })));
+        expect(byMeasure(result)).toMatchObject({
+            'eligible-support': { count: 27, total: 40, needed: 27, met: true },
+            'household-eligible-support': { count: 14, total: 20, met: true },
+            'long-resident-support': { count: 5, total: 10, met: true } });
+        expect(result.passed).toBe(true);
+        const fewer = Rules.evaluate(CM, config, yes.slice(1).map(codeHash => ({ codeHash, choice: 'support' })));
+        expect(byMeasure(fewer)['long-resident-support'].met).toBe(false);
+        expect(fewer.passed).toBe(false);
+    });
+    it('reads an optional Years column, and keeps years in the local list, never in the record', async () => {
+        const rows = V.residentsCsv('Person,Household,Years\r\nAda,1 Mews Row,4\r\nBen,1 Mews Row,\r\nCy,2 Mews Row,2');
+        expect(rows.map(row => row.years)).toEqual([4, null, 2]);
+        expect(() => V.residentsCsv('Person,Household,Years\r\nAda,1,four')).toThrow('whole number');
+        const entries = await V.generateEntries(ID, rows, globalThis.crypto);
+        expect(V.longResidentsOf(entries, 3)).toEqual([entries[0].codeHash]);
+        expect(V.localFile(ID, entries).entries.map(row => row.years ?? null)).toEqual([4, null, 2]);
+        const back = await V.importLocalFile(V.localFile(ID, entries));
+        expect(back.entries.map(row => row.years)).toEqual([4, null, 2]);
+        expect(V.distributionCsv(entries).split('\r\n')[0]).toBe('Person,Household,Years,Code');
+    }, 30000);
 });

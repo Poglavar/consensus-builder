@@ -8667,7 +8667,10 @@
             "valuationUnknown": "Un valor por m² nombra una parcela o porción que no está en este acuerdo.",
             "valuationZero": "El suelo aportado necesita un valor superior a cero para liquidar por valor.",
             "valuationUnused": "Los valores del suelo solo se aplican a la liquidación por valor.",
-            "schemeRule": "{{reason}}"
+            "schemeRule": "{{reason}}",
+            "householdsTooFew": "Esta regla de votación necesita al menos {{min}} hogares; la lista tiene {{households}}.",
+            "longResidentsMissing": "Esta regla cuenta a los residentes empadronados en su dirección al menos {{years}} años: indique sus años en la dirección en la lista.",
+            "blockMissing": "Esta regla se aplica a una manzana: forme la manzana con el suelo del plan con Detectar manzana en el mapa y nómbrela aquí."
         },
         "warnings": {
             "ruleNotReady": "Todavía no se puede evaluar la regla: {{reason}}",
@@ -9536,7 +9539,8 @@
         "eligibility": {
             "set": {
                 "gb-living-tradition-mansards": "Mansardas según Living Tradition",
-                "gb-strong-suburbs-street-code": "Código de calle de Strong Suburbs"
+                "gb-strong-suburbs-street-code": "Código de calle de Strong Suburbs",
+                "gb-create-mews-block-code": "Código de plan de manzana de Create Mews"
             },
             "verdict": {
                 "eligible": "Cumple todas las condiciones que la aplicación puede comprobar",
@@ -9580,7 +9584,22 @@
                 "ssFrontDoors": "Como máximo 15 m entre puertas de entrada",
                 "ssSideWindows": "Ventanas laterales a 2 m o más del lindero",
                 "ssSemiDetached": "Consienten ambas casas de un pareado",
-                "ssDetached": "Bajo un plano de 70° desde el lindero de un vecino aislado"
+                "ssDetached": "Bajo un plano de 70° desde el lindero de un vecino aislado",
+                "cmListed": "No es un edificio protegido",
+                "cmPre1918": "Construido en 1918 o después",
+                "cmGreenBelt": "No en suelo no urbanizado del cinturón verde",
+                "cmOpenLand": "No en parques ni tierras agrícolas",
+                "cmNature": "No en un Parque Nacional, AONB ni SSSI",
+                "cmBlockSize": "Al menos seis viviendas en la manzana",
+                "cmStreetPlane": "Bajo el plano de 20° desde las calles que rodean la manzana",
+                "cmStreetFronts": "Fachadas a la calle sin cambios",
+                "cmInfill": "Relleno entre edificios dentro de sus límites",
+                "cmRailways": "Bajo el plano de 20° más allá de un ferrocarril o autopista",
+                "cmPlotPlane": "Bajo los planos de 70° desde las demás parcelas",
+                "cmPrivacyPlane": "Bajo los planos de privacidad de 40° desde las demás parcelas",
+                "cmBuffers": "Bajo el plano de 30° desde una franja de separación",
+                "cmTallest": "Como máximo 9 m por encima del edificio más alto de la manzana",
+                "cmCeilingMin": "Techos de al menos 2,5 m"
             },
             "fact": {
                 "proposedStoreys": "{{storeys}} plantas propuestas",
@@ -9607,16 +9626,28 @@
                 "storeyHeight": "plantas de {{metres}} m de suelo a suelo; un techo es más bajo por el grosor del forjado, que el diseño no indica",
                 "setbackRise": "la planta retranqueada sube {{metres}} m",
                 "designations": "está en: {{datasets}}",
-                "designationsUnread": "No se pudieron leer las designaciones"
+                "designationsUnread": "No se pudieron leer las designaciones",
+                "planeClear": "bajo el plano de {{degrees}}°",
+                "planePierced": "{{metres}} m por encima del plano de {{degrees}}° (parcelas protegidas: {{parcels}})",
+                "planeUnknown": { "noBlock": "La votación no nombra ninguna manzana, así que no se leen los planos desde su borde y sus parcelas", "plotsUnread": "No se pudieron leer las parcelas de alrededor", "noStreet": "La votación no nombra ninguna calle, así que no se conocen las parcelas de otras calles", "raisersUnknown": "Por encima del plano salvo que lo eleve un edificio intermedio de altura desconocida", "ownPlotUnknown": "No se conoce la parcela sobre la que está el edificio", "topUnknown": "No se conoce la altura del edificio" },
+                "proposedTop": "{{metres}} m de altura",
+                "tallestExisting": "edificio más alto de la manzana {{metres}} m",
+                "tallestPartly": "la más alta conocida de la manzana {{metres}} m, {{unknown}} de altura desconocida",
+                "tallestUnread": "no se pudieron leer los edificios de la manzana"
             },
             "notChecked": {
                 "noSource": "planning.data.gov.uk aún no publica Metropolitan Open Land",
-                "otherStreets": "requiere saber qué parcelas vecinas están en otras calles",
                 "ceilings": "el diseño no indica alturas de techo",
                 "plotUse": "requiere la huella construida en la primera votación y las parcelas de otras calles",
                 "doors": "el diseño no sitúa puertas",
                 "windows": "el diseño no sitúa ventanas laterales",
-                "consent": "el consentimiento de un vecino se da en un acuerdo, no se mide"
+                "consent": "el consentimiento de un vecino se da en un acuerdo, no se mide",
+                "parksFarmland": "aún no se lee ninguna fuente de parques y tierras agrícolas",
+                "blockBuildings": "necesita saber qué edificios de la manzana son viviendas",
+                "fronts": "necesita saber qué fachadas dan a una calle",
+                "infill": "necesita las vallas y setos alrededor de un hueco",
+                "railways": "necesita las parcelas al otro lado de un ferrocarril o autopista",
+                "buffers": "la aplicación no divide manzanas con franjas de separación"
             }
         },
         "survey": "Levantamiento de alturas",
@@ -10396,7 +10427,8 @@
             "gb-street-vote-living-tradition": {
                 "name": "Votación de calle — mansardas según Living Tradition",
                 "source": "Propuesta en Living Tradition de Samuel Hughes (Create Streets, 2021): al menos el 50% de los votos emitidos a favor, residentes de al menos la mitad de los hogares votando, y un sí de un residente en al menos la mitad de los hogares votantes. Solo pueden incluirse casas que cumplan sus condiciones (párr. 17)."
-            }
+            },
+            "gb-block-vote-create-mews": { "name": "Votación de manzana — Create Mews", "source": "Propuesto en Create Mews de Create Streets (2022): una manzana de al menos veinte hogares adopta un plan de manzana cuando al menos dos tercios de los votantes votan a favor, un residente de al menos la mitad de los hogares vota a favor y al menos la mitad de quienes llevan tres años o más en su dirección vota a favor." }
         },
         "eligibility": {
             "title": "Casas incluidas",
@@ -10435,14 +10467,22 @@
                 "eligible": "Cumple el código",
                 "ineligible": "Incumple el código",
                 "excluded": "Excluido por el código",
-                "unknown": "Aún no se sabe"
+                "unknown": "Aún no se sabe",
+                "waivable": "Cumple el código si los vecinos renuncian"
             },
             "unclaimed": "Esta regla de votación solo permite la votación sobre un plan que declara cumplir este código, y este plan no lo declara. Añádalo a los códigos de calle del plan con Editar plan, o elija otra regla de votación.",
             "required": "Esta regla de votación solo permite la votación sobre un plan que cumple el código: un edificio que lo incumple o que queda excluido por él impide guardar este acuerdo. Las reglas aún desconocidas o no comprobadas no lo impiden. La votación registra esta comprobación.",
             "noBuildings": "El plan no tiene edificios que comprobar.",
             "unchecked": "Reglas que la aplicación no comprueba",
-            "check": "Comprobar el código"
-        }
+            "check": "Comprobar el código",
+            "waiver": "{{cite}}: los propietarios de {{parcels}} pueden renunciar a ello",
+            "waiverHint": "Sus renuncias se dan en el acuerdo de propietarios sobre este plan: añada esas parcelas en Vecinos como renuncia."
+        },
+        "block": { "title": "Manzana", "named": "La votación cubre la manzana de {{count}} parcelas donde está el suelo del plan.", "none": "Esta regla de votación se aplica a una manzana. Forme la manzana con el suelo del plan con Detectar manzana en el mapa y úsela aquí.", "hint": "El registro guarda las parcelas de la manzana por su id. Votan sus residentes, y los planos de luz del código se elevan desde su borde y sus parcelas.", "use": "Usar la manzana formada" },
+        "yearsHint": "Una columna Years opcional da los años de cada residente en la dirección, para una regla que cuenta a los residentes de larga duración. Los años también quedan en local.",
+        "years": "Años en la dirección (solo local)",
+        "yearsOf": "Años en la dirección de {{person}}",
+        "ruleBlock": "Se celebra en una manzana de al menos {{min}} hogares. Indique los años de cada residente en la dirección: la regla cuenta a quienes llevan {{years}} años o más."
     },
     "criticTour": {
         "skip": "Saltar animación",

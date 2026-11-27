@@ -1029,6 +1029,16 @@
             // recorded check must cover exactly the houses the plan raises, and find each eligible.
             const voting = consultation.voting;
             const rules = root.CommunityBallotRules || (typeof require === 'function' ? require('./community/ballot-rules.js') : null);
+            // What the record still lacks for its rule: twenty households, the long residents, the block (Create Mews).
+            const votingApi = root.CommunityVoting || (typeof require === 'function' ? require('./community/voting.js') : null);
+            for (const issue of voting ? votingApi.ruleIssues(voting) : []) {
+                const message = {
+                    'households-too-few': `This ballot rule needs at least ${issue.min} households; the voter list has ${issue.households}.`,
+                    'long-residents-missing': `This ballot rule counts the residents registered at their address for at least ${issue.years} years: give their years at the address in the voter list.`,
+                    'block-missing': 'This ballot rule is held on a block: name the block whose residents vote.',
+                }[issue.code];
+                add(errors, 'consultation', `voting-${issue.code}`, message, issue.code === 'households-too-few' ? { min: issue.min, households: issue.households } : issue.code === 'long-residents-missing' ? { years: issue.years } : undefined);
+            }
             const required = voting?.rule ? rules.get(voting.rule.id, voting.rule.version)?.requires?.eligibility : null;
             if (required) {
                 const E = root.BuildingEligibility || (typeof require === 'function' ? require('./planning/eligibility.js') : null);
@@ -1053,7 +1063,7 @@
             if (requiredCode && agreement.plan) {
                 const E = root.BuildingEligibility || (typeof require === 'function' ? require('./planning/eligibility.js') : null);
                 const set = E.get(requiredCode.id, requiredCode.version);
-                for (const issue of E.codeIssues(set, voting.streetCode || null, { plan: agreement.plan, street: voting.street || null })) {
+                for (const issue of E.codeIssues(set, voting.streetCode || null, { plan: agreement.plan, street: voting.street || null, block: voting.block || null })) {
                     const blocked = (issue.buildings || []).map(building => `${building.factId || `design ${building.design + 1}, building ${building.index + 1}`} `
                         + `(${building.verdict}: ${[...building.excluded, ...building.failing].map(id => `${set.tests.find(test => test.id === id).cite} ${id}`).join(', ')})`).join('; ');
                     const message = {

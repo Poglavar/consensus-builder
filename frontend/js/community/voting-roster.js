@@ -22,10 +22,14 @@
             return value && value!==key?value:root.BuildingEligibility?.get(id,version)?.text.name || id;};
         // The published voting record: every code, its households (from the local entries, or kept from
         // a reopened draft whose voter list is not open) and the chosen ballot rule.
+        // A rule that counts long residents (Create Mews) gets the codes of those at their address at
+        // least its years, from the local entries' years (or kept from a reopened draft).
         function configure(codeHashes) {
             const rule=ruleOf(local.rule);
+            const long=Rules().needsLongResidents(rule)?(local.entries.length?V().longResidentsOf(local.entries,rule.longResidentYears):local.value?.longResidents || null):null;
             return V().configuration({schema:V().SCHEMA,id:local.id,codeHashes,
                 ...(local.entries.length?{households:V().householdsOf(local.entries)}:local.value?.households?{households:local.value.households}:{}),
+                ...(long?{longResidents:long}:{}),
                 ...(rule?{rule:{id:rule.id,version:rule.version}}:{})});
         }
         async function generate(rows) {
@@ -51,9 +55,10 @@
                 + `<label class="proposal-editor-field"><span>${esc(t('count','Or number of unassigned codes'))}</span><input type="number" data-roster-count min="1" max="100" value="${local.count}"></label>`
                 + `<div class="cb-actions"><button type="button" class="btn btn-secondary" data-roster-action="generate">${esc(t('generate','Generate codes locally'))}</button><button type="button" class="btn btn-secondary" data-roster-action="save"${local.entries.length?'':' disabled'}>${esc(t('export','Save voter list'))}</button><button type="button" class="btn btn-secondary" data-roster-action="csv"${local.entries.length?'':' disabled'}>${esc(t('csv','Export for distribution'))}</button><button type="button" class="btn btn-secondary" data-roster-pick="json"><i class="fa-solid fa-folder-open" aria-hidden="true"></i> ${esc(t('import','Open a saved voter list'))}</button><input type="file" accept="application/json,.json" data-roster-import hidden><button type="button" class="btn btn-secondary" data-roster-pick="csv"><i class="fa-solid fa-file-csv" aria-hidden="true"></i> ${esc(t('importCsv','Generate codes from a resident CSV'))}</button><input type="file" accept="text/csv,.csv,text/plain" data-roster-import-csv hidden></div>`
                 + `<p class="agreement-hint">${esc(t('csvHint','The CSV needs Person and Household columns, one resident per row. The file is read in this browser and never uploaded.'))}</p>`
+                + `<p class="agreement-hint">${esc(t('yearsHint','An optional Years column gives each resident’s years at the address, for a ballot rule that counts long residents. Years stay local too.'))}</p>`
                 + `<p role="status" data-roster-progress>${!local.saved?esc(t('saveFirst','Save your voter-list file before saving this agreement. Keep the file to distribute codes and resume later.')):''}</p>`
                 + (local.value?`<button type="button" class="btn btn-quiet" data-roster-action="remove">${esc(t('remove','Remove code voting from this draft'))}</button>`:'')
-                + (local.entries.length?`<details><summary>${esc(t('showCodes','Show local code assignments'))}</summary><div class="voting-table-wrap"><table class="voting-table"><thead><tr><th>${esc(t('person','Person (local only)'))}</th><th>${esc(t('household','Household (local only)'))}</th><th>${esc(t('code','Voting code'))}</th></tr></thead><tbody>${local.entries.map((row,index)=>`<tr><td>${esc(row.label)}</td><td><input type="text" data-roster-household="${index}" value="${esc(row.household || '')}" aria-label="${esc(t('householdOf','Household of {{person}}',{person:row.label || row.code}))}" autocomplete="off" spellcheck="false"></td><td class="voting-code">${esc(row.code)}</td></tr>`).join('')}</tbody></table></div></details>`:'');
+                + (local.entries.length?`<details><summary>${esc(t('showCodes','Show local code assignments'))}</summary><div class="voting-table-wrap"><table class="voting-table"><thead><tr><th>${esc(t('person','Person (local only)'))}</th><th>${esc(t('household','Household (local only)'))}</th><th>${esc(t('years','Years at the address (local only)'))}</th><th>${esc(t('code','Voting code'))}</th></tr></thead><tbody>${local.entries.map((row,index)=>`<tr><td>${esc(row.label)}</td><td><input type="text" data-roster-household="${index}" value="${esc(row.household || '')}" aria-label="${esc(t('householdOf','Household of {{person}}',{person:row.label || row.code}))}" autocomplete="off" spellcheck="false"></td><td><input type="number" min="0" max="150" step="1" data-roster-years="${index}" value="${Number.isFinite(row.years)?row.years:''}" aria-label="${esc(t('yearsOf','Years at the address of {{person}}',{person:row.label || row.code}))}"></td><td class="voting-code">${esc(row.code)}</td></tr>`).join('')}</tbody></table></div></details>`:'');
         }
         function ruleHtml() {
             const rule=ruleOf(local.rule);
@@ -63,7 +68,9 @@
                 + '</select></label>'
                 + (rule?`<p class="agreement-hint" data-roster-rule-source>${esc(ruleText(rule,'source'))} ${rule.sources.map(source=>`<a class="cb-link" href="${esc(source.url)}" target="_blank" rel="noopener">${esc(source.label)}</a>`).join(' · ')}</p>`:'')
                 // A rule held only on a plan that complies with a street code (requires.streetCode).
-                + (rule?.requires?.streetCode?`<p class="agreement-hint" data-roster-rule-code>${esc(t('ruleRequiresCode','Held only on a plan that claims the {{code}} and whose check finds no building that breaks it or that it excludes.',{code:codeName(rule.requires.streetCode)}))}</p>`:'');
+                + (rule?.requires?.streetCode?`<p class="agreement-hint" data-roster-rule-code>${esc(t('ruleRequiresCode','Held only on a plan that claims the {{code}} and whose check finds no building that breaks it or that it excludes.',{code:codeName(rule.requires.streetCode)}))}</p>`:'')
+                // A rule held on a block, with a minimum of households and a test of the long residents (Create Mews).
+                + (rule?.unit==='block'?`<p class="agreement-hint" data-roster-rule-block>${esc(t('ruleBlock','Held on a block of at least {{min}} households. Give each resident’s years at the address: the rule counts those there {{years}} years or more.',{min:rule.minHouseholds ?? 1,years:rule.longResidentYears ?? '?'}))}</p>`:'');
         }
         function progress(done,total) {const node=slot.querySelector('[data-roster-progress]');if(node)node.textContent=t('progress','Preparing codes: {{done}} / {{total}}',{done,total});}
         async function run(control,work) {
@@ -91,6 +98,13 @@
                 local.value=configure(local.value.codeHashes);local.saved=false;notify();
                 const node=slot.querySelector('[data-roster-progress]');
                 if(node)node.textContent=t('saveFirst','Save your voter-list file before saving this agreement. Keep the file to distribute codes and resume later.');
+                return;
+            }
+            if(event.target.matches('[data-roster-years]')) {
+                const row=local.entries[Number(event.target.dataset.rosterYears)];if(!row)return;
+                const value=event.target.value.trim();
+                row.years=value===''?null:Math.max(0,Math.min(150,Math.round(Number(value))));
+                local.value=configure(local.value.codeHashes);local.saved=false;notify();
                 return;
             }
             if(event.target.matches('[data-roster-import-csv]') && event.target.files[0]) {

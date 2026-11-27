@@ -68,6 +68,14 @@
         // Para 54: a neighbour on another street is owed compensation for building over a 30° angle of
         // elevation from the boundary of their plot (Effects on neighbours, `boundary`).
         neighbourGuides: { boundary: { degrees: 30, effect: 'compensation', cite: '54' } },
+        // Light planes (planning/light-planes.js) the `underPlane` tests read, by where they rise from:
+        // `otherStreetPlots`, the plots near the plan not on the voted street (para 35.1: 45° on a line
+        // running north of due east or west, else 35° plus a ninth of its angle from due south);
+        // `neighbourPlots`, the plots beside a building not attached to it (para 52, 70°).
+        planes: {
+            otherStreets: { from: 'otherStreetPlots', angle: { northOfEastWest: 45, fromSouth: { base: 35, perDegree: 1 / 9 } } },
+            detached: { from: 'neighbourPlots', angle: 70, unattached: true },
+        },
         tests: [
             { id: 'ssListed', cite: '12', applies: 'existing', check: 'notListed', fact: 'heritage', effect: 'excluded' },
             { id: 'ssPre1918', cite: '13', applies: 'existing', check: 'builtFrom', min: 1918, effect: 'excluded' },
@@ -78,7 +86,8 @@
             { id: 'ssStoreys', cite: '30', check: 'atMostFact', fact: 'proposed_storeys', limit: 'storey_cap' },
             { id: 'ssSetbackPlane', cite: '31', applies: 'setback', check: 'factIs', fact: 'setback_under_plane', value: true },
             { id: 'ssSetbacks', cite: '32', applies: 'setback', check: 'atMostFact', fact: 'proposed_setbacks', limit: 'setbacks_allowed' },
-            { id: 'ssLightPlanes', cite: '35', check: 'unchecked', reason: 'otherStreets' },
+            // Para 35: a private right of the neighbours on other streets, which they may waive.
+            { id: 'ssLightPlanes', cite: '35', check: 'underPlane', fact: 'plane_otherStreets', effect: 'waivable' },
             // Ceilings: the design states storey heights (floor to floor); a ceiling is lower by the
             // floor's thickness, which it does not state. So a storey of at most 3.5 m keeps the
             // maximum and one under 2.5 m breaks the minimum; anything else is unknown.
@@ -91,7 +100,45 @@
             { id: 'ssFrontDoors', cite: '41', check: 'unchecked', reason: 'doors' },
             { id: 'ssSideWindows', cite: '42', check: 'unchecked', reason: 'windows' },
             { id: 'ssSemiDetached', cite: '51', check: 'unchecked', reason: 'consent' },
-            { id: 'ssDetached', cite: '52', check: 'unchecked', reason: 'consent' },
+            // Para 52: above 70° from the border with a neighbour not attached, only with their consent.
+            { id: 'ssDetached', cite: '52', check: 'underPlane', fact: 'plane_detached', effect: 'waivable' },
+        ],
+    }, {
+        // Create Mews' block plan code (Ben Southwood and Samuel Hughes, Create Streets, February 2022):
+        // the most a block plan may permit, voted by the block's residents in "this form of street vote"
+        // (para 5), so it is a street code whose vote is held on a block. Paragraph numbers are its
+        // Detailed proposals' (pages 47–58); para 26's rules are its lettered sub-paragraphs (26a).
+        id: 'gb-create-mews-block-code', version: '2022', kind: 'street-code', planningRuleSet: 'gb-eng-planning',
+        ballotRules: ['gb-block-vote-create-mews'],
+        source: { label: 'Ben Southwood and Samuel Hughes, Create Mews (Create Streets, 2022), paras 1, 11–14, 26 and 28', url: 'https://www.createstreets.com/wp-content/uploads/2022/02/Create-Mews.pdf' },
+        text: { name: 'Create Mews block plan code' },
+        // Para 26: a. 20° from the block's boundary with the streets around it, raised without rotation
+        // over a building in between; e. 70° from each boundary between plots, waivable by the owner it
+        // protects; f. 40° from the boundary of the other plots, above which terraces are set back and
+        // windows translucent unless that owner waives it; h. at most 9 m above the block's tallest
+        // existing building.
+        planes: {
+            street: { from: 'blockEdge', angle: 20, raisedBy: 'existing' },
+            plots: { from: 'blockPlots', angle: 70 },
+            privacy: { from: 'blockPlots', angle: 40 },
+        },
+        tallest: { overM: 9 },
+        tests: [
+            { id: 'cmListed', cite: '11', applies: 'existing', check: 'notListed', fact: 'heritage', effect: 'excluded' },
+            { id: 'cmPre1918', cite: '12', applies: 'existing', check: 'builtFrom', min: 1918, effect: 'excluded' },
+            { id: 'cmGreenBelt', cite: '13', applies: 'new', check: 'notInAreas', fact: 'designations', datasets: ['green-belt'], effect: 'excluded' },
+            { id: 'cmOpenLand', cite: '13', check: 'unchecked', reason: 'parksFarmland' },
+            { id: 'cmNature', cite: '14', check: 'notInAreas', fact: 'designations', datasets: ['national-park', 'area-of-outstanding-natural-beauty', 'site-of-special-scientific-interest'], effect: 'excluded' },
+            { id: 'cmBlockSize', cite: '1', check: 'unchecked', reason: 'blockBuildings' },
+            { id: 'cmStreetPlane', cite: '26a', check: 'underPlane', fact: 'plane_street' },
+            { id: 'cmStreetFronts', cite: '26b', check: 'unchecked', reason: 'fronts' },
+            { id: 'cmInfill', cite: '26c', check: 'unchecked', reason: 'infill' },
+            { id: 'cmRailways', cite: '26d', check: 'unchecked', reason: 'railways' },
+            { id: 'cmPlotPlane', cite: '26e', check: 'underPlane', fact: 'plane_plots', effect: 'waivable' },
+            { id: 'cmPrivacyPlane', cite: '26f', check: 'underPlane', fact: 'plane_privacy', effect: 'waivable' },
+            { id: 'cmBuffers', cite: '26g', check: 'unchecked', reason: 'buffers' },
+            { id: 'cmTallest', cite: '26h', check: 'heightOver', fact: 'proposed_top_m', limit: 'tallest_existing_m', overM: 9 },
+            { id: 'cmCeilingMin', cite: '28', check: 'boundBelowFails', fact: 'storey_height_m', min: 2.5 },
         ],
     }];
     const byKey = new Map(RULE_SETS.map(set => [`${set.id}@${set.version}`, set]));
@@ -122,7 +169,10 @@
     // boundAtMost and boundBelowFails (the fact is an upper bound of what the rule limits: a bound
     // within the maximum passes, one under the minimum fails, else unknown), gradeNotIn, notListed,
     // notInAreas (the designation datasets a building lies in), passWhenFact (passes when a fact
-    // that implies the condition holds, else unchecked), row and unchecked.
+    // that implies the condition holds, else unchecked), underPlane (a light plane's reading:
+    // { status: clear | pierced | unknown, parcels } from planning/street-code.js), heightOver (a
+    // height at most `overM` above a limit fact, which may be known only as a lower `bound`), row and
+    // unchecked.
     function runTest(test, facts) {
         const result = (status, value) => ({ id: test.id, cite: test.cite, status, ...(value === undefined ? {} : { value }) });
         if (!applies(test, facts)) return result('notApplicable');
@@ -158,6 +208,17 @@
                 return result(finite(to) && to < test.before && afterKept ? 'pass' : 'unknown', span);
             }
             case 'passWhenFact': return value === test.value ? result('pass', value) : result('unchecked');
+            case 'underPlane': {
+                if (!value || !['clear', 'pierced'].includes(value.status)) return result('unknown');
+                return value.status === 'clear' ? result('pass') : { ...result('fail', value.clearM ?? undefined), parcels: [...(value.parcels || [])] };
+            }
+            case 'heightOver': {
+                const limit = facts?.[test.limit] || null;
+                if (!finite(value)) return result('unknown');
+                if (limit && finite(limit.value)) return { ...result(value <= limit.value + test.overM ? 'pass' : 'fail', value), limit: limit.value + test.overM };
+                // Known only as at least `bound`: within bound + overM passes for certain.
+                return limit && finite(limit.bound) && value <= limit.bound + test.overM ? { ...result('pass', value), limit: limit.bound + test.overM } : result('unknown', value);
+            }
             case 'factIs': return value === null ? result('unknown') : result(value === test.value ? 'pass' : 'fail', value);
             case 'factIsNot': return value === null ? result('unknown') : result(value === test.value ? 'fail' : 'pass', value);
             case 'factAtLeast': return !finite(value) ? result('unknown') : result(value >= test.min ? 'pass' : 'fail', value);
@@ -284,9 +345,11 @@
     const cidApi = () => (root && root.Cid) || require('../cid.js');
     const streetsApi = () => (root && root.StreetSegments) || require('../streets/street-segments.js');
     // A building's verdict under a street code, by its failing tests' effect: 'excluded' when a test
-    // whose failure takes it out of what a street vote may change fails, 'breaks' when another fails,
-    // 'unknown' while a test is unknown, else 'meets'. The first two hold the vote back.
-    const CODE_VERDICTS = ['meets', 'breaks', 'excluded', 'unknown'];
+    // whose failure takes it out of what a street vote may change fails, 'breaks' when another fails
+    // that no one can waive, 'waivable' when it fails only tests the protected neighbours may waive
+    // (their waivers are given in an owners' agreement, the affected parcels of the plan), 'unknown'
+    // while a test is unknown, else 'meets'. Only the first two hold the vote back.
+    const CODE_VERDICTS = ['meets', 'breaks', 'excluded', 'unknown', 'waivable'];
     const CODE_BLOCKING = ['breaks', 'excluded'];
     const effectOf = (set, id) => set.tests.find(test => test.id === id)?.effect || null;
     function codeLists(set, result) {
@@ -294,8 +357,14 @@
         const failed = ids('fail');
         return { failing: failed.filter(id => effectOf(set, id) !== 'excluded'), excluded: failed.filter(id => effectOf(set, id) === 'excluded'), unknown: ids('unknown') };
     }
-    const verdictOfLists = ({ failing, excluded, unknown }) => (excluded.length ? 'excluded' : failing.length ? 'breaks' : unknown.length ? 'unknown' : 'meets');
-    const codeVerdict = (set, result) => verdictOfLists(codeLists(set, result));
+    const verdictOfLists = (set, { failing, excluded, unknown }) => (excluded.length ? 'excluded'
+        : failing.some(id => effectOf(set, id) !== 'waivable') ? 'breaks' : failing.length ? 'waivable' : unknown.length ? 'unknown' : 'meets');
+    const codeVerdict = (set, result) => verdictOfLists(set, codeLists(set, result));
+    // The plots whose owners may waive what a building's waivable failures break, by test id.
+    function waiverPlots(set, result) {
+        return result.tests.filter(test => test.status === 'fail' && effectOf(set, test.id) === 'waivable')
+            .map(test => ({ id: test.id, cite: test.cite, parcels: test.parcels || [] }));
+    }
     // The street a check read, as the record keys it: the CID of the vote's street reference without
     // its corner plots, which the check does not read; null when the vote names no street.
     function streetKey(street) {
@@ -303,16 +372,20 @@
         const { corners: _corners, ...read } = streetsApi().normaliseReference(street);
         return cidApi().cidOfObject(read);
     }
+    // A vote held on a block (community/voting.js `block`, its plots as a parcel set) is keyed by
+    // that set instead: the record's `street` field names whichever unit the check read.
+    const blockKey = block => cidApi().cidOfObject({ block: { parcelSourceId: block.parcelSourceId, parcelIds: [...block.parcelIds].map(String).sort() } });
+    const unitKey = (street, block) => (block ? blockKey(block) : streetKey(street));
     /**
      * What a street vote records of its street code check (planning/street-code.js check()): the code,
      * when, the plan (its CID) and street it read, and each building of the plan with its verdict and
      * the ids of the tests it breaks, is excluded by or leaves unknown.
      */
-    function codeEvidence(set, outcome, { planCid, street = null }, checkedAt) {
-        return { set: { id: set.id, version: set.version }, checkedAt, planCid, street: streetKey(street),
+    function codeEvidence(set, outcome, { planCid, street = null, block = null }, checkedAt) {
+        return { set: { id: set.id, version: set.version }, checkedAt, planCid, street: unitKey(street, block),
             buildings: outcome.buildings.map(building => {
                 const lists = codeLists(set, building.result);
-                return { design: building.design, index: building.index, factId: building.factId || null, kind: building.kind, verdict: verdictOfLists(lists), ...lists };
+                return { design: building.design, index: building.index, factId: building.factId || null, kind: building.kind, verdict: verdictOfLists(set, lists), ...lists };
             }) };
     }
     const exactKeys = (value, names) => value && typeof value === 'object' && !Array.isArray(value)
@@ -337,7 +410,7 @@
                 || !CODE_VERDICTS.includes(building.verdict)
                 || !lists.every(name => Array.isArray(building[name]) && building[name].length <= set.tests.length && building[name].every(id => testIds.has(id)))
                 || !building.excluded.every(id => effectOf(set, id) === 'excluded') || building.failing.some(id => effectOf(set, id) === 'excluded')
-                || verdictOfLists(building) !== building.verdict) {
+                || verdictOfLists(set, building) !== building.verdict) {
                 fail('A street code building entry is malformed.');
             }
             return { design: building.design, index: building.index, factId: building.factId, kind: building.kind, verdict: building.verdict,
@@ -350,14 +423,14 @@
      * the check read this plan and street, and no building breaks the code or is excluded by it.
      * Unknown and not-checked rules do not hold it back. `plan`: { cid, content } or null.
      */
-    function codeIssues(set, recorded, { plan, street = null }) {
+    function codeIssues(set, recorded, { plan, street = null, block = null }) {
         if (plan && !(plan.content?.codes || []).some(code => code.id === set.id && code.version === set.version)) return [{ code: 'street-code-unclaimed' }];
         if (!recorded || recorded.set.id !== set.id || recorded.set.version !== set.version) return [{ code: 'street-code-missing' }];
-        if ((plan && recorded.planCid !== plan.cid) || recorded.street !== streetKey(street)) return [{ code: 'street-code-stale' }];
+        if ((plan && recorded.planCid !== plan.cid) || recorded.street !== unitKey(street, block)) return [{ code: 'street-code-stale' }];
         const blocked = recorded.buildings.filter(building => CODE_BLOCKING.includes(building.verdict));
         return blocked.length ? [{ code: 'street-code-failed', buildings: blocked }] : [];
     }
 
     return { RULE_SETS, get, latest, forCity, codesForBallot, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues,
-        CODE_VERDICTS, CODE_BLOCKING, codeVerdict, codeLists, streetKey, codeEvidence, normalizeCodeEvidence, codeIssues };
+        CODE_VERDICTS, CODE_BLOCKING, codeVerdict, codeLists, waiverPlots, streetKey, blockKey, codeEvidence, normalizeCodeEvidence, codeIssues };
 });

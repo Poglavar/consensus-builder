@@ -2522,7 +2522,10 @@
             "valuationUnknown": "Une valeur par m² désigne une parcelle ou une portion qui ne fait pas partie de cet accord.",
             "valuationZero": "Le terrain apporté doit avoir une valeur supérieure à zéro pour un règlement selon la valeur.",
             "valuationUnused": "Les valeurs foncières ne s’appliquent qu’au règlement selon la valeur.",
-            "schemeRule": "{{reason}}"
+            "schemeRule": "{{reason}}",
+            "householdsTooFew": "Cette règle de vote exige au moins {{min}} ménages ; la liste en compte {{households}}.",
+            "longResidentsMissing": "Cette règle compte les habitants inscrits à leur adresse depuis au moins {{years}} ans : indiquez leurs années à l’adresse dans la liste.",
+            "blockMissing": "Cette règle porte sur un îlot : formez l’îlot contenant le terrain du plan avec Détecter l’îlot sur la carte, puis nommez-le ici."
         },
         "warnings": {
             "ruleNotReady": "La règle ne peut pas encore être évaluée : {{reason}}",
@@ -9689,7 +9692,8 @@
         "eligibility": {
             "set": {
                 "gb-living-tradition-mansards": "Mansardes selon Living Tradition",
-                "gb-strong-suburbs-street-code": "Code de rue Strong Suburbs"
+                "gb-strong-suburbs-street-code": "Code de rue Strong Suburbs",
+                "gb-create-mews-block-code": "Code de plan d’îlot Create Mews"
             },
             "verdict": {
                 "eligible": "Remplit toutes les conditions que l’application peut vérifier",
@@ -9733,7 +9737,22 @@
                 "ssFrontDoors": "Au plus 15 m entre portes d’entrée",
                 "ssSideWindows": "Fenêtres latérales à au moins 2 m de la limite",
                 "ssSemiDetached": "Les deux maisons d’une paire jumelée consentent",
-                "ssDetached": "Sous un plan à 70° depuis la limite d’un voisin isolé"
+                "ssDetached": "Sous un plan à 70° depuis la limite d’un voisin isolé",
+                "cmListed": "Pas un bâtiment classé",
+                "cmPre1918": "Construit en 1918 ou après",
+                "cmGreenBelt": "Pas sur une ceinture verte non bâtie",
+                "cmOpenLand": "Pas sur des parcs ni des terres agricoles",
+                "cmNature": "Pas dans un parc national, une AONB ni un SSSI",
+                "cmBlockSize": "Au moins six logements sur l’îlot",
+                "cmStreetPlane": "Sous le plan à 20° depuis les rues autour de l’îlot",
+                "cmStreetFronts": "Façades sur rue inchangées",
+                "cmInfill": "Comblement entre bâtiments dans ses limites",
+                "cmRailways": "Sous le plan à 20° au-delà d’une voie ferrée ou d’une autoroute",
+                "cmPlotPlane": "Sous les plans à 70° depuis les autres parcelles",
+                "cmPrivacyPlane": "Sous les plans d’intimité à 40° depuis les autres parcelles",
+                "cmBuffers": "Sous le plan à 30° depuis une bande tampon",
+                "cmTallest": "Au plus 9 m au-dessus du bâtiment le plus haut de l’îlot",
+                "cmCeilingMin": "Plafonds d’au moins 2,5 m"
             },
             "fact": {
                 "proposedStoreys": "{{storeys}} étages proposés",
@@ -9760,16 +9779,28 @@
                 "storeyHeight": "étages de {{metres}} m de sol à sol ; un plafond est plus bas de l’épaisseur du plancher, que le projet n’indique pas",
                 "setbackRise": "l’étage en retrait s’élève de {{metres}} m",
                 "designations": "se trouve dans : {{datasets}}",
-                "designationsUnread": "Les zonages protégés n’ont pas pu être lus"
+                "designationsUnread": "Les zonages protégés n’ont pas pu être lus",
+                "planeClear": "sous le plan à {{degrees}}°",
+                "planePierced": "{{metres}} m au-dessus du plan à {{degrees}}° (parcelles protégées : {{parcels}})",
+                "planeUnknown": { "noBlock": "Le vote ne nomme aucun îlot : les plans depuis son bord et ses parcelles ne sont pas lus", "plotsUnread": "Les parcelles alentour n’ont pas pu être lues", "noStreet": "Le vote ne nomme aucune rue : les parcelles d’autres rues ne sont pas connues", "raisersUnknown": "Au-dessus du plan, sauf si un bâtiment intermédiaire de hauteur inconnue le relève", "ownPlotUnknown": "La parcelle sur laquelle se trouve le bâtiment n’est pas connue", "topUnknown": "La hauteur du bâtiment n’est pas connue" },
+                "proposedTop": "{{metres}} m de haut",
+                "tallestExisting": "bâtiment le plus haut de l’îlot {{metres}} m",
+                "tallestPartly": "le plus haut connu de l’îlot {{metres}} m, {{unknown}} de hauteur inconnue",
+                "tallestUnread": "les bâtiments de l’îlot n’ont pas pu être lus"
             },
             "notChecked": {
                 "noSource": "planning.data.gov.uk ne publie pas encore la Metropolitan Open Land",
-                "otherStreets": "il faut savoir quelles parcelles voisines sont sur d’autres rues",
                 "ceilings": "le projet n’indique aucune hauteur sous plafond",
                 "plotUse": "il faut l’emprise bâtie au premier vote et les parcelles d’autres rues",
                 "doors": "le projet ne place aucune porte",
                 "windows": "le projet ne place aucune fenêtre latérale",
-                "consent": "le consentement d’un voisin se donne par un accord, il ne se mesure pas"
+                "consent": "le consentement d’un voisin se donne par un accord, il ne se mesure pas",
+                "parksFarmland": "aucune source de parcs et de terres agricoles n’est encore lue",
+                "blockBuildings": "il faut savoir quels bâtiments de l’îlot sont des logements",
+                "fronts": "il faut savoir quelles façades donnent sur une rue",
+                "infill": "il faut les clôtures et haies autour d’une dent creuse",
+                "railways": "il faut les parcelles au-delà d’une voie ferrée ou d’une autoroute",
+                "buffers": "l’application ne divise pas les îlots par des parcelles tampons"
             }
         },
         "survey": "Relevé des hauteurs",
@@ -10375,7 +10406,8 @@
             "gb-street-vote-living-tradition": {
                 "name": "Vote de rue — mansardes selon Living Tradition",
                 "source": "Proposé dans Living Tradition de Samuel Hughes (Create Streets, 2021) : au moins 50 % des suffrages exprimés pour, des résidents d’au moins la moitié des foyers votant, et un oui d’un résident dans au moins la moitié des foyers votants. Seules les maisons remplissant ses conditions (par. 17) peuvent être couvertes."
-            }
+            },
+            "gb-block-vote-create-mews": { "name": "Vote d’îlot — Create Mews", "source": "Proposé dans Create Mews de Create Streets (2022) : un îlot d’au moins vingt ménages adopte un plan d’îlot quand au moins deux tiers des électeurs votent pour, qu’un habitant d’au moins la moitié des ménages vote pour, et qu’au moins la moitié des inscrits à leur adresse depuis trois ans ou plus votent pour." }
         },
         "eligibility": {
             "title": "Maisons couvertes",
@@ -10414,14 +10446,22 @@
                 "eligible": "Respecte le code",
                 "ineligible": "Enfreint le code",
                 "excluded": "Exclu par le code",
-                "unknown": "Pas encore connu"
+                "unknown": "Pas encore connu",
+                "waivable": "Respecte le code si les voisins y renoncent"
             },
             "unclaimed": "Cette règle de vote ne permet le vote que sur un plan qui déclare respecter ce code, et ce plan ne le déclare pas. Ajoutez-le aux codes de rue du plan avec Modifier le plan, ou choisissez une autre règle de vote.",
             "required": "Cette règle de vote ne permet le vote que sur un plan conforme au code : un bâtiment qui l’enfreint ou qu’il exclut empêche d’enregistrer cet accord. Les règles encore inconnues ou non vérifiées ne l’empêchent pas. Le vote enregistre cette vérification.",
             "noBuildings": "Le plan n’a aucun bâtiment à vérifier.",
             "unchecked": "Règles que l’application ne vérifie pas",
-            "check": "Vérifier le code"
-        }
+            "check": "Vérifier le code",
+            "waiver": "{{cite}} : les propriétaires de {{parcels}} peuvent y renoncer",
+            "waiverHint": "Leurs renonciations figurent dans l’accord des propriétaires sur ce plan : ajoutez ces parcelles sous Voisins comme renonciation."
+        },
+        "block": { "title": "Îlot", "named": "Le vote couvre l’îlot de {{count}} parcelles qui contient le terrain du plan.", "none": "Cette règle de vote porte sur un îlot. Formez l’îlot contenant le terrain du plan avec Détecter l’îlot sur la carte, puis utilisez-le ici.", "hint": "L’enregistrement garde les parcelles de l’îlot par identifiant. Ses habitants votent, et les plans de lumière du code partent de son bord et de ses parcelles.", "use": "Utiliser l’îlot formé" },
+        "yearsHint": "Une colonne Years facultative donne les années de chaque habitant à l’adresse, pour une règle qui compte les habitants de longue date. Les années restent aussi locales.",
+        "years": "Années à l’adresse (local uniquement)",
+        "yearsOf": "Années à l’adresse de {{person}}",
+        "ruleBlock": "Tenu sur un îlot d’au moins {{min}} ménages. Indiquez les années de chaque habitant à l’adresse : la règle compte ceux qui y sont depuis {{years}} ans ou plus."
     },
     "criticTour": {
         "skip": "Passer l’animation",

@@ -8640,7 +8640,10 @@
             "valuationUnknown": "A value per m² names a parcel or piece that is not in this agreement.",
             "valuationZero": "The input land needs a value above zero to settle by value.",
             "valuationUnused": "Land values apply to settlement by value only.",
-            "schemeRule": "{{reason}}"
+            "schemeRule": "{{reason}}",
+            "householdsTooFew": "This ballot rule needs at least {{min}} households; the voter list has {{households}}.",
+            "longResidentsMissing": "This ballot rule counts the residents registered at their address for at least {{years}} years: give their years at the address in the voter list.",
+            "blockMissing": "This ballot rule is held on a block: form the block that holds the plan’s land with Detect block on the map, then name it here."
         },
         "warnings": {
             "ruleNotReady": "The rule cannot be evaluated yet: {{reason}}",
@@ -9464,7 +9467,8 @@
         "eligibility": {
             "set": {
                 "gb-living-tradition-mansards": "Mansard eligibility",
-                "gb-strong-suburbs-street-code": "Strong Suburbs street code"
+                "gb-strong-suburbs-street-code": "Strong Suburbs street code",
+                "gb-create-mews-block-code": "Create Mews block plan code"
             },
             "verdict": {
                 "eligible": "Eligible on every condition the app can check",
@@ -9508,7 +9512,22 @@
                 "ssFrontDoors": "At most 15 m between front doors",
                 "ssSideWindows": "Side windows at least 2 m from the boundary",
                 "ssSemiDetached": "Both houses of a semi-detached pair consent",
-                "ssDetached": "Under a 70° plane from a detached neighbour's boundary"
+                "ssDetached": "Under a 70° plane from a detached neighbour's boundary",
+                "cmListed": "Not a listed building",
+                "cmPre1918": "Built in 1918 or later",
+                "cmGreenBelt": "Not on undeveloped Green Belt land",
+                "cmOpenLand": "Not on parks or farmland",
+                "cmNature": "Not in a National Park, AONB or SSSI",
+                "cmBlockSize": "At least six homes on the block",
+                "cmStreetPlane": "Under the 20° plane from the streets around the block",
+                "cmStreetFronts": "Fronts facing a street unchanged",
+                "cmInfill": "Infill between buildings within its limits",
+                "cmRailways": "Under the 20° plane beyond a railway or motorway",
+                "cmPlotPlane": "Under the 70° planes from the other plots",
+                "cmPrivacyPlane": "Under the 40° privacy planes from the other plots",
+                "cmBuffers": "Under the 30° plane from a buffer",
+                "cmTallest": "At most 9 m above the block’s tallest building",
+                "cmCeilingMin": "Ceilings at least 2.5 m"
             },
             "fact": {
                 "proposedStoreys": "{{storeys}} storeys proposed",
@@ -9535,16 +9554,28 @@
                 "storeyHeight": "storeys {{metres}} m floor to floor; a ceiling is lower by the floor's thickness, which the design does not state",
                 "setbackRise": "the setback storey rises {{metres}} m",
                 "designations": "lies in: {{datasets}}",
-                "designationsUnread": "The designations could not be read"
+                "designationsUnread": "The designations could not be read",
+                "planeClear": "under the {{degrees}}° plane",
+                "planePierced": "{{metres}} m above the {{degrees}}° plane (protected plots: {{parcels}})",
+                "planeUnknown": { "noBlock": "The vote names no block, so the planes from its edge and plots are not read", "plotsUnread": "The plots around could not be read", "noStreet": "The vote names no street, so the plots on other streets are not known", "raisersUnknown": "Above the plane unless a building in between, of unknown height, raises it", "ownPlotUnknown": "The plot the building stands on is not known", "topUnknown": "The building’s height is not known" },
+                "proposedTop": "{{metres}} m high",
+                "tallestExisting": "tallest building on the block {{metres}} m",
+                "tallestPartly": "tallest known on the block {{metres}} m, {{unknown}} of unknown height",
+                "tallestUnread": "the block’s buildings could not be read"
             },
             "notChecked": {
                 "noSource": "planning.data.gov.uk publishes no Metropolitan Open Land yet",
-                "otherStreets": "needs which neighbouring plots are on other streets",
                 "ceilings": "the design states no ceiling heights",
                 "plotUse": "needs the built footprint at the first vote and the plots on other streets",
                 "doors": "the design places no doors",
                 "windows": "the design places no side windows",
-                "consent": "a neighbour's consent is given in an agreement, not measured"
+                "consent": "a neighbour's consent is given in an agreement, not measured",
+                "parksFarmland": "no source of parks and farmland is read yet",
+                "blockBuildings": "needs which buildings on the block are homes",
+                "fronts": "needs which facades face a street",
+                "infill": "needs the fences and hedges around a gap",
+                "railways": "needs the plots beyond a railway or motorway",
+                "buffers": "the app does not divide blocks by buffer plots"
             }
         },
         "survey": "Height survey",
@@ -10324,7 +10355,8 @@
             "gb-street-vote-living-tradition": {
                 "name": "Street vote — Living Tradition mansards",
                 "source": "Proposed in Samuel Hughes’s Living Tradition (Create Streets, 2021): at least 50% of votes cast in favour, residents of at least half the households voting, and a yes from a resident in at least half of the voting households. Only houses that meet its eligibility conditions (para. 17) may be covered."
-            }
+            },
+            "gb-block-vote-create-mews": { "name": "Block vote — Create Mews", "source": "Proposed in Create Streets’ Create Mews (2022): a block of at least twenty households adopts a block plan when at least two-thirds of eligible voters vote in favour, a resident of at least half the households votes in favour, and at least half of those registered at their address for three years or more vote in favour." }
         },
         "eligibility": {
             "title": "Covered houses",
@@ -10363,14 +10395,22 @@
                 "eligible": "Meets the code",
                 "ineligible": "Breaks the code",
                 "excluded": "Excluded by the code",
-                "unknown": "Not known yet"
+                "unknown": "Not known yet",
+                "waivable": "Meets the code if neighbours waive"
             },
             "unclaimed": "This ballot rule holds the vote only on a plan that claims this code, and the plan does not. Add it to the plan’s street codes with Edit plan, or choose another ballot rule.",
             "required": "This ballot rule holds the vote only on a plan that complies with the code: a building that breaks it or that it excludes keeps this agreement from being saved. Rules not known yet or not checked do not. The vote records this check.",
             "noBuildings": "The plan has no buildings to check.",
             "unchecked": "Rules the app does not check",
-            "check": "Check the code"
-        }
+            "check": "Check the code",
+            "waiver": "{{cite}}: the owners of {{parcels}} may waive it",
+            "waiverHint": "Their waivers are given in the owners’ agreement on this plan: add those plots under Neighbours as a waiver."
+        },
+        "block": { "title": "Block", "named": "The vote covers the block of {{count}} plots that holds the plan’s land.", "none": "This ballot rule is held on a block. Form the block that holds the plan’s land with Detect block on the map, then use it here.", "hint": "The record keeps the block’s plots by parcel id. Its residents vote, and the code’s light planes rise from its edge and its plots.", "use": "Use the formed block" },
+        "yearsHint": "An optional Years column gives each resident’s years at the address, for a ballot rule that counts long residents. Years stay local too.",
+        "years": "Years at the address (local only)",
+        "yearsOf": "Years at the address of {{person}}",
+        "ruleBlock": "Held on a block of at least {{min}} households. Give each resident’s years at the address: the rule counts those there {{years}} years or more."
     },
     "criticTour": {
         "skip": "Skip animation",

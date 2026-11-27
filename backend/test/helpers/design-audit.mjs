@@ -227,8 +227,8 @@ const PROTECTED_WORDS = new Set(['OSM', 'DGU', 'GUP', 'GDI', 'NFT', 'AI', '2D', 
     'Burning', 'Man', 'Esplanade',
     // The plan critics' names ("How the Dog measures").
     'Beaver', 'Dog', 'Hare', 'Cat',
-    // The report title a street-vote ballot rule is named after (community/ballot-rules.js).
-    'Strong', 'Suburbs',
+    // The report titles a street-vote ballot rule is named after (community/ballot-rules.js).
+    'Strong', 'Suburbs', 'Create', 'Mews',
     // X-ray, the named interior view, capitalised mid-sentence across the copy and docs/vocabulary.md.
     'Xray']);
 

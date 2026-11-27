@@ -8686,7 +8686,10 @@
             "valuationUnknown": "Vrijednost po m² navodi česticu ili dio koji nije u ovom sporazumu.",
             "valuationZero": "Za poravnanje prema vrijednosti ulazno zemljište mora imati vrijednost veću od nule.",
             "valuationUnused": "Vrijednosti zemljišta primjenjuju se samo na poravnanje prema vrijednosti.",
-            "schemeRule": "{{reason}}"
+            "schemeRule": "{{reason}}",
+            "householdsTooFew": "Ovo pravilo glasanja treba najmanje {{min}} kućanstava; popis birača ima {{households}}.",
+            "longResidentsMissing": "Ovo pravilo broji stanovnike prijavljene na adresi najmanje {{years}} godina: navedite njihove godine na adresi u popisu birača.",
+            "blockMissing": "Ovo se glasanje održava u bloku: oblikujte blok sa zemljištem plana pomoću Prepoznaj blok na karti, pa ga navedite ovdje."
         },
         "warnings": {
             "ruleNotReady": "Pravilo se još ne može procijeniti: {{reason}}",
@@ -9564,7 +9567,8 @@
         "eligibility": {
             "set": {
                 "gb-living-tradition-mansards": "Mansarde po Living Tradition",
-                "gb-strong-suburbs-street-code": "Ulični kod Strong Suburbs"
+                "gb-strong-suburbs-street-code": "Ulični kod Strong Suburbs",
+                "gb-create-mews-block-code": "Kod blokovskog plana Create Mews"
             },
             "verdict": {
                 "eligible": "Ispunjava svaki uvjet koji aplikacija može provjeriti",
@@ -9608,7 +9612,22 @@
                 "ssFrontDoors": "Najviše 15 m između ulaznih vrata",
                 "ssSideWindows": "Bočni prozori barem 2 m od međe",
                 "ssSemiDetached": "Pristanak obiju kuća dvojne kuće",
-                "ssDetached": "Ispod ravnine od 70° od međe samostojećeg susjeda"
+                "ssDetached": "Ispod ravnine od 70° od međe samostojećeg susjeda",
+                "cmListed": "Nije zaštićena zgrada",
+                "cmPre1918": "Izgrađeno 1918. ili kasnije",
+                "cmGreenBelt": "Nije na neizgrađenom zelenom pojasu",
+                "cmOpenLand": "Nije na parkovima ni poljoprivrednom zemljištu",
+                "cmNature": "Nije u nacionalnom parku, AONB-u ni SSSI-ju",
+                "cmBlockSize": "Najmanje šest domova u bloku",
+                "cmStreetPlane": "Ispod ravnine od 20° od ulica oko bloka",
+                "cmStreetFronts": "Pročelja prema ulici nepromijenjena",
+                "cmInfill": "Popunjavanje između zgrada u svojim granicama",
+                "cmRailways": "Ispod ravnine od 20° preko pruge ili autoceste",
+                "cmPlotPlane": "Ispod ravnina od 70° od ostalih čestica",
+                "cmPrivacyPlane": "Ispod ravnina privatnosti od 40° od ostalih čestica",
+                "cmBuffers": "Ispod ravnine od 30° od tampon-čestica",
+                "cmTallest": "Najviše 9 m iznad najviše zgrade u bloku",
+                "cmCeilingMin": "Stropovi najmanje 2,5 m"
             },
             "fact": {
                 "proposedStoreys": "predloženo etaža: {{storeys}}",
@@ -9635,16 +9654,28 @@
                 "storeyHeight": "etaže {{metres}} m od poda do poda; strop je niži za debljinu stropne konstrukcije, koju projekt ne navodi",
                 "setbackRise": "uvučena etaža diže se {{metres}} m",
                 "designations": "nalazi se u: {{datasets}}",
-                "designationsUnread": "Zaštićena područja nisu se mogla pročitati"
+                "designationsUnread": "Zaštićena područja nisu se mogla pročitati",
+                "planeClear": "ispod ravnine od {{degrees}}°",
+                "planePierced": "{{metres}} m iznad ravnine od {{degrees}}° (zaštićene čestice: {{parcels}})",
+                "planeUnknown": { "noBlock": "Glasanje ne navodi blok, pa se ravnine od njegova ruba i čestica ne čitaju", "plotsUnread": "Okolne čestice nisu se mogle pročitati", "noStreet": "Glasanje ne navodi ulicu, pa čestice u drugim ulicama nisu poznate", "raisersUnknown": "Iznad ravnine, osim ako je ne podiže zgrada između nepoznate visine", "ownPlotUnknown": "Čestica na kojoj zgrada stoji nije poznata", "topUnknown": "Visina zgrade nije poznata" },
+                "proposedTop": "visina {{metres}} m",
+                "tallestExisting": "najviša zgrada u bloku {{metres}} m",
+                "tallestPartly": "najviša poznata u bloku {{metres}} m, {{unknown}} nepoznate visine",
+                "tallestUnread": "zgrade bloka nisu se mogle pročitati"
             },
             "notChecked": {
                 "noSource": "planning.data.gov.uk još ne objavljuje Metropolitan Open Land",
-                "otherStreets": "treba znati koje su susjedne čestice u drugim ulicama",
                 "ceilings": "projekt ne navodi visine stropova",
                 "plotUse": "treba tlocrt izgrađenog pri prvom glasanju i čestice u drugim ulicama",
                 "doors": "projekt ne smješta vrata",
                 "windows": "projekt ne smješta bočne prozore",
-                "consent": "pristanak susjeda daje se ugovorom, ne mjeri se"
+                "consent": "pristanak susjeda daje se ugovorom, ne mjeri se",
+                "parksFarmland": "izvor parkova i poljoprivrednog zemljišta još se ne čita",
+                "blockBuildings": "treba znati koje su zgrade u bloku domovi",
+                "fronts": "treba znati koja su pročelja okrenuta ulici",
+                "infill": "treba znati ograde i živice oko praznine",
+                "railways": "treba znati čestice preko pruge ili autoceste",
+                "buffers": "aplikacija ne dijeli blokove tampon-česticama"
             }
         },
         "survey": "Snimka visina",
@@ -10425,7 +10456,8 @@
             "gb-street-vote-living-tradition": {
                 "name": "Glasanje ulice — mansarde po Living Tradition",
                 "source": "Predloženo u Living Tradition Samuela Hughesa (Create Streets, 2021.): najmanje 50% danih glasova za, stanari barem polovine kućanstava glasaju, i barem jedan stanar za u najmanje polovini kućanstava koja su glasala. Obuhvatiti se smiju samo kuće koje ispunjavaju uvjete (t. 17)."
-            }
+            },
+            "gb-block-vote-create-mews": { "name": "Glasanje bloka — Create Mews", "source": "Predloženo u publikaciji Create Mews (Create Streets, 2022): blok od najmanje dvadeset kućanstava usvaja blokovski plan kad najmanje dvije trećine birača glasa za, stanovnik najmanje polovine kućanstava glasa za, i najmanje polovina onih koji su na svojoj adresi tri ili više godina glasa za." }
         },
         "eligibility": {
             "title": "Obuhvaćene kuće",
@@ -10464,14 +10496,22 @@
                 "eligible": "Poštuje kod",
                 "ineligible": "Krši kod",
                 "excluded": "Kod je isključuje",
-                "unknown": "Još se ne zna"
+                "unknown": "Još se ne zna",
+                "waivable": "Zadovoljava kod ako se susjedi odreknu"
             },
             "unclaimed": "Ovo pravilo glasanja dopušta glasanje samo za plan koji tvrdi da poštuje ovaj kod, a ovaj plan to ne tvrdi. Dodajte ga uličnim kodovima plana s Uredi plan ili odaberite drugo pravilo glasanja.",
             "required": "Ovo pravilo glasanja dopušta glasanje samo za plan koji poštuje kod: zgrada koja ga krši ili koju on isključuje sprječava spremanje ovog sporazuma. Pravila koja se još ne znaju ili se ne provjeravaju ne sprječavaju. Glasanje bilježi ovu provjeru.",
             "noBuildings": "Plan nema zgrada za provjeru.",
             "unchecked": "Pravila koja aplikacija ne provjerava",
-            "check": "Provjeri kod"
-        }
+            "check": "Provjeri kod",
+            "waiver": "{{cite}}: vlasnici čestica {{parcels}} mogu se toga odreći",
+            "waiverHint": "Njihova se odricanja daju u sporazumu vlasnika o ovom planu: dodajte te čestice pod Susjedi kao odricanje."
+        },
+        "block": { "title": "Blok", "named": "Glasanje obuhvaća blok od {{count}} čestica na kojem je zemljište plana.", "none": "Ovo se glasanje održava u bloku. Oblikujte blok sa zemljištem plana pomoću Prepoznaj blok na karti, a zatim ga upotrijebite ovdje.", "hint": "Zapis čuva čestice bloka po oznakama. Glasaju njegovi stanovnici, a svjetlosne ravnine koda dižu se od njegova ruba i čestica.", "use": "Upotrijebi oblikovani blok" },
+        "yearsHint": "Neobavezan stupac Years daje godine stanovanja na adresi, za pravilo glasanja koje broji dugogodišnje stanovnike. I godine ostaju lokalno.",
+        "years": "Godine na adresi (samo lokalno)",
+        "yearsOf": "Godine na adresi za {{person}}",
+        "ruleBlock": "Održava se u bloku od najmanje {{min}} kućanstava. Navedite godine svakog stanovnika na adresi: pravilo broji one koji su ondje {{years}} ili više godina."
     },
     "criticTour": {
         "skip": "Preskoči animaciju",
