@@ -17,7 +17,8 @@ import {
     sha256Hex,
     validateDecision,
     validateMarketEvidence,
-    validateOwnership
+    validateOwnership,
+    LENS_SCHEMA_KINDS
 } from '../oracle/lens-schemas.js';
 import { LensError, lensLog } from './errors.js';
 
@@ -73,7 +74,8 @@ export function ownershipFromOwnerSet(rows, { parcelUid, owner }) {
 
 function schemaAddresses(credential) {
     const derive = kind => deriveSchemaPda({ credential, name: LENS_SCHEMAS[kind].name, version: LENS_SCHEMAS[kind].version });
-    return { ownership: derive('ownership'), decision: derive('decision'), propertyOffer: derive('propertyOffer'), evidence: derive('evidence') };
+    // Every schema the registry defines, so a lens member's service and a wallet derive the same set.
+    return Object.fromEntries(LENS_SCHEMA_KINDS.map(kind => [kind, derive(kind)]));
 }
 
 // What an issued attestation states, for its log line.
