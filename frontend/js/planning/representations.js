@@ -30,7 +30,9 @@
                 constraints: 'not-evaluated', status: p.__outcome || null },
             metrics: { floorAreaM2: finite(p.floor_area_m2) ? p.floor_area_m2 : null,
                 footprintM2: finite(footprintM2) ? footprintM2 : null,
-                heightM: finite(p.height_m) ? p.height_m : finite(p.height) ? p.height : null },
+                heightM: finite(p.height_m) ? p.height_m : finite(p.height) ? p.height : null,
+                // The storey count a source states (the footprint pool's `floors`, OSM's levels); never derived.
+                storeys: [p.floors, p.levels, p.storeys].find(value => finite(value) && value > 0) ?? null },
             constraints: [], sourceEvidence: p };
     }
     function observedMeshFeature(building, sourceFeature) {
@@ -39,6 +41,8 @@
             ? building.z_max - building.z_min : null;
         return { type: 'Feature', geometry: building.floorModel?.footprint || null,
             properties: { ...building.properties, object_id: building.object_id, height_m: height,
+                // A 3D record states its source's storey count beside its shape (footprint-provider.js buildingFacts).
+                ...(finite(building.floors) ? { floors: building.floors } : {}),
                 // An extrusion's basis (footprint-provider.js): an `estimated` height is a display default.
                 ...(building.height_source ? { height_source: building.height_source } : {}) } };
     }

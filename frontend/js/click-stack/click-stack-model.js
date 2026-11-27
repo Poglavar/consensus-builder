@@ -93,20 +93,24 @@
         return ORDER.indexOf(section.kind);
     }
 
-    function topSection(sections) {
+    // `background` lists kinds drawn only as context (zoning outlines while the Permitted layer is
+    // off): they stay in the stack, one row away, but open first only when nothing else is there.
+    function topSection(sections, background = []) {
         const byRank = list => list.slice().sort((a, b) => pickRank(a) - pickRank(b))[0] || null;
-        return byRank(pointSections(sections).filter(section => section.expandable))
+        const atPoint = pointSections(sections).filter(section => section.expandable);
+        return byRank(atPoint.filter(section => !background.includes(section.kind))) || byRank(atPoint)
             || sections.find(section => section.expandable) || null;
     }
 
-    function topRefOf(sections) {
-        const top = topSection(sections) || sections[0];
+    function topRefOf(sections, background) {
+        const top = topSection(sections, background) || sections[0];
         return top ? top.instances[top.selectedIndex].ref : null;
     }
 
     // hits: { plans, designs, built, permitted, formed, parcels } arrays of { id, label, ... }.
     // options.selected: { [kind]: id } to keep a chosen instance (a strip click) when the same
-    // spot is rebuilt.
+    // spot is rebuilt. options.background: kinds that open first only when nothing else is at the
+    // point (topSection).
     function buildClickStack(hits = {}, options = {}) {
         const plans = instancesOf('plans', hits.plans);
         const plan = plans.find(item => item.id === options.selected?.plans) || plans[0];
@@ -121,8 +125,9 @@
                 expandable: EXPANDABLE.has(kind), selectedIndex: chosen >= 0 ? chosen : 0,
                 atPoint: instances.some(item => !item.onParcel) });
         }
-        const expandedSection = topSection(sections);
-        return { sections, expanded: expandedSection ? expandedSection.kind : null, selectedKind: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections) };
+        const background = Array.isArray(options.background) ? options.background : [];
+        const expandedSection = topSection(sections, background);
+        return { sections, background, expanded: expandedSection ? expandedSection.kind : null, selectedKind: expandedSection ? expandedSection.kind : null, topRef: topRefOf(sections, background) };
     }
 
     // Selection is a map mode, not a hit at a point. Its section exists with zero members too.
@@ -153,7 +158,7 @@
             const index = section.instances.findIndex(item => item.id === String(id));
             return index < 0 ? section : { ...section, selectedIndex: index };
         });
-        return { ...stack, sections, topRef: topRefOf(sections) };
+        return { ...stack, sections, topRef: topRefOf(sections, stack.background) };
     }
 
     // Keep the complete hit inventory while showing only the selected level and its neighbours.

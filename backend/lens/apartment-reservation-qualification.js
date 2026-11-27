@@ -19,6 +19,6 @@ export async function planApartmentReservationQualification({ agreement, unitId,
     const account = pledge.getApartmentUnitPda(content.sponsor, unitKey)[0].toBase58();
     if (listing.account !== account || listing.termsHash !== termsHash || listing.deposit !== unit.depositUsdcAtomic)
         throw new LensError(422, 'terms_mismatch', 'The listing differs from the published apartment terms.');
-    const payoutsHash = Buffer.from(client.payoutScheduleHash([{ recipient: observed.vault, lamports: unit.depositUsdcAtomic }])).toString('hex');
+    const payoutsHash = Buffer.from(client.payoutScheduleHash([{ recipient: observed.vault, amount: unit.depositUsdcAtomic }])).toString('hex');
     return { cid: agreement.cid, offer: account, termsHash, payoutsHash, buyer, seller: content.sponsor };
 }

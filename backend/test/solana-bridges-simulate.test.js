@@ -160,7 +160,8 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
             };
             const statuses = [];
             const result = await bridge.mint({ agreement, lenses: [LENS], payout: WALLET.toBase58(), onStatus: s => statuses.push(s) });
-            // Ten new anchors in two transactions, then the create: three simulated, one approval, sent in order.
+            // Eleven new anchors (the id over 32 bytes too: the PDA is seeded by its sha256) in two transactions,
+            // then the create: three simulated, one approval, sent in order.
             expect(signer.signAllTransactions).toHaveBeenCalledTimes(1);
             expect(signer.signTransaction).not.toHaveBeenCalled();
             const [transactions] = signer.signAllTransactions.mock.calls[0];
@@ -168,14 +169,14 @@ describe('wallet bridges preflight through real web3 simulateTransaction', () =>
             const programs = transactions.map(tx => [...new Set(tx.instructions.map(ix => ix.programId.toBase58()))]);
             expect(programs).toEqual([[ParcelClient.constants.PARCEL_NFT_PROGRAM_ID], [ParcelClient.constants.PARCEL_NFT_PROGRAM_ID], [AgreementClient.constants.AGREEMENT_PROGRAM_ID]]);
             const anchoredIds = transactions.slice(0, 2).flatMap(tx => tx.instructions.map(ix => ix.keys[0].pubkey.toBase58()));
-            expect(anchoredIds).toEqual(parcelIds.slice(1, 11).map(id => ParcelClient.getParcelPda(id)[0].toBase58()));
+            expect(anchoredIds).toEqual(parcelIds.slice(1).map(id => ParcelClient.getParcelPda(id)[0].toBase58()));
             expect(Buffer.from(transactions[0].instructions[0].data).equals(Buffer.from(ParcelClient.encodeMintParcelData(parcelIds[1], `https://urbangametheory.xyz/parcel/${parcelIds[1]}`)))).toBe(true);
             expect(calls).toEqual(['simulateTransaction', 'simulateTransaction', 'simulateTransaction',
                 'sendRawTransaction', 'confirmTransaction', 'sendRawTransaction', 'confirmTransaction', 'sendRawTransaction', 'confirmTransaction']);
             expect(statuses.map(s => s.state)).toEqual(['preparing', 'awaiting_signature', 'anchoring', 'anchoring', 'submitted', 'confirmed']);
-            expect(statuses[3].detail).toEqual({ done: 10, total: 10 });
-            expect(result.inputAnchors).toMatchObject({ alreadyAnchored: ['HR-335754-1/1'], skipped: [{ parcelId: long, reason: 'id-too-long' }] });
-            expect(result.inputAnchors.anchored.map(row => row.parcelId)).toEqual(parcelIds.slice(1, 11));
+            expect(statuses[3].detail).toEqual({ done: 11, total: 11 });
+            expect(result.inputAnchors).toMatchObject({ alreadyAnchored: ['HR-335754-1/1'], skipped: [] });
+            expect(result.inputAnchors.anchored.map(row => row.parcelId)).toEqual(parcelIds.slice(1));
         } finally {
             AgreementClient.configure({ web3: null });
         }

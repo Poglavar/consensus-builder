@@ -21,7 +21,7 @@ describe('planning 2D map hover behavior', () => {
         const select = vi.fn();
         const marker = vi.fn();
         const root = { L: { geoJSON: vi.fn(() => shape), featureGroup: vi.fn(() => group), marker, DomEvent: { stopPropagation: vi.fn() } }, map: { getZoom: () => 19 }, MapHighlight: { color: '#000', style: () => ({}) },
-            __mapEditLock: null, ClickStack: { handleClick: vi.fn() }, i18n: { t: key => key },
+            __mapEditLock: null, ClickStack: { handleClick: vi.fn() }, i18n: { t: key => key }, document: { activeElement: null, body: {} },
             dispatchEvent() {} };
         const context = vm.createContext({ root, ready: true, selectionLayer: { clearLayers: vi.fn() }, layer,
             hitShapes: [], store: { get: () => state }, selected: () => null, items: [item], drawOverview() {},

@@ -1,47 +1,42 @@
 # Property offer (Solana)
 
-`property_offer` settles an atomic, fixed-price purchase or sale offer. It is an escrow
-settlement record only: it does not itself transfer cadastral title.
+`property_offer` v2 (`HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH`, devnet) settles a fixed-price
+offer for one plot or one flat in SOL or devnet USDC. It is an escrow and settlement record only: it
+does not know what is sold or who holds it, and it transfers no title.
 
 ## Safety model
 
-- The offer CID and `terms_hash` commit the canonical `property-offer/v1` object, including its
-  exact apartment or sorted parcel bundle and price.
-- A sale uses an explicit payout schedule of at most 16 unique recipient wallets. Amounts are
-  positive and must sum exactly to the price. The program never divides proceeds or infers owners.
-- A BUY is schedule-less when created; its accepting sellers supply the final schedule. A SELL has
-  its schedule at creation.
-- `accept` needs a current SAS `PropertyOfferDecision` v2 attestation. It atomically binds the
-  offer CID/PDA, immutable terms hash, final payout hash, buyer, seller and the lens’s affirmative qualification before
-  a counterparty is recorded. This prevents untrusted acceptance from reserving a public offer.
-- The buyer deposits exactly the fixed price. `execute` then transfers to every scheduled recipient
-  in one instruction/transaction. Its remaining accounts must be the recipient list in schedule
-  order, so settlement is all-or-nothing.
-- Only an open offer may be cancelled by its maker. Acceptance includes the lens decision in the
-  same transaction, so an accepted offer cannot be cancelled. If it remains uncompleted past its
-  deadline, expiry returns its escrow to the fixed buyer; an open sale has no buyer and names its
-  maker as the zero-escrow expiry recipient.
+- The offer CID and `terms_hash` commit the canonical `property-offer/v2` object. The offer address
+  is `["property-offer", maker, sha256(cid)]`.
+- Each side names its lens: up to 8 distinct member keys and a threshold. The buyer's lens is
+  required (role 0: the seller holds the asset); the seller's lens may be empty (role 1: the buyer
+  qualifies). The maker's lens is fixed at `create`, the counterparty's at `commit`.
+- The buyer's money is escrowed when the buyer acts: at `create` for a buy offer, at `commit` for a
+  sell offer. SOL is held in the offer account; USDC in the offer's associated token account.
+- A sale has an explicit payout schedule of at most 16 unique recipients summing exactly to the
+  price (`create` for a sell offer, `commit` for a buy offer).
+- `confirm` records one lens member's `PropertyOfferConfirmation-v1` SAS attestation: owned by SAS,
+  unexpired, issued under the member's own credential and the schema
+  `["schema", credential, "PropertyOfferConfirmation", 1]`, binding this offer's CID, address, terms
+  hash, payout hash, buyer and seller; its role picks the lens, and each member counts once.
+- `execute` pays every scheduled recipient in one instruction once both lenses are met, before the
+  deadline. Remaining accounts are the recipients (wallets for SOL, token accounts for USDC) in
+  schedule order, so settlement is all-or-nothing.
+- `cancel`: the maker, while Open; any escrow returns. `expire`: anyone after the deadline while
+  Open or Committed; any escrow returns to the buyer.
+- Nothing approves by default: an offer whose lenses do not confirm expires.
 
 ## Lens payload
 
-SAS schema `PropertyOfferDecision`, version 2, borsh fields in exact order:
+`PropertyOfferConfirmation` version 1, borsh fields in order: `cid`, `offer` (base58), `termsHash`
+(hex), `payoutsHash` (hex), `buyer`, `seller`, `role` (u8), `assetHash` (hex), `holding` (the
+statement or settled offer through which the seller holds the asset; empty for role 1),
+`observedAt` (i64). The program reads the first seven and checks `observedAt` is not in the future;
+`assetHash` and `holding` are for readers. A role-0 confirmation's SAS nonce is
+`sha256(["property-offer-sale/v1", assetHash, holding])`, so one lens member cannot confirm two sales of
+one holding (`frontend/js/solana/property-offer-client.js` `decisionNonce`).
 
-1. `cid`: string
-2. `offer`: base58 PDA string
-3. `termsHash`: lowercase 64-character SHA-256 hex string
-4. `payoutsHash`: lowercase 64-character SHA-256 hex string
-5. `buyer`: base58 string
-6. `seller`: base58 string
-7. `counterpartyQualified`: u8 (`1` only)
-8. `sourceObservedAt`: i64
+## Tests
 
-`payoutsHash` is SHA-256 over the ordered raw concatenation of each recipient's 32-byte public key
-and its little-endian `u64` lamport amount.
-
-## Browser codec
-
-`frontend/js/solana/property-offer-client.js` exports `PropertyOfferClient`. Its useful builders
-are `buildCreateIx`, `buildAcceptIx`, `buildFundIx`, `buildExecuteIx`, `buildCancelIx` and
-`buildExpireIx`. `buildExecuteIx` receives the full scheduled recipient list, not one recipient.
-Configure it with injected `web3`; binary payout hashing additionally needs `sha256Bytes` outside
-Node.
+`tests/property_offer.ts` (mock SAS, local USDC) and `tests/property_offer_integrated.ts` (the real
+SAS cloned from devnet; refuses a second confirmation of one holding).

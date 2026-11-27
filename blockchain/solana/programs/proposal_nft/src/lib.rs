@@ -773,11 +773,12 @@ pub enum ProposalError {
     OpenGroundNeedsSite,
 }
 
-/// The parcel anchor must exist: owned by parcel_nft at PDA ["parcel", parcel_id].
+/// The parcel anchor must exist: owned by parcel_nft at PDA ["parcel", sha256(parcel_id)].
 fn require_parcel_anchor(parcel: &AccountInfo, parcel_id: &str) -> Result<()> {
     require_keys_eq!(*parcel.owner, PARCEL_NFT_PROGRAM_ID, ProposalError::InvalidParcelAccount);
+    let seed = anchor_lang::solana_program::hash::hash(parcel_id.as_bytes());
     let (expected, _) =
-        Pubkey::find_program_address(&[b"parcel", parcel_id.as_bytes()], &PARCEL_NFT_PROGRAM_ID);
+        Pubkey::find_program_address(&[b"parcel", seed.as_ref()], &PARCEL_NFT_PROGRAM_ID);
     require_keys_eq!(parcel.key(), expected, ProposalError::InvalidParcelAccount);
     Ok(())
 }

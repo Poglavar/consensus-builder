@@ -1602,6 +1602,7 @@ name = "property_offer"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
+ "anchor-spl",
  "sas_attestation",
 ]
 

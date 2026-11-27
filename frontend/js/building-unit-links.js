@@ -1,4 +1,6 @@
-// A unit address uses a source building or an immutable published design building.
+// A flat's one address, used by X-ray, links, offers, developer rounds and lens statements:
+// building · storey level · flat number on that storey. The building is a source building
+// (city::source::id) or an immutable published design building (design::cid::id).
 (function (root, factory) {
     const api = factory(root.__consentSha256 || (typeof module === 'object' && require('../vendor/noble-hashes-1.8.0/sha256.js')));
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -27,11 +29,21 @@
         return parts;
     }
 
+    // `level::flat`: the storey level (0 at street level, negative below) and the flat's number on it.
     function apartmentUnitLocator(value) {
         const parts = locatorParts(value);
-        if (![2, 3].includes(parts.length) || !/^(?:0|-?[1-9]\d*)$/.test(parts[0]) || !Number.isSafeInteger(Number(parts[0]))) return null;
-        return parts.length === 3 && !/^[a-f0-9]{24}$/.test(parts[2]) ? null : parts;
+        if (parts.length !== 2 || !/^(?:0|-?[1-9]\d*)$/.test(parts[0]) || !Number.isSafeInteger(Number(parts[0]))
+            || !/^[1-9]\d{0,3}$/.test(parts[1])) return null;
+        return parts;
     }
+
+    // The identity every use hashes: offers, apartment anchors, round listings and lens statements.
+    function flatKey(building, unit) {
+        if (!apartmentLocator(building) || !apartmentUnitLocator(unit)) throw new Error('A flat needs a building and a storey::flat address.');
+        const [level, flat] = locatorParts(unit);
+        return JSON.stringify(['flat/v1', building, Number(level), Number(flat)]);
+    }
+    const flatHash = (building, unit) => sha256.sha256Hex(flatKey(building, unit));
 
     function apartmentLocation(at) {
         if (typeof at !== 'string' || !/^-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?,\d+(?:\.\d+)?$/.test(at)) return false;
@@ -46,13 +58,9 @@
             const candidates = regions.filter(region => suggested ? `${region.id}-${storey.level}` === unit.id
                 : region.id === unit.id || region.targetId === unit.id);
             const region = candidates.length === 1 ? candidates[0] : null;
-            // Layout slots may be reused after a footprint, access scheme or partition changes.
-            // Include the actual apartment geometry so the old address cannot open the new slot.
-            const proof = suggested && region ? sha256.sha256Hex(JSON.stringify([
-                model.registration.corners, storey.elevationM, region.polygons
-            ])).slice(0, 24) : null;
-            const key = suggested && !proof ? null : pack([storey.level, unit.id, ...(proof ? [proof] : [])]);
-            return { key, id: unit.id, ordinal: index + 1, areaM2: unit.areaM2, regionId: region?.id ?? null };
+            // The flat keeps its number when an estimated layout is redrawn; the walls may move.
+            return { key: pack([storey.level, index + 1]), id: unit.id, ordinal: index + 1, areaM2: unit.areaM2,
+                rooms: unit.rooms ?? null, regionId: region?.id ?? null };
         });
     }
 
@@ -83,9 +91,8 @@
         const [source] = offer.xrayBuilding.split('::');
         const city = source === 'design' ? context.city : decodeURIComponent(source);
         return link(base, mapShare, { ...context, city }, { building: offer.xrayBuilding, unit: offer.unit,
-            suggested: offer.unit.split('::').length === 3,
-            access: offer.access || 'auto', center: [lng, lat] });
+            suggested: !!offer.access, access: offer.access || 'auto', center: [lng, lat] });
     }
 
-    return { nativeBuilding, designBuilding, unitsForStorey, read, link, offerLink, apartmentLocator, apartmentUnitLocator, apartmentLocation };
+    return { nativeBuilding, designBuilding, unitsForStorey, read, link, offerLink, apartmentLocator, apartmentUnitLocator, apartmentLocation, flatKey, flatHash };
 });

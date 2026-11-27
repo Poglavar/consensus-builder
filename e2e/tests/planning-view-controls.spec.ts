@@ -191,12 +191,16 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   expect(new URL(page.url()).searchParams.get('planningSelection')).toBe('zagreb-gup-2016:massing');
   await page.keyboard.press('Escape');
   await expect(clickStack).toBeHidden();
+  // Its keyboard action opens the same stack (34fd7113f), on this shape.
   await shape.focus();
   await shape.press('Enter');
+  await expect(clickStack.locator('.click-stack__section[data-kind="permitted"]')).toBeVisible();
   await expect(inspector.getByRole('heading', { name: 'Planning edition B massing', exact: true })).toBeVisible();
-  await inspector.getByRole('button', { name: 'Close', exact: true }).click();
+  expect(new URL(page.url()).searchParams.get('planningSelection')).toBe('zagreb-gup-2016:massing');
+  await page.keyboard.press('Escape');
+  await expect(clickStack).toBeHidden();
   await expect(inspector).toBeHidden();
-  await expect(page.locator('#planning-views-button')).toBeFocused();
+  expect(await page.evaluate(() => document.activeElement?.getAttribute('aria-label'))).toBe('Inspect permitted massing on Planning edition B massing');
 });
 
 test('Buildings and massing shares its button and section loading states when opened during a request', async ({ mockApi: page }) => {

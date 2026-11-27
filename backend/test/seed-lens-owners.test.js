@@ -13,12 +13,14 @@ const SCRIPT = fileURLToPath(new URL('../scripts/seed-lens-owners.mjs', import.m
 const densifier = Keypair.generate().publicKey.toBase58();
 const builder = Keypair.generate().publicKey.toBase58();
 const stranger = Keypair.generate().publicKey.toBase58();
+const homebuyer = Keypair.generate().publicKey.toBase58();
 const personas = proposerPersonas({ personas: [
     { name: 'densifier-01', role: 'proposer', wallet: densifier },
     { name: 'builder-02', wallet: builder },
     { name: 'gentle-01', role: 'proposer', wallet: Keypair.generate().publicKey.toBase58() },
     { name: 'unfunded-01', role: 'proposer' },
-    { name: 'notary-01', role: 'lens-member', wallet: stranger }
+    { name: 'notary-01', role: 'lens-member', wallet: stranger },
+    { name: 'homebuyer-01', role: 'homebuyer', wallet: homebuyer }
 ] });
 
 function run(persona, day, picks, { slot = null } = {}) {
@@ -139,6 +141,10 @@ describe('registering the day\'s picks', () => {
         expect(one).toMatchObject({ exitCode: 0, wanted: [{ parcelId: 'HR-8', wallet: builder, persona: 'builder-02' }] });
         expect(pool.owners('HR-8')).toEqual([expect.objectContaining({ owner_wallet: builder })]);
         expect(pool.getCalls().some(call => /consensus\.agent_run/.test(call.sql))).toBe(false);
-        await expect(seedLensOwners({ parcel: 'HR-8', persona: 'nobody', apply: false }, { pool, personas, log: quiet })).rejects.toThrow(/no proposer persona named nobody/);
+        await expect(seedLensOwners({ parcel: 'HR-8', persona: 'nobody', apply: false }, { pool, personas, log: quiet })).rejects.toThrow(/no proposer or homebuyer persona named nobody/);
+        // A homebuyer holds the plots it trades (agents/plot-market.json); a lens member never holds land.
+        await seedLensOwners({ parcel: 'KZ-1', persona: 'homebuyer-01', apply: true }, { pool, personas, log: quiet });
+        expect(pool.owners('KZ-1')).toEqual([expect.objectContaining({ owner_wallet: homebuyer })]);
+        await expect(seedLensOwners({ parcel: 'KZ-2', persona: 'notary-01', apply: false }, { pool, personas, log: quiet })).rejects.toThrow(/no proposer or homebuyer persona named notary-01/);
     });
 });

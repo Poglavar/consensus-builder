@@ -246,7 +246,7 @@ const ADAPTERS = { fundBotAction, buyAgreementShares, sellAgreementShares, readA
 export async function execute({ action, connection, keypair, caps, pool, persona, runId, resumed = false, adapters = {}, homes = null }) {
     const act = { ...ADAPTERS, ...adapters };
     if (action.usdc > caps.maxUsdc + 1e-9) throw new Error(`${action.type} of ${action.amount} USDC exceeds AGENT_SOCIETY_USDC_CAP ${caps.maxUsdc}`);
-    // A homebuyer's rounds and apartment offers (policies/homebuyer.js, homebuyer-chain.js).
+    // A homebuyer's rounds and flat offers (policies/homebuyer.js, homebuyer-chain.js).
     if (HOME_ACTIONS.has(action.type)) {
         return (act.executeHomeAction || executeHomeAction)({ action, connection, keypair, pool, persona, ...homes,
             maxUsdcAtomic: usdcToAtomic(String(caps.maxUsdc)), sendAndConfirm: sendAndConfirmPolling });
@@ -351,6 +351,8 @@ async function main() {
     const live = Boolean(args.live);
     const day = args.day || new Date().toISOString().slice(0, 10);
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
+    // The Origin a homebuyer's offer-index writes send (the API admits writes from its own sites).
+    const appOrigin = process.env.AGENT_APP_ORIGIN || 'https://urbangametheory.xyz';
     const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
     const index = createIndexClient({ apiBase, log });
     const persona = loadSocietyPersona(args.persona, ...(args.personas ? [path.resolve(args.personas)] : []));
@@ -405,7 +407,7 @@ async function main() {
                 let decision = null;
                 if (!action) {
                     const inputs = await gatherInputs({ index, persona, needs: policy.NEEDS, connection, wallet });
-                    const homes = policy.NEEDS.homes ? await gatherHomes({ index, persona, connection, wallet, apiBase, log }) : null;
+                    const homes = policy.NEEDS.homes ? await gatherHomes({ index, persona, connection, wallet, apiBase, appOrigin, log }) : null;
                     const runs = live ? await listPersonaRuns(pool, persona.name) : [];
                     const history = societyHistory({ runs, chain: inputs.chain, simulated });
                     // A claim the persona is owed comes first; otherwise the role's own policy decides.
@@ -442,7 +444,7 @@ async function main() {
                         console.log(JSON.stringify(action, null, 2));
                         simulated.push(action);
                         spent.actions += action.signedActions; spent.usdc += action.usdc;
-                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.agreementCid}`);
+                        report.push(`${label}: would ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.resolveFirst ? ' (resolve first)' : ''} ${action.agreementCid ?? action.asset?.id}`);
                     } else {
                         report.push(`${label}: ${decision?.capped ? 'cap reached' : 'no action'}`);
                         if (decision?.capped) break;
@@ -474,7 +476,7 @@ async function main() {
                     source: 'live',
                     action: { type: action.type, agreementCid: action.agreementCid, account: action.account, amount: action.amount, side: action.side || null },
                     execute: async () => ({
-                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed, homes: { index, apiBase } })),
+                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed, homes: { index, apiBase, appOrigin } })),
                         entity: HOME_ACTIONS.has(action.type) ? homeActivityEntity(action) : { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
                     })
                 });
@@ -485,8 +487,8 @@ async function main() {
                 const used = societyTurnSpent(summary);
                 spent.actions += used.actions; spent.usdc += used.usdc;
                 report.push(acted
-                    ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid}`
-                    : `${label}: ${action.agreementCid} already in that state on-chain; no new transaction`);
+                    ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid ?? action.asset?.id}`
+                    : `${label}: ${action.agreementCid ?? action.asset?.id} already in that state on-chain; no new transaction`);
             } catch (error) {
                 // The shared funding wallet is short: record it and go on (a later turn may need no USDC).
                 if (runStarted && isFundingSourceShort(error)) {

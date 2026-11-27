@@ -76,6 +76,9 @@ export function earlierRounds(runs, personaName) {
             if (agreement?.content?.rule?.electorate !== 'investors') continue;
             const apartments = agreement.content.funding?.apartments;
             rounds.push({ runId: run.run_id, key, cid: agreement.cid, deadline: agreement.deadline ?? agreement.content.deadline ?? null,
+                // A round the app's record check now refuses (built before a contract change, e.g. the
+                // flat id of f57ee4e6e) takes no reservations, so it does not hold an open slot.
+                current: !agreementRecord.crowdfundingError(agreement.content),
                 minted: Boolean(run.summary?.mints?.[key]?.account), settled: settledCids.has(agreement.cid),
                 units: new Set((apartments?.units || []).map(unit => `${apartments.projectId}/${unit.unitId}`)) });
         }
@@ -174,7 +177,7 @@ export function roundContract({ planTitle, buildingTitle, developer, units, targ
 export async function planRound({ persona, runs, runKey, now = Date.now(), loadPlan, loadDesigns, lensKeys = {} }) {
     const config = developerConfig(persona);
     const rounds = earlierRounds(runs, persona.name);
-    const open = rounds.filter(round => !round.settled && round.deadline && Date.parse(round.deadline) > now);
+    const open = rounds.filter(round => round.current && !round.settled && round.deadline && Date.parse(round.deadline) > now);
     if (open.length >= config.maxOpenRounds) return { candidate: null, reason: `${open.length} round(s) still open (max ${config.maxOpenRounds})` };
     const number = rounds.length;
     const plain = config.plainRoundEvery > 0 && number % config.plainRoundEvery === config.plainRoundEvery - 1;

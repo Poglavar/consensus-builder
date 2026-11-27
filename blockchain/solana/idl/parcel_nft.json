@@ -77,7 +77,8 @@
     {
       "name": "mint_parcel",
       "docs": [
-        "Create the anchor for one parcel. Anyone may pay for it; nobody owns it."
+        "Create the anchor for one parcel. Anyone may pay for it; nobody owns it. `parcel_hash` is",
+        "sha256(parcel_id), the PDA's seed; it is checked here."
       ],
       "discriminator": [
         158,
@@ -108,7 +109,7 @@
               },
               {
                 "kind": "arg",
-                "path": "parcel_id"
+                "path": "parcel_hash"
               }
             ]
           }
@@ -134,6 +135,15 @@
         {
           "name": "metadata_uri",
           "type": "string"
+        },
+        {
+          "name": "parcel_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
         }
       ]
     }
@@ -186,6 +196,11 @@
       "code": 6003,
       "name": "ParcelDoesNotExist",
       "msg": "Parcel does not exist"
+    },
+    {
+      "code": 6004,
+      "name": "ParcelHashMismatch",
+      "msg": "parcel_hash is not the sha256 of parcel_id"
     }
   ],
   "types": [

@@ -262,20 +262,45 @@ file is on the host (`lifecycle-01`) confirms it from its own wallet once the ta
 executes and releases the deposits to the developer in one transaction). A round past its deadline
 expires; its buyers take their deposits back. Then resolve and reclaim the market seed as for any agreement.
 
+After settlement, a developer's run also does the property duties of its rounds' lens member, with that
+member's own key (`property-lens-duties.js`, at most `AGENT_PROPERTY_LENS_MAX_PER_RUN` transactions):
+for each of the newest executed apartment rounds it states each reserved unit's buyer as first holder of
+the flat (`PropertyHolding-v1`, basis `developer`, evidence `agreement:<round CID>`, asset = the flat's
+v2 identity), reading the statements first so a repeat signs nothing, and reporting a statement that
+names someone else instead of replacing it. For each plot of its plot markets (`plot-market.json`) it
+states the sole owner its devnet owner registry gives as first holder (basis `registry`, evidence
+`devnet-registry:<parcel id>`), skipping a plot with no sole owner. Then it lists the committed offers waiting for the member
+(`GET /property-offers/awaiting`) and confirms, as the buyer's lens, only those whose seller its own
+statements name as holder (`property-offer-signer.js` `confirmSale`, the browser's check, at the
+per-holding address); the confirmation that completes both lenses executes the payout in the same
+transaction. A refused offer, and any request as a seller's lens, waits and expires. Problems go into
+the run's verdict.
+
 `homebuyer` personas (`homebuyer-01…03`) run on `society-run.mjs` with `policies/homebuyer.js`.
 `homebuyer-chain.js` gathers the developer rounds of their `policy.cities` with their apartment
-inventory, their own deposits in rounds that ended unexecuted, and the cities' apartment offers with
-their accounts. Each turn takes one action. Obligations come first, in this order: take back
-deposits (`refundMyDonations`), fund and release an accepted offer it buys (`settle-offer`), accept
-another agent's open offer it can take (`accept-offer`). Otherwise it makes one seed-stable, weighted
-choice: reserve an available apartment (`reserve-apartment`, one per round, at most
-`maxReservations` in open rounds, deposits up to `maxDepositUsdc`), list a held apartment for resale
-(`make-offer` sell), bid on an apartment another wallet holds (`make-offer` buy) or contribute
-`donationUsdc` to a plain round (`donate`). Offers are priced in SOL between `offerMinSol` and
-`offerMaxSol`, run `offerDays` and name `offerLens`. The lens member of the round or offer qualifies
-the bot counterparty through its operator token (the variable its persona's `service.operatorTokenEnv`
-names), as the lens operator would for a person's qualification request. The chain steps are the
-shared signers: `apartment-actions.js`, `chain-actions.js` and `property-offer-signer.js`.
+inventory, their own deposits in rounds that ended unexecuted, the flats of the `tradeRounds` newest
+executed rounds with who holds each according to the round's lens member (`property-holders.js`
+`viewOf`), and those flats' USDC `property-offer/v2` offers from the index, each read from its chain
+account. The plots of their cities' plot markets join those flats (no round; held as the market's
+lens member states). Each turn takes one action. Obligations first, in this order: take back deposits
+(`refundMyDonations`); end its own offer, or one whose escrow it paid, past the deadline
+(`expire-offer`, the escrow returns to the buyer); create on chain an offer it published but did not
+mint (`mint-offer`); accept a bid on a flat it holds whose buyer's lens is the round's lens member
+(`take-offer` as seller, at least `offerMinUsdc`); take a listing whose seller holds the flat and that
+names no seller's lens (`take-offer` as buyer, naming the round's lens member with threshold 1, the
+price into escrow, at most `offerMaxUsdc`). Otherwise it makes one seed-stable, weighted choice:
+reserve an available apartment (`reserve-apartment`, one per round, at most `maxReservations` in open
+rounds, deposits up to `maxDepositUsdc`), put a flat it holds up for sale (`make-offer` sell, payout
+to itself, no seller's lens), bid for a flat another wallet holds (`make-offer` buy, the round's lens
+member with threshold 1, the price into escrow) or contribute `donationUsdc` to a plain round
+(`donate`). Offers are priced between `offerMinUsdc` and `offerMaxUsdc` on 0.01 USDC steps, run
+`offerDays`, and at most `maxOpenOffers` are open or taken at once; a flat with a committed offer or
+an unsettled confirmed sale is left alone. A flat nobody holds according to the lens member is not
+traded. USDC comes through `funding.js` `ensureBotUsdcFunding` within `AGENT_SOCIETY_USDC_CAP`.
+The round's lens member qualifies a reserving bot through its operator token (the variable its
+persona's `service.operatorTokenEnv` names), as the lens operator would for a person's qualification
+request. The chain steps are the shared signers `apartment-actions.js`, `chain-actions.js` and
+`property-offer-signer.js`; the lens member's statements and confirmations are the developer run's.
 
 The bettors and the supporter read every city but act on `policy.focusCities` / `support.focusCities`
 (`alatau`) first. A speculator pledges only behind a market at ≥ `minPledgeProbability` YES, so it
@@ -325,12 +350,13 @@ resubmitted. The model is the layer's default; the run header logs which one ran
 |---|---|---|
 | `DATABASE_URL` | all runners (`db/connection.cjs`) | the shared `geodata` database (ledger, candidate parcels, binding preflight) |
 | `AGENT_API_BASE` | all runners (`--api` overrides) | the index the designs and agreements are published to and read from |
-| `AGENT_APP_ORIGIN` | `run.mjs` | the Origin the index writes send (default `https://urbangametheory.xyz`); the API's write guard admits the app's origins |
+| `AGENT_APP_ORIGIN` | `run.mjs`, `society-run.mjs` | the Origin the index writes send (default `https://urbangametheory.xyz`); the API's write guard admits the app's origins |
 | `AGENT_LENS` | `run.mjs` | the lens member to operate (a lens-member persona's name or key) when `--lens` is not given |
 | `AGENT_LENS_SERVICE_URL` | `run.mjs` | overrides that persona's `service.url` |
 | `AGENT_LIFECYCLE_LENS_OPERATOR_TOKEN` (the persona's `operatorTokenEnv`) | `run.mjs`, the lens member | the operator token of agreement decisions; a live proposer run refuses to start without it |
 | `AGENT_DAILY_ACTION_CAP` / `AGENT_DAILY_USDC_CAP` | `run-policy.js` | signed actions (default 4) and stake USDC (default 0.35) per proposer run |
 | `AGENT_SETTLE_MAX_PER_RUN` | `run-policy.js` | own agreements settled per run (default 3) |
+| `AGENT_PROPERTY_LENS_MAX_PER_RUN` | `property-lens-duties.js` | transactions a round's lens member signs per developer run for first holders and sale confirmations (default 12) |
 | `AGENT_SUPPORT_USDC_CAP` | `support-run.mjs` | the supporter's one action (default 0.25 USDC) |
 | `AGENT_SOCIETY_ACTION_CAP` / `AGENT_SOCIETY_USDC_CAP` | `society-run.mjs` | per invocation, defaults 4 / 0.05 |
 | `AGENT_SOL_FUNDING_ENABLED` / `AGENT_USDC_FUNDING_ENABLED` | `funding.js` | bot wallet top-ups |

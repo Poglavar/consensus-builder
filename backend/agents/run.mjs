@@ -17,6 +17,9 @@
 // the payout, the sponsor) → resolve the market YES → claim; one past its deadline it expires (escrow back
 // to the sponsor) → resolve NO → claim any YES refund. A community vote is a poll in the index: it is never
 // minted and has no market, so the runner proposes none.
+// After settlement, a developer's run has the lens member of its rounds (whose key the runner holds)
+// state the first holders of the flats its executed rounds sold and confirm committed flat offers its
+// statements back (property-lens-duties.js).
 //
 // Usage:
 //   node agents/run.mjs --dry-run [--controller algorithm|llm] [--persona NAME] [--day YYYY-MM-DD] [--lens NAME|KEY]
@@ -34,7 +37,8 @@
 //   longer cooldown. Persistent incomplete replies fail; signed actions are not retried by this policy.
 //   STAGE: planned | chosen | designed | proposed | minted | recorded | staked (default staked)
 // Env: DATABASE_URL (from backend/.env), AGENT_DAILY_ACTION_CAP (4), AGENT_DAILY_USDC_CAP (0.35),
-//      AGENT_SETTLE_MAX_PER_RUN (3), AGENT_API_BASE (default http://localhost:$API_PORT),
+//      AGENT_SETTLE_MAX_PER_RUN (3), AGENT_PROPERTY_LENS_MAX_PER_RUN (12; the round lens member's
+//      first-holder statements and sale confirmations per run), AGENT_API_BASE (default http://localhost:$API_PORT),
 //      AGENT_MARKET_SEED_USDC_CAP (0; explicit opt-in seed allowance, separate from trade budget),
 //      AGENT_APP_ORIGIN (the Origin the index writes send; default https://urbangametheory.xyz),
 //      AGENT_LENS (the lens member to operate, a lens-member persona's name or key, when --lens is not
@@ -90,6 +94,9 @@ import { agentRegistrationNote, isSoleOwner, readParcelOwners, registerSoleOwner
 import { ensureOwnerApproval, requestAgreementDecision } from './lens-approval-client.js';
 import { isEntrypoint } from './entrypoint.js';
 import { advanceRound, createPlanReaders, planRound, roundSignedActions } from './developer-round.js';
+import { propertyLensStage } from './property-lens-duties.js';
+import { createPropertyOfferTools } from './mcp-property-offers.js';
+import { createOnchainRecorder } from './property-offer-signer.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -933,6 +940,18 @@ async function main() {
             pool, connection, index, lens, entries, dryRun: false, controller,
             plannedActions: executionPlan.actionCount, failures, report, memberSigners
         });
+        // A developer's round lens member, with its own key: first holders of the flats its executed
+        // rounds sold and of its plot markets' plots (its devnet owner registry), and its confirmations
+        // of committed flat and plot offers (property-lens-duties.js).
+        const developers = entries.map(entry => entry.persona).filter(persona => persona.role === 'developer');
+        if (developers.length) {
+            const appOrigin = process.env.AGENT_APP_ORIGIN || DEFAULT_APP_ORIGIN;
+            await propertyLensStage({
+                connection, index, personas: allPersonas, developers, memberSigners, failures, report, log,
+                offerTools: createPropertyOfferTools({ apiBase, appOrigin }), recordOnchain: createOnchainRecorder({ apiBase, appOrigin }),
+                readOwners: ids => readParcelOwners(pool, ids), sendAndConfirm: sendAndConfirmPolling
+            });
+        }
         for (const e of entries.filter(entry => entry.run?.summary?.picks?.length)) {
             e.run = await updateRun(pool, e.runId, { status: 'running', summaryPatch: {
                 executionPolicy: policy,

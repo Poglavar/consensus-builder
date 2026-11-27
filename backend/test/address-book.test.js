@@ -57,7 +57,7 @@ describe('buildAddressBook', () => {
         expect(book.entryFor('3WsVS6LkLo4ySLaLvxKdwuD37fcCjE2Yu9fVh1nMfxbg')).toBeNull();
         expect(book.labelFor('79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn').label).toBe('proposal_market program');
         expect(book.labelFor('DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK').label).toBe('proposal_pledge program');
-        expect(book.labelFor('BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp').label).toBe('property_offer program');
+        expect(book.labelFor('HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH').label).toBe('property_offer program');
         expect(AGREEMENT_PROGRAM_ID).toBe('6X5ihiKNpsF39eYzWGaw7swgYa6vouZ8gT1LHB5H86Cb');
         expect(book.labelFor(AGREEMENT_PROGRAM_ID)).toMatchObject({ label: 'agreement program', kind: 'program' });
     });
@@ -176,7 +176,7 @@ describe('watchedAddresses', () => {
             '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
             '79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn',
             'DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK',
-            'BasWrJJH6By9nkeeLAoAdYpPu35BM9VMtMCWGyXjqdBp',
+            'HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH',
             AGREEMENT_PROGRAM_ID,
             TREASURY,
             TREASURY_USDC,

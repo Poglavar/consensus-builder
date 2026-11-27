@@ -15,29 +15,30 @@ describe('building unit addresses', () => {
         expect(links.designBuilding('revision-a', 'building-1')).not.toBe(links.designBuilding('revision-b', 'building-1'));
     });
 
-    it('keeps a generated occurrence stable and distinguishes storeys and changed boundaries', () => {
-        const storey = level => ({ level, elevationM: level * 3, units: [{ id: `flat-a-${level}`, kind: 'apartment' }] });
-        const key = (floor, plan = layout) => links.unitsForStorey(model, storey(floor), plan)[0].key;
-        expect(key(1)).toMatch(/^1::flat-a-1::[0-9a-f]{24}$/);
-        expect(key(1)).toBe(key(1, structuredClone(layout)));
-        expect(key(1)).not.toBe(key(2));
+    it('numbers flats per storey and keeps the number when an estimated layout is redrawn', () => {
+        const storey = level => ({ level, elevationM: level * 3, units: [{ id: 'stair', kind: 'office' }, { id: `flat-a-${level}`, kind: 'apartment', areaM2: 54, rooms: 2 }, { id: `flat-b-${level}`, kind: 'apartment' }] });
+        const keys = (floor, plan = layout) => links.unitsForStorey(model, storey(floor), plan).map(unit => unit.key);
+        expect(keys(1)).toEqual(['1::1', '1::2']);
+        expect(keys(-1)).toEqual(['-1::1', '-1::2']);
         const revised = structuredClone(layout);
         revised.architecture.apartmentRegions[0].polygons[0][0][1][0] = .9;
-        expect(key(1)).not.toBe(key(1, revised));
-        revised.architecture.apartmentRegions = [];
-        expect(key(1, revised)).toBeNull();
+        expect(keys(1, revised)).toEqual(keys(1));
+        expect(links.unitsForStorey(model, storey(1), layout)[0]).toMatchObject({ areaM2: 54, rooms: 2, ordinal: 1, regionId: 'flat-a' });
     });
 
-    it('uses the published unit ID and ignores non-apartment units', () => {
-        const storey = { level: 1, units: [{ id: 'stair', kind: 'office' }, { id: 'A1-1', kind: 'apartment', areaM2: 54 }] };
-        const result = links.unitsForStorey({ ...model, suggested: false }, storey, { architecture: {} });
-        expect(result).toEqual([{ id: 'A1-1', ordinal: 1, key: '1::A1-1', regionId: null, areaM2: 54 }]);
+    it('gives every use of a flat one identity: building, storey and flat number', () => {
+        const building = links.nativeBuilding('almaty', 'osm', 'w51214877');
+        expect(links.flatKey(building, '12::3')).toBe(JSON.stringify(['flat/v1', building, 12, 3]));
+        expect(links.flatHash(building, '12::3')).toMatch(/^[0-9a-f]{64}$/);
+        expect(links.flatHash(building, '12::3')).not.toBe(links.flatHash(building, '12::4'));
+        for (const unit of ['12::flat-a-12::7984e5b4a4760b077382e106', '12::0', '12', 'x::1']) expect(links.apartmentUnitLocator(unit)).toBeNull();
+        expect(() => links.flatKey(building, '12::flat-a')).toThrow();
     });
 
     it('opens the same unit with the correct source, camera and layout settings', () => {
         expect(links.read('?xrayBuilding=local-layout-key&unit=1::a')).toBeNull();
         const selection = { building: links.nativeBuilding('astana', 'kz-nsdi-buildings', 'KZ-NSDI-B-43399'),
-            unit: '1::flat-a-1::proof', suggested: true, access: 'corridor', center: [71.42, 51.12] };
+            unit: '1::1', suggested: true, access: 'corridor', center: [71.42, 51.12] };
         const url = new URL(links.link('http://localhost:8173/?draft=private', mapShare,
             { city: 'astana', backend: 'https://api.example.test', language: 'kk' }, selection));
         expect(links.read(url.search)).toEqual({ building: selection.building, unit: selection.unit, openFloor: true });
@@ -55,7 +56,7 @@ describe('building unit addresses', () => {
 
     it('opens an apartment in its source city when the funding agreement is based elsewhere', () => {
         const apartment = { xrayBuilding: 'astana::kz-nsdi-buildings::KZ-NSDI-B-43399',
-            unit: '7::core-2-whole-7::7984e5b4a4760b077382e106', at: '51.12,71.42,19', access: 'point' };
+            unit: '7::2', at: '51.12,71.42,19', access: 'point' };
         const context = { city: 'alatau', backend: 'https://api.example.test' };
         const url = new URL(links.offerLink('https://app.example.test', mapShare, context, apartment));
         expect(Object.fromEntries(url.searchParams)).toMatchObject({ city: 'astana', xrayBuilding: apartment.xrayBuilding,

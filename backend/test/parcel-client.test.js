@@ -1,6 +1,6 @@
 // Unit tests for frontend/js/solana/parcel-client.js, the pure codec of the parcel_nft program that
 // solana/parcel-mint.js signs with (it took over mint_parcel from the deleted acceptance client, M3):
-// the ownerless parcel anchor PDA ["parcel", parcel_id] and the byte-exact mint_parcel instruction,
+// the ownerless parcel anchor PDA ["parcel", sha256(parcel_id)] and the byte-exact mint_parcel instruction,
 // with the discriminator re-derived from sha256 and the data, accounts and seeds checked against the
 // generated IDL.
 import { afterAll, describe, expect, it } from 'vitest';
@@ -27,17 +27,24 @@ const PARCEL_ID = 'HR-335550-1/1';
 const URI = 'https://api.example/parcels/HR-335550-1%2F1';
 const APARTMENT_HASH = createHash('sha256').update(JSON.stringify(['apartment/v1', 'xray-building', 'unit-1'])).digest('hex');
 
-// Reads mint_parcel's data back by the IDL's argument types (two borsh strings).
+const sha256 = text => createHash('sha256').update(text).digest();
+
+// Reads mint_parcel's data back by the IDL's argument types (two borsh strings and a 32-byte hash).
 function decode(data) {
     const bytes = Buffer.from(data);
     expect(Array.from(bytes.subarray(0, 8))).toEqual(MINT.discriminator);
     let offset = 8;
     const out = {};
     for (const arg of MINT.args) {
-        expect(arg.type).toBe('string');
-        const length = bytes.readUInt32LE(offset);
-        out[arg.name] = bytes.subarray(offset + 4, offset + 4 + length).toString('utf8');
-        offset += 4 + length;
+        if (arg.type === 'string') {
+            const length = bytes.readUInt32LE(offset);
+            out[arg.name] = bytes.subarray(offset + 4, offset + 4 + length).toString('utf8');
+            offset += 4 + length;
+        } else {
+            expect(arg.type).toEqual({ array: ['u8', 32] });
+            out[arg.name] = bytes.subarray(offset, offset + 32).toString('hex');
+            offset += 32;
+        }
     }
     expect(offset).toBe(bytes.length);
     return out;
@@ -52,28 +59,31 @@ describe('parcel_nft codec', () => {
         expect(client.constants.SYSTEM_PROGRAM_ID).toBe(web3.SystemProgram.programId.toBase58());
     });
 
-    it('encodes mint_parcel as (parcel_id, metadata_uri)', () => {
-        expect(decode(client.encodeMintParcelData(PARCEL_ID, URI))).toEqual({ parcel_id: PARCEL_ID, metadata_uri: URI });
-        expect(decode(client.encodeMintParcelData('Šibenik 12/3', ''))).toEqual({ parcel_id: 'Šibenik 12/3', metadata_uri: '' });
+    it('encodes mint_parcel as (parcel_id, metadata_uri, parcel_hash = sha256(parcel_id))', () => {
+        expect(decode(client.encodeMintParcelData(PARCEL_ID, URI))).toEqual({ parcel_id: PARCEL_ID, metadata_uri: URI, parcel_hash: sha256(PARCEL_ID).toString('hex') });
+        expect(decode(client.encodeMintParcelData('Šibenik 12/3', ''))).toEqual({ parcel_id: 'Šibenik 12/3', metadata_uri: '', parcel_hash: sha256('Šibenik 12/3').toString('hex') });
     });
 
-    it('anchors a parcel at ["parcel", parcel_id], the seeds the IDL declares', () => {
+    it('anchors a parcel at ["parcel", sha256(parcel_id)], the seeds the IDL declares', () => {
         const seeds = MINT.accounts.find(account => account.name === 'parcel').pda.seeds;
         expect(Buffer.from(seeds[0].value).toString()).toBe('parcel');
-        expect(seeds[1]).toMatchObject({ kind: 'arg', path: 'parcel_id' });
-        const [expected, bump] = PublicKey.findProgramAddressSync([Buffer.from('parcel'), Buffer.from(PARCEL_ID)], new PublicKey(IDL.address));
+        expect(seeds[1]).toMatchObject({ kind: 'arg', path: 'parcel_hash' });
+        const [expected, bump] = PublicKey.findProgramAddressSync([Buffer.from('parcel'), sha256(PARCEL_ID)], new PublicKey(IDL.address));
         const [anchor, anchorBump] = client.getParcelPda(PARCEL_ID);
         expect(anchor.toBase58()).toBe(expected.toBase58());
         expect(anchorBump).toBe(bump);
         expect(client.getParcelPda('HR-335550-1/2')[0].toBase58()).not.toBe(expected.toBase58());
     });
 
-    it('refuses a parcel id that cannot be a PDA seed: empty, or more than 32 bytes', () => {
-        expect(client.getParcelPda('x'.repeat(32))[0]).toBeInstanceOf(PublicKey);
-        expect(() => client.getParcelPda('')).toThrow(/1-32 bytes/);
-        expect(() => client.getParcelPda('x'.repeat(33))).toThrow(/1-32 bytes/);
-        // Bytes, not characters: 17 two-byte letters are 34 bytes.
-        expect(() => client.getParcelPda('č'.repeat(17))).toThrow(/1-32 bytes/);
+    it('anchors ids longer than a raw seed, and refuses one that does not fit the account: empty, or more than 256 bytes', () => {
+        const kazakh = 'kz-pkk::20-321-001-234::parcel-0042';
+        expect(Buffer.byteLength(kazakh)).toBeGreaterThan(32);
+        expect(client.getParcelPda(kazakh)[0].toBase58()).toBe(PublicKey.findProgramAddressSync([Buffer.from('parcel'), sha256(kazakh)], new PublicKey(IDL.address))[0].toBase58());
+        expect(client.getParcelPda('x'.repeat(256))[0]).toBeInstanceOf(PublicKey);
+        expect(() => client.getParcelPda('')).toThrow(/1-256 bytes/);
+        expect(() => client.getParcelPda('x'.repeat(257))).toThrow(/1-256 bytes/);
+        // Bytes, not characters: 129 two-byte letters are 258 bytes.
+        expect(() => client.getParcelPda('č'.repeat(129))).toThrow(/1-256 bytes/);
     });
 
     it('builds an ownerless mint: the parcel anchor, the payer paying rent, the system program', () => {
@@ -87,7 +97,7 @@ describe('parcel_nft codec', () => {
                 isWritable: !!account.writable
             })));
         expect(MINT.accounts.map(account => account.name)).toEqual(['parcel', 'payer', 'system_program']);
-        expect(decode(instruction.data)).toEqual({ parcel_id: PARCEL_ID, metadata_uri: URI });
+        expect(decode(instruction.data)).toEqual({ parcel_id: PARCEL_ID, metadata_uri: URI, parcel_hash: sha256(PARCEL_ID).toString('hex') });
         expect(client.constants.DEFAULT_PUBKEY).toBe(web3.PublicKey.default.toBase58());
     });
 
@@ -95,7 +105,7 @@ describe('parcel_nft codec', () => {
         const other = new PublicKey(Uint8Array.from({ length: 32 }, () => 9)).toBase58();
         const { parcel, instruction } = client.buildMintParcelIx({ parcelId: PARCEL_ID, metadataUri: URI, payer: PAYER, programId: other });
         expect(instruction.programId.toBase58()).toBe(other);
-        expect(parcel.toBase58()).toBe(PublicKey.findProgramAddressSync([Buffer.from('parcel'), Buffer.from(PARCEL_ID)], new PublicKey(other))[0].toBase58());
+        expect(parcel.toBase58()).toBe(PublicKey.findProgramAddressSync([Buffer.from('parcel'), sha256(PARCEL_ID)], new PublicKey(other))[0].toBase58());
         expect(() => client.buildMintParcelIx({ parcelId: PARCEL_ID, metadataUri: URI, payer: 'payer' })).toThrow(/payer must be a base58 public key/);
         expect(client.buildMintParcelIx({ parcelId: PARCEL_ID, metadataUri: URI, payer: new PublicKey(PAYER) }).instruction.keys[1].pubkey.toBase58()).toBe(PAYER);
     });

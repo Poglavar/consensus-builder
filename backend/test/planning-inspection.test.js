@@ -331,7 +331,11 @@ describe('shared building and proposal representations', () => {
         const feature = { type: 'Feature', geometry, properties: { height_m: null, floors: 3 } }, before = JSON.stringify(feature);
         const item = representations.built(feature, { key: 'a', city: 'sample', footprintM2: 30 });
         expect(item.id).toBe('built:sample:a'); expect(item.role).toBe('existing');
-        expect(item.volumes).toEqual([]); expect(item.metrics).toEqual({ floorAreaM2: null, heightM: null, footprintM2: 30 });
+        // The stated storey count is shown on the building card; a missing height stays unknown.
+        expect(item.volumes).toEqual([]); expect(item.metrics).toEqual({ floorAreaM2: null, heightM: null, footprintM2: 30, storeys: 3 });
+        expect(representations.built({ ...feature, properties: { floors: null } }, { key: 'b', city: 'sample' }).metrics.storeys).toBeNull();
+        expect(representations.built(representations.observedMeshFeature({ object_id: 14, floors: 5, z_min: 0, z_max: 15 }), { key: '14', city: 'sample' })
+            .metrics.storeys).toBe(5);
         expect(JSON.stringify(feature)).toBe(before);
     });
     it('titles a building by its name or the given label, never by its record key', () => {

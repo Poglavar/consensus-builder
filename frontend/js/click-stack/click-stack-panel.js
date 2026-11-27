@@ -27,6 +27,10 @@
     const ICONS = Object.freeze({ agreements: 'fas cb-icon-agreement', plans: 'fas cb-icon-plan', designs: 'fas cb-icon-design', built: 'fas fa-building',
         permittedArea: 'fas fa-draw-polygon', permitted: 'fas fa-cube', formed: 'fas fa-vector-square', parcels: 'fas fa-border-all', selection: 'fas fa-object-group', ground: 'fas fa-seedling' });
 
+    // With the Permitted layer off, permitted massing and zoning outlines are context only: the
+    // parcel or building under them opens first and they stay one row away (click-stack-model.js).
+    const backgroundKinds = () => (global.PlanningViews?.getPolicy?.()?.permitted === 'off' ? ['permitted', 'permittedArea'] : []);
+    const buildStack = (hits, options = {}) => model.buildClickStack(hits, { ...options, background: backgroundKinds() });
     const relationsFor = (kind, instance) => model.contextFor(kind, instance, state.hits)
         .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
 
@@ -334,7 +338,7 @@
                 const previous = state.stack;
                 const selected = Object.fromEntries(previous.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
                 state.hits.agreements = rows;
-                const next = model.buildClickStack(state.hits, { selected });
+                const next = buildStack(state.hits, { selected });
                 const has = kind => next.sections.some(section => section.kind === kind);
                 const expanded = has(previous.expanded) ? previous.expanded : previous.expanded === 'agreements' ? 'plans' : null;
                 state.stack = { ...next, expanded, selectedKind: has(previous.selectedKind) ? previous.selectedKind : 'plans', topRef: previous.topRef };
@@ -585,7 +589,7 @@
             hits[selectedKind] = [focused, ...(hits[selectedKind] || [])];
         }
         const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
-        const next = model.buildClickStack(hits, { selected });
+        const next = buildStack(hits, { selected });
         const expanded = state.stack.expanded;
         state.hits = { ...hits };
         state.baseHits = { ...hits };
@@ -674,7 +678,7 @@
         if (result.hits === state.hits) return;
         state.hits = result.hits;
         const selected = Object.fromEntries(state.stack.sections.map(section => [section.kind, section.instances[section.selectedIndex].id]));
-        const next = model.buildClickStack(state.hits, { selected });
+        const next = buildStack(state.hits, { selected });
         state.stack = { ...next, expanded: state.stack.expanded, selectedKind: state.stack.selectedKind, topRef: state.stack.topRef };
     }
 
@@ -890,7 +894,7 @@
             state.hits = { ...state.hits, plans: Array.from(new Map([...session.instances('plans', previous.selectedKind === 'plans'), ...(state.hits.planContext ? [state.hits.planContext] : [])].map(item => [item.id, item])).values()) };
             // Annotate only the exact inspected revision for relationship matching.
             state.hits.designs = state.hits.designs.map(item => item.id === design.id ? { ...item, cid: session.cid || session.revision } : item);
-            const next = model.buildClickStack(state.hits, { selected });
+            const next = buildStack(state.hits, { selected });
             const has = kind => next.sections.some(section => section.kind === kind);
             state.stack = { ...next, expanded: previous.expanded && has(previous.expanded) ? previous.expanded : null,
                 selectedKind: has(previous.selectedKind) ? previous.selectedKind : next.selectedKind, topRef: previous.topRef };
@@ -924,7 +928,7 @@
             hits.designs.unshift({ id: designKey, label: String(proposal.title || proposal.name || designKey),
                 createdAt: proposal.createdAt, proposal, goal: proposal.goal || '' });
         }
-        const stack = model.expand(model.buildClickStack(hits, { selected: { designs: designKey } }), 'designs');
+        const stack = model.expand(buildStack(hits, { selected: { designs: designKey } }), 'designs');
         state.lastClick = null;
         log(`placed ${designKey}: ${stack.sections.map(section => `${section.kind}×${section.count}`).join(' ')}`);
         // No click opened this spot, so the first click on the design is a new one (it selects what
@@ -941,7 +945,7 @@
         global.BuildoutClock?.show({ cid: plan.cid, content: plan.content });
         if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(instance);
         const hits = { plans: [instance], planContext: instance, designs: instance.members };
-        const stack = model.expand(model.buildClickStack(hits, { selected: { plans: instance.id } }), 'plans');
+        const stack = model.expand(buildStack(hits, { selected: { plans: instance.id } }), 'plans');
         state.lastClick = null;
         show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame });
     }
@@ -961,7 +965,7 @@
             agreement, readOnly, designs, plan, onParcel: true };
         if (doc.body.classList.contains('three-mode-active')) return global.showThreeModePlan(plan, { agreement: instance });
         const hits = { plans: [plan], planContext: plan, agreements: [instance], agreementContext: instance, designs: plan.members };
-        const stack = model.expand(model.buildClickStack(hits, { selected: { plans: plan.id, agreements: instance.id } }), 'agreements');
+        const stack = model.expand(buildStack(hits, { selected: { plans: plan.id, agreements: instance.id } }), 'agreements');
         state.lastClick = null; show({ ...stack, topRef: null }, global.map.getCenter(), hits, { frame: true });
         return state.agreementReady;
     }
@@ -980,7 +984,7 @@
         hits[kind] = hits[kind] || [];
         if (!hits[kind].some(item => item.id === id)) hits[kind].unshift({ id, feature,
             label: global.ClickStackHits.parcelLabel(id, feature), live: !!global.LiveParcelFabric.get(id) });
-        const stack = model.expand(model.buildClickStack(hits, { selected: { [kind]: id } }), kind);
+        const stack = model.expand(buildStack(hits, { selected: { [kind]: id } }), kind);
         state.lastClick = null;
         show({ ...stack, topRef: null }, latlng, hits, { frame: true });
     }
@@ -998,7 +1002,7 @@
             label: global.ClickStackHits.buildingLabel(feature) };
         if (existing >= 0) hits.built[existing] = supplied;
         else hits.built.unshift(supplied);
-        const stack = model.expand(model.buildClickStack(hits, { selected: { built: id } }), 'built');
+        const stack = model.expand(buildStack(hits, { selected: { built: id } }), 'built');
         state.lastClick = null;
         show({ ...stack, topRef: null }, latlng, hits, { frame: true });
         return true;
@@ -1006,10 +1010,12 @@
 
     // A reload for a new release reopens the spot the person had open with the same instances
     // selected, leaving the map where the address put it. False until all of them are back there.
-    function resume(latlng, { selected, selectedKind, expanded }) {
-        if (!latlng || blocked({})) return false;
+    // Also opens the stack on one chosen object, as a map shape's keyboard action does: the stack
+    // at its point with that object selected, whatever lies above it.
+    function resume(latlng, { selected, selectedKind, expanded, allowUrbanBlocks = false }) {
+        if (!latlng || blocked({ allowUrbanBlocks })) return false;
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
-        let stack = model.buildClickStack(hits, { selected });
+        let stack = buildStack(hits, { selected });
         if (!Object.entries(selected).every(([kind, id]) => model.selectedInstance(stack, kind)?.id === id)) return false;
         stack = expanded ? model.expand(stack, expanded) : { ...stack, expanded: null, selectedKind: selectedKind || stack.selectedKind };
         state.lastClick = null;
@@ -1051,7 +1057,7 @@
         // An ordinary map click replaces the retained selection with the new point context.
         if (global.multiParcelSelection?.selectedParcels?.size) global.multiParcelSelection.clearSelection();
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
-        const stack = model.buildClickStack(hits);
+        const stack = buildStack(hits);
         const previous = isOpen() ? model.selectedInstance(state.stack, state.stack.selectedKind)?.ref : null;
         const next = model.selectedInstance(stack, stack.selectedKind)?.ref;
         const action = model.clickAction(previous || null, { ...stack, topRef: next || stack.topRef });

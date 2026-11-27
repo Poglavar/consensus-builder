@@ -74,7 +74,7 @@ describe('investor funding observation', () => {
     });
 
     it('lets the named operator qualify one buyer for a listed apartment before any deposit', async () => {
-        const unit = { unitId: 'a-23', label: 'A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::A4-C-23',
+        const unit = { unitId: 'a-23', label: 'A4-C-23', xrayBuilding: 'zagreb::gdi-3d::148972', unit: '6::23',
             at: '45.7665,15.9722,19', priceUsdcAtomic: '2000000', depositUsdcAtomic: '1000000',
             drawing: { name: 'a-23.pdf', mediaType: 'application/pdf', data: 'JVBERi0xLjQK' } };
         const funding = { ...base.content.funding, apartments: { projectId: 'podbrezje', units: [unit] } };

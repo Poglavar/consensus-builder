@@ -398,41 +398,17 @@ describe('three-mode (3D display)', () => {
         });
     });
 
-    it('suggested interiors: an overlap with a proposed building that throws is reported', async () => {
-        const planned = [];
-        const fns = extract(file, ['reportThreeClip', 'appendSuggestedExistingFloorPlans'], {
+    it('suggested interiors: an overlap with a proposed building that throws is reported', () => {
+        const fns = extract(file, ['reportThreeClip', 'suggestedExistingInScope'], {
             ...base(['intersect']),
-            window: {
-                __parcelArrangement: A, PlanningViews: { getState: () => ({ existingScope: 'surviving' }) },
-                buildingFeaturePool: [{ ...LEFT, properties: { height_m: 9 } }],
-                proposedBuildings: [RIGHT],
-                BuildingUse: require('../../frontend/js/building-use.js')
-            },
-            xrayScope: 'built', apartmentAddress: null, existingFloorPlanShells: new Map(), threeBuildingKey: () => 'source:one',
-            floorPlanGroup: {}, suggestedFloorPlans: {}, suggestedPlanTotals: {},
-            suggestedPlanContext: { planBuilding: () => null, neighbourPool: () => [] },
-            getGeoCameraView: () => ({ targetLng: 16.0005, targetLat: 46.0005 }),
-            buildingLoadRadiusM: 1000, SUGGESTED_EXISTING_CAP: 10,
-            // The once-per-radius footprint request is keyed on these.
-            nearbyProposalBuildingsKey: '', suggestedExistingPoolKey: null,
-            suggestedRegion: () => null, suggestedRoadsFor: () => [], suggestedPlanCache: new Map(),
-            // The scene the layout is chosen in: the building is in view, within the detail radius.
-            isActive: true, buildingsWorkGeneration: 0, suggestedAccess: 'auto', floorPlanErrors: 0, console,
-            camera: { position: { x: 16.0005, y: 46.0005 }, updateMatrixWorld() {} },
-            xyToLatLng: (x, y) => ({ lng: x, lat: y }), latLngToXY: (lat, lng) => [lng, lat], lifeMercatorK: () => 1,
-            floorPlanProximity: { DETAIL_DEFAULTS: { radiusM: 100 } },
-            xrayViewProjection: { multiplyMatrices() {} }, xrayFrustum: { setFromProjectionMatrix() {}, intersectsBox: () => true },
-            xrayBox: { min: { set() {} }, max: { set() {} }, distanceToPoint: () => 0 },
-            estimateBuildingHeightMeters: () => 9,
-            // Not replaced (the overlap is unknown), so its typical layout is still planned.
-            planSuggestedBuilding: async feature => { planned.push(feature); return { slices: [] }; }
+            window: { __parcelArrangement: A }, console
         });
-        const before = count('three-mode.appendSuggestedExistingFloorPlans');
+        const before = count('three-mode.suggestedExistingInScope');
         const degradedBefore = degraded();
-        await fns.appendSuggestedExistingFloorPlans({});
-        expect(count('three-mode.appendSuggestedExistingFloorPlans'), 'three-mode.appendSuggestedExistingFloorPlans was not reported').toBe(before + 1);
+        // Not replaced (the overlap is unknown), so it stays in the Surviving scope and gets its layout.
+        expect(fns.suggestedExistingInScope({ ...LEFT, properties: { height_m: 9 } }, 'surviving', [RIGHT])).toBe(true);
+        expect(count('three-mode.suggestedExistingInScope'), 'three-mode.suggestedExistingInScope was not reported').toBe(before + 1);
         expect(degraded()).toBe(degradedBefore + 1);
-        expect(planned).toHaveLength(1);
     });
 });
 

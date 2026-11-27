@@ -6,6 +6,8 @@
 })(typeof window === 'undefined' ? null : window, function () {
     'use strict';
     const PREFIX = 'property-offer:';
+    // Copies of offers made under property-offer/v1 belong to the retired program and are not listed.
+    const SCHEMA = 'property-offer/v2';
     const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object'
         ? Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])])) : value;
     function create({ storage } = {}) {
@@ -16,10 +18,10 @@
         function list() {
             const rows = [];
             db().forEach((raw, key) => { if (key.startsWith(PREFIX)) rows.push(raw); });
-            return rows.map(raw => JSON.parse(raw)).sort((a, b) => String(b.content.createdAt).localeCompare(String(a.content.createdAt)) || a.id.localeCompare(b.id));
+            return rows.map(raw => JSON.parse(raw)).filter(row => row.content?.schema === SCHEMA).sort((a, b) => String(b.content.createdAt).localeCompare(String(a.content.createdAt)) || a.id.localeCompare(b.id));
         }
         function save(record) {
-            if (!record?.id || record.content?.schema !== 'property-offer/v1') throw new TypeError('A property offer working copy is required.');
+            if (!record?.id || record.content?.schema !== SCHEMA) throw new TypeError('A property offer working copy is required.');
             const prior = get(record.id);
             if (prior?.published && (JSON.stringify(stable(prior.content)) !== JSON.stringify(stable(record.content)) || prior.published.cid !== record.published?.cid)) {
                 throw new Error('Published offer terms are immutable. Create a new offer.');

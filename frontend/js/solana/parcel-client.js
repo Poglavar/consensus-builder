@@ -1,5 +1,5 @@
 // Pure client codec for the parcel_nft program (blockchain/solana/idl/parcel_nft.json): the ownerless
-// parcel anchor PDA ["parcel", parcel_id], the byte-exact mint_parcel instruction and anchors packed
+// parcel anchor PDA ["parcel", sha256(parcel_id)], the byte-exact mint_parcel instruction and anchors packed
 // several to a transaction by size. No DOM and no
 // wallet: @solana/web3.js is injected (configure), the browser's vendored build, or the package. UMD
 // like market-client.js: window.SolanaParcelClient in the browser (solana/parcel-mint.js signs with
@@ -24,7 +24,8 @@
         DEFAULT_PUBKEY: '11111111111111111111111111111111'
     });
 
-    const MAX_SEED_BYTES = 32;
+    // parcel_nft's Parcel account reserves 4 + 256 bytes for parcel_id.
+    const MAX_PARCEL_ID_BYTES = 256;
 
     let injectedWeb3 = null;
     let api = null;
@@ -83,22 +84,26 @@
         return concat([u32(bytes.length), bytes]);
     }
 
-    // A PDA seed is at most 32 bytes; the parcel id is the parcel PDA's seed.
-    function seedBytes(text, label) {
-        const bytes = new TextEncoder().encode(String(text));
-        if (!bytes.length || bytes.length > MAX_SEED_BYTES) throw new Error(`${label} must be 1-${MAX_SEED_BYTES} bytes to be a PDA seed`);
-        return bytes;
+    // The vendored noble sha256 (window.__consentSha256 in the browser), resolved at call time.
+    const sha256 = () => globalThis.__consentSha256 || (typeof require === 'function' && require('../../vendor/noble-hashes-1.8.0/sha256.js'));
+
+    // The parcel PDA's seed: sha256 of the parcel id, so an id of any length up to the account's
+    // MAX_PARCEL_ID_BYTES has an anchor (a raw PDA seed is capped at 32 bytes).
+    function parcelSeed(parcelId) {
+        const bytes = new TextEncoder().encode(String(parcelId));
+        if (!bytes.length || bytes.length > MAX_PARCEL_ID_BYTES) throw new Error(`parcelId must be 1-${MAX_PARCEL_ID_BYTES} bytes`);
+        return sha256().sha256Bytes(bytes);
     }
 
-    // mint_parcel(parcel_id: String, metadata_uri: String)
+    // mint_parcel(parcel_id: String, metadata_uri: String, parcel_hash: [u8; 32])
     function encodeMintParcelData(parcelId, metadataUri) {
-        return concat([Uint8Array.from(IX_DISCRIMINATORS.mint_parcel), encodeString(parcelId), encodeString(metadataUri)]);
+        return concat([Uint8Array.from(IX_DISCRIMINATORS.mint_parcel), encodeString(parcelId), encodeString(metadataUri), parcelSeed(parcelId)]);
     }
 
-    // ["parcel", parcel_id] under parcel_nft.
+    // ["parcel", sha256(parcel_id)] under parcel_nft.
     function getParcelPda(parcelId, programId = constants.PARCEL_NFT_PROGRAM_ID) {
         const { PublicKey } = resolveWeb3();
-        return PublicKey.findProgramAddressSync([new TextEncoder().encode('parcel'), seedBytes(parcelId, 'parcelId')], toKey(programId, 'programId'));
+        return PublicKey.findProgramAddressSync([new TextEncoder().encode('parcel'), parcelSeed(parcelId)], toKey(programId, 'programId'));
     }
 
     // v2 ownerless anchor. Accounts: parcel (mut, PDA), payer (signer, mut), system_program.
@@ -195,7 +200,7 @@
         if (!hash.every((byte, i) => data[i + 8] === byte) || data[40] !== bump) throw new Error('invalid apartment anchor identity hash or bump');
         return { address: address.toBase58(), identityHash: identityHashHex.toLowerCase(), bump };
     }
-    api = { constants, IX_DISCRIMINATORS, MAX_TRANSACTION_BYTES, configure, encodeMintParcelData, getParcelPda, buildMintParcelIx,
+    api = { constants, IX_DISCRIMINATORS, MAX_TRANSACTION_BYTES, MAX_PARCEL_ID_BYTES, configure, encodeMintParcelData, getParcelPda, buildMintParcelIx,
         packMintParcelInstructions, missingParcelAnchors, getApartmentPda, buildMintApartmentIx: buildMintApartmentInstruction, readApartmentAnchor };
     return api;
 });

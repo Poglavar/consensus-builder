@@ -705,6 +705,8 @@
         };
         const shown = new Set();
         hitShapes = [];
+        // Selecting a shape redraws it: keyboard focus moves to its new element (drawItem marks them).
+        const focusedItem = root.document.activeElement?.dataset?.planningItem || null;
         for (const item of items) {
             const display = appearance(item);
             if (display === 'off' || shown.has(item.id)) continue;
@@ -729,6 +731,10 @@
             drawnItems.delete(id);
         }
         sourceBoundaryLayer?.bringToFront?.();
+        const active = root.document.activeElement;
+        if (focusedItem && (!active || active === root.document.body || !active.isConnected)) {
+            root.document.querySelector(`[data-planning-item="${root.CSS.escape(focusedItem)}"]`)?.focus({ preventScroll: true });
+        }
     }
     // A plan unit is source evidence, not a selectable parcel result. It stays visible even when
     // this viewport happens to contain no returned parcels.
@@ -834,20 +840,23 @@
                 const node = part.getElement?.();
                 if (!node) return;
                 node.setAttribute('tabindex', '0'); node.setAttribute('role', 'button');
+                node.dataset.planningItem = item.id;
                 node.setAttribute('aria-label', warningFeature ? `${smallParcelLabel(item)}. ${t('inspectResult')}`
                     : evidenceFeature ? `${itemTitle(item)}. ${t('inspectResult')}`
                     : t(item.assessment?.meaning === 'restriction' ? 'inspectDesignation' : item.areas?.length ? 'inspectArea' : 'inspectMassing', { parcel: label }));
                 node.addEventListener('keydown', event => {
                     if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault(); event.stopPropagation();
-                        // Match pointer activation so a narrow-screen hosted inspector opens.
+                        // Match pointer activation so a narrow-screen hosted inspector opens, but
+                        // with this shape selected: a building above it at its point must not win.
                         let latlng = part.getBounds?.().getCenter?.();
                         try {
                             const point = root.turf.pointOnFeature(feature).geometry.coordinates;
                             latlng = root.L.latLng(point[1], point[0]);
                         } catch (_) { /* Bounds centre is the safe fallback. */ }
-                        if (latlng && root.ClickStack?.handleClick) root.ClickStack.handleClick(latlng, { allowUrbanBlocks: true });
-                        else inspect();
+                        const kind = root.__clickStackModel?.permittedKind(item);
+                        const opened = latlng && kind && root.ClickStack?.resume(latlng, { selected: { [kind]: item.id }, expanded: kind, allowUrbanBlocks: true });
+                        if (!opened) inspect();
                     }
                 });
             });
@@ -996,6 +1005,8 @@
         const displayedMetrics = [];
         if (item.metrics.floorAreaM2 != null) displayedMetrics.push([t('floorArea'), area(item.metrics.floorAreaM2)]);
         if (item.metrics.heightM != null) displayedMetrics.push([t(item.parcelEnvelope ? 'envelopeHeight' : 'height'), root.CbFormat.formatLength(item.metrics.heightM, { maxFractionDigits: 1 })]);
+        // An existing building's stated storey count (representations.js built).
+        if (item.role === 'existing' && item.metrics.storeys != null) displayedMetrics.push([t('storeys'), number(item.metrics.storeys)]);
         // An incentive's extra height is listed with its condition, apart from what the rules grant.
         if (item.metrics.conditional?.heightM != null) {
             const condition = labels.condition(item.metrics.conditional, fullT);

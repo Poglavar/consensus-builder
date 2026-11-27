@@ -390,15 +390,25 @@ export function createUrbanGameTheoryMcpServer({ mode = 'local', env = process.e
 
     // A published property offer's chain steps, as the offer panel takes them with a wallet.
     const offerCid = z.string().regex(CID).describe('Published property offer CID (ugt_publish_property_offer, ugt_list_property_offer)');
+    const offerLens = z.object({ members: z.array(z.string()).max(8), threshold: z.number().int().min(0).max(8) });
     for (const [name, title, description, extra, method] of [
-        ['ugt_mint_property_offer', 'Create a property offer on Solana', 'As the offer\'s proposer (this agent\'s wallet), create the published offer\'s account on Solana devnet after the named lens answers its pre-mint check; an apartment offer also mints the apartment\'s ownerless anchor. The chain reference is recorded in the index. An existing account is a replay.', {}, 'mintPropertyOffer'],
-        ['ugt_take_property_offer', 'Accept (take) a property offer', 'Take the offer as its accepting counterparty (the buyer of a sell offer, the seller of a buy offer): sign the decision request, ask the named lens for its decision and record the acceptance on chain. candidate is the acceptance from ugt_prepare_property_offer or a shared acceptance (ugt_consent_property_offer get); a parcel offer needs every seller\'s consent in it, an apartment offer the lens\'s qualification of this wallet. Accepted already by these parties is a replay.', { candidate: z.object({}).passthrough() }, 'acceptPropertyOffer'],
-        ['ugt_fund_property_offer', 'Fund a property offer', 'As the accepted offer\'s buyer, deposit exactly its SOL price into its escrow. Funded already is a replay.', {}, 'fundPropertyOffer'],
-        ['ugt_release_property_offer', 'Release a property offer', 'Permissionlessly pay a funded, accepted offer\'s escrow to its scheduled recipients before its deadline. Settled already is a replay.', {}, 'releasePropertyOffer'],
-        ['ugt_cancel_property_offer', 'Cancel a property offer', 'As the proposer, withdraw an offer that is still open. Cancelled already is a replay.', {}, 'cancelPropertyOffer'],
-        ['ugt_expire_property_offer', 'Expire a property offer', 'Permissionlessly close an open or accepted offer after its deadline, refunding any escrow to the buyer. Expired already is a replay.', {}, 'expirePropertyOffer']
+        ['ugt_mint_property_offer', 'Create a property offer on Solana', 'As the offer\'s maker (this agent\'s wallet), create the published offer\'s account on Solana devnet; a buy offer pays its price (SOL or USDC) into escrow now. The chain reference is recorded in the index. An existing account is a replay.', {}, 'mintPropertyOffer'],
+        ['ugt_take_property_offer', 'Take a property offer', 'Commit to an open offer as its counterparty. Taking a sell offer (as buyer): name your lens (members and threshold), the lens members who must confirm the seller holds the asset, and pay the price into escrow. Taking a buy offer (as seller): name the payout schedule (default: the whole price to you) and optionally a lens that must qualify the buyer. Committed already by this wallet is a replay.', { lens: offerLens.optional(), payouts: z.array(z.object({ recipient: z.string(), amount: z.string() })).max(16).optional() }, 'takePropertyOffer'],
+        ['ugt_confirm_property_offer', 'Confirm a property offer as a lens member', 'As one of a committed offer\'s lens members: issue your PropertyOfferConfirmation-v1 and record it on the offer in one transaction, paying out when it completes both lenses. In the buyer\'s lens (role 0) you confirm the seller holds the asset and pass holding, the address of the statement through which the seller holds it (your first-holder statement, or the settled offer the seller bought through); in the seller\'s lens (role 1) you confirm the buyer qualifies. Confirmed already is a replay.', { role: z.union([z.literal(0), z.literal(1)]).optional(), holding: z.string().min(32).max(44).optional() }, 'confirmPropertyOffer'],
+        ['ugt_execute_property_offer', 'Execute a property offer', 'Permissionlessly pay a committed offer\'s escrow to its payout schedule once both lenses are met, before its deadline. Settled already is a replay.', {}, 'executePropertyOffer'],
+        ['ugt_cancel_property_offer', 'Cancel a property offer', 'As the maker, withdraw an offer nobody has committed to; a buyer\'s escrow returns. Cancelled already is a replay.', {}, 'cancelPropertyOffer'],
+        ['ugt_expire_property_offer', 'Expire a property offer', 'Permissionlessly end an open or committed offer after its deadline, refunding any escrow to the buyer. Expired already is a replay.', {}, 'expirePropertyOffer']
     ]) server.registerTool(name, { title, description, inputSchema: z.object({ cid: offerCid, ...extra, confirm: confirmation }), annotations: PAID_IDEMPOTENT },
         handler(args => actions[method](args)));
+
+    server.registerTool('ugt_state_holding', {
+        title: 'State who first holds a plot or a flat',
+        description: 'As a lens member (this agent\'s wallet), state on Solana who first holds one plot or one flat (PropertyHolding-v1, one statement per lens member and asset): as the developer\'s lens for a new build, or confirming a person\'s holding request (ugt_list_holding_requests). basis is developer, declared or registry. A statement naming the same holder is a replay; one naming another holder is refused.',
+        inputSchema: z.object({ asset: z.object({ kind: z.enum(['parcel', 'flat']) }).passthrough().describe('One plot { kind: "parcel", sourceId, id, at } or one flat { kind: "flat", xrayBuilding, unit: "storey::flat", at }'),
+            city: z.string().optional().describe('Required for a plot; a flat\'s building address names its city'),
+            holder: z.string().min(32).max(44), basis: z.enum(['developer', 'declared', 'registry']), evidence: z.string().max(500).optional(), confirm: confirmation }),
+        annotations: PAID_IDEMPOTENT
+    }, handler(args => actions.stateHolding(args)));
 
     server.registerTool('ugt_resolve_external_market', {
         title: 'Resolve an external-evidence market',

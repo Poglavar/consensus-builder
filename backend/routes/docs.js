@@ -428,7 +428,7 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     // executions, oldest first by each source's own time (null and last when it has none).
                     parcelHistory: {
                         url: `${base}/parcels/{parcelUid}/history`,
-                        response: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type, at, agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }',
+                        response: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable) }, events: [{ type, at, agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }',
                         eventTypes: [AGREEMENT_PUBLISHED_EVENT_TYPE, OWNERSHIP_EVENT_TYPE, AGREEMENT_EXECUTED_EVENT_TYPE],
                         anchor: `parcel_nft (${PARCEL_PROGRAM_ID}) PDA ["parcel", parcelUid]; an identity only, it carries no ownership. Existence requires a validated devnet account read; unavailable evidence stays null. No mint time is inferred from touched transactions.`,
                         privacy: 'ownership attestations expose member, owner wallet, ownerCount and the account hash; never the evidence reference',

@@ -22,7 +22,7 @@
     /**
      * The anchors `parcelIds` still need, as mint_parcel instruction groups that each fit one
      * transaction: { groups: [{ parcelIds, instructions }], alreadyAnchored: [ids], skipped: [{ parcelId, reason }] }.
-     * An id that cannot seed an anchor (over 32 bytes) is in `skipped`, never fatal.
+     * An id or URI that does not fit the anchor account (over 256 bytes) is in `skipped`, never fatal.
      */
     async function instructionGroups({ connection, wallet, parcelIds, programId }) {
         const { parcels, skipped } = parcelAnchor().anchorTargets(parcelIds);

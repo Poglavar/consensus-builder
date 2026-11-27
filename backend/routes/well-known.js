@@ -301,7 +301,7 @@ export function buildOpenApi(base, env) {
                     operationId: 'getParcelHistory',
                     parameters: [{ name: 'parcelUid', in: 'path', required: true, schema: { type: 'string', maxLength: 128 }, description: 'Cadastral parcel id, URL-encoded (e.g. HR-335347-1208%2F3).' }],
                     responses: {
-                        200: { description: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable | unseedable) }, events: [{ type (agreement_published | parcel_ownership | agreement_executed), at (source time or null), agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }. agreement_published is the index receiving an agreement that takes the parcel; agreement_executed is its execution on chain, at the account\'s executed_at. Anchor existence is a separate validated account read; unavailable evidence stays null. No anchor mint time is inferred.' },
+                        200: { description: '{ parcelUid, anchor: { account, exists (true | false | null), source (chain | unavailable) }, events: [{ type (agreement_published | parcel_ownership | agreement_executed), at (source time or null), agreementCid?, title?, account?, lens?, attestation?, member?, owner?, ownerCount?, outcome?, transaction?, hash?, link }] }. agreement_published is the index receiving an agreement that takes the parcel; agreement_executed is its execution on chain, at the account\'s executed_at. Anchor existence is a separate validated account read; unavailable evidence stays null. No anchor mint time is inferred.' },
                         400: { description: 'Invalid parcelUid.' }
                     }
                 }
