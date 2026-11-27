@@ -86,6 +86,29 @@ describe('headless app formation host', () => {
         expect(paths).not.toContain('/agreements');
     });
 
+    // Strong Suburbs para 2 through the real tool: refused on a plan that does not claim the street
+    // code; on one that does, the server's check goes into the voting record and survives a terms edit.
+    it('drafts a Strong Suburbs street vote only on a plan claiming its street code, recording the check', async () => {
+        const design = make('space', { spaceKind: 'park' });
+        const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async url => {
+            const path = new URL(url).pathname;
+            return Response.json(path === '/designs/binding'
+                ? { parcelSourceId: 'selected-source', binding: { coverage: 'complete', parcels: [{ parcelId: 'A' }], unsurveyedM2: 0, unknownM2: 0 } }
+                : { complete: true, features: parcels });
+        } });
+        const consultation = { organiser: null, participationUrl: null, voting: { schema: 'community-voting/v2', id: '6f1c2a3b-4d5e-4f60-8a71-92b3c4d5e6f7',
+            codeHashes: ['a'.repeat(64)], rule: { id: 'gb-street-vote-strong-suburbs', version: '2026-11-27' } } };
+        const unclaimed = await tools.draftPlan({ designs: [design.content], title: 'Park without a code' });
+        await expect(tools.draftAgreement({ plan: unclaimed.draftArtifact, rulePreset: 'community-vote', consultation })).rejects.toMatchObject({ code: 'street-code-unclaimed' });
+        const claimed = await tools.draftPlan({ designs: [design.content], title: 'Park', codes: [{ id: 'gb-strong-suburbs-street-code', version: '2021' }] });
+        const result = await tools.draftAgreement({ plan: claimed.draftArtifact, rulePreset: 'community-vote', consultation });
+        expect(result.agreement.consultation.voting.streetCode).toMatchObject({ set: { id: 'gb-strong-suburbs-street-code', version: '2021' }, planCid: result.agreement.planCid, street: null, buildings: [] });
+        expect(result.streetCode).toMatchObject({ required: true, summary: { buildings: 0 } });
+        expect(result.streetCode).not.toHaveProperty('recorded');
+        const revised = await tools.editAgreement({ plan: result.draftArtifact, expectedCid: result.cid, terms: { title: 'Revised' } });
+        expect(revised.agreement.consultation.voting.streetCode).toEqual(result.agreement.consultation.voting.streetCode);
+    });
+
     it('defaults omitted agreement currency to the plan city money', async () => {
         const design = make('space', { spaceKind: 'park', city: 'bogota' });
         const tools = createUrbanGameTheoryTools({ mode: 'hosted', env: {}, fetchImpl: async url => {

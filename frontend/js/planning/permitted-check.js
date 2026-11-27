@@ -152,7 +152,8 @@
             itemId: restriction.id, rule: 'restriction', status: failed ? 'unknown' : EFFECT_STATUS[restriction.effect] || 'unknown',
             effect: restriction.effect, reasonCode: restriction.reasonCode, requirement: restriction.requirement, subject: restriction.subject,
             dataset: restriction.dataset, name: restriction.name, organisation: restriction.organisation?.name || null,
-            footprint: restriction.footprint, links: restriction.links, sourceLabel: restriction.source?.label || null, share }));
+            footprint: restriction.footprint, links: restriction.links, sourceLabel: restriction.source?.label || null, share,
+            ...(restriction.removedRights ? { removedRights: restriction.removedRights } : {}) }));
     }
     // `buildings`: [{ id, footprint: Feature<Polygon|MultiPolygon>, heightM, floors? }].
     // `site`: { plotAreaM2, footprintM2, floorAreaM2 } of the land the design takes, or null.

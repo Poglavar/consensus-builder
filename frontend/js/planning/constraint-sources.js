@@ -105,7 +105,24 @@
         const areas = await planningDataRecords(source, found.map(properties => ({ properties, geometry: null })), { fetch, signal, asOf });
         return { areas, partial, pages };
     }
-    const adapters = Object.freeze({ 'planning-data-entity': Object.freeze({ areas: planningDataAreas, membership: planningDataMembership }) });
+    // The records an organisation publishes in another dataset (the Article 4 directions an area
+    // names), without geometry; one paged query per organisation, kept for the session.
+    const linkedRecords = new Map();
+    function planningDataLinked(source, { dataset, organisationId, fetch, signal }) {
+        const key = `${dataset}:${organisationId}`;
+        if (!linkedRecords.has(key)) {
+            const url = new URL('/entity.json', source.endpoint);
+            url.searchParams.set('dataset', dataset);
+            url.searchParams.set('organisation_entity', String(organisationId));
+            for (const field of ['geometry', 'point']) url.searchParams.append('exclude_field', field);
+            url.searchParams.set('limit', String(source.pageSize));
+            const pending = planningDataPages(source, url, { fetch, signal, rows: page => page?.entities }).then(({ found }) => found);
+            linkedRecords.set(key, pending);
+            pending.catch(() => linkedRecords.delete(key));
+        }
+        return linkedRecords.get(key);
+    }
+    const adapters = Object.freeze({ 'planning-data-entity': Object.freeze({ areas: planningDataAreas, membership: planningDataMembership, linked: planningDataLinked }) });
 
     // One read of a constraint source for a box. Returns { areas, partial, pages }: `partial` means
     // the page cap stopped the read and more areas exist than were read.
@@ -139,6 +156,39 @@
             return { ruleSet, source };
         });
     }
+    // References compared without case or punctuation: a publisher may write one direction
+    // "D_43_BEX_ART4_00013" on its area and "D_43_BEX__ART4_00013" on the direction itself.
+    const plainReference = value => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    // The areas of a read with the record each links to (a rule-set entry's `removedRights.linked`:
+    // the dataset and the area field naming the record's reference, within the area's organisation)
+    // as `linked`, null when the organisation publishes none under that reference. A failed lookup
+    // is logged and leaves `linked` unset: what the record says stays unread, never "nothing".
+    async function withLinked(source, ruleSet, answer, { fetch: fetchPage, signal } = {}) {
+        const links = (ruleSet.effects || []).filter(entry => entry.removedRights?.linked)
+            .map(entry => ({ areaDataset: entry.dataset, dataset: entry.removedRights.linked.dataset, field: entry.removedRights.linked.field }));
+        const adapter = adapters[source?.adapter];
+        if (!links.length || !adapter?.linked || !answer?.areas?.length) return answer;
+        const found = new Map();
+        for (const link of links) {
+            const organisations = [...new Set(answer.areas.filter(area => area.dataset === link.areaDataset && area.fields?.[link.field])
+                .map(area => Number(area.organisation?.id)).filter(Number.isFinite))];
+            await Promise.all(organisations.map(async organisationId => {
+                try {
+                    const records = await adapter.linked(source, { dataset: link.dataset, organisationId, fetch: fetchPage, signal });
+                    found.set(`${link.areaDataset}:${organisationId}`, new Map(records.map(record => [plainReference(record.reference), record])));
+                } catch (error) {
+                    console.error(`[${new Date().toISOString()}] [constraint-sources] Linked ${link.dataset} records of organisation ${organisationId} could not be read; their rights stay unread`, error);
+                }
+            }));
+        }
+        const areas = answer.areas.map(area => {
+            const link = links.find(entry => entry.areaDataset === area.dataset);
+            const reference = link && area.fields?.[link.field];
+            const records = reference ? found.get(`${link.areaDataset}:${Number(area.organisation?.id)}`) : null;
+            return records ? { ...area, linked: records.get(plainReference(reference)) || null } : area;
+        });
+        return { ...answer, areas };
+    }
     const effectsOf = (ruleSet, effects) => (ruleSet.effects || []).filter(entry => !effects || effects.includes(entry.effect));
     const datasetsOf = (ruleSet, effects) => [...new Set(effectsOf(ruleSet, effects).map(entry => entry.dataset))];
 
@@ -157,7 +207,8 @@
                 const datasets = datasetsOf(ruleSet, effects);
                 const scope = `${ruleSet.id}:${source.id}:${datasets.join(',')}`;
                 const hit = cache.find(scope, box);
-                const entry = hit || await cache.load(scope, box, abort => readAreas(source, { bbox: box, datasets, fetch: fetchPage, signal: abort }));
+                const entry = hit || await cache.load(scope, box, abort => readAreas(source, { bbox: box, datasets, fetch: fetchPage, signal: abort })
+                    .then(answer => withLinked(source, ruleSet, answer, { fetch: fetchPage, signal: abort })));
                 return { ruleSet, source, ...entry.value, bbox: entry.bbox };
             }));
             return reads;
@@ -171,7 +222,8 @@
                 const datasets = datasetsOf(ruleSet, effects);
                 const key = `${ruleSet.id}:${datasets.join(',')}:${JSON.stringify(geometry.coordinates)}`;
                 if (!memberships.has(key)) {
-                    const pending = readMembership(source, { geometry, datasets, fetch: fetchPage });
+                    const pending = readMembership(source, { geometry, datasets, fetch: fetchPage })
+                        .then(answer => withLinked(source, ruleSet, answer, { fetch: fetchPage }));
                     memberships.set(key, pending);
                     pending.catch(() => memberships.delete(key));
                     while (memberships.size > 256) memberships.delete(memberships.keys().next().value);
@@ -181,5 +233,5 @@
         }
         return { load, membership, clear: () => { cache.clear(); memberships.clear(); } };
     }
-    return { adapters, readAreas, readMembership, wkt, ruleSetsFor, datasetsOf, effectsOf, createLoader };
+    return { adapters, readAreas, readMembership, withLinked, wkt, ruleSetsFor, datasetsOf, effectsOf, createLoader };
 });

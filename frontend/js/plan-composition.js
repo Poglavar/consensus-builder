@@ -55,12 +55,13 @@
         return freeze(row);
     }
     // schedule: { [designCid]: { start, end } } (plan-record.js); windows of non-members are dropped.
-    function create(title, records, view, schedule = null) {
+    // codes: the street codes the plan claims to respect (plan-record.js).
+    function create(title, records, view, schedule = null, codes = null) {
         const PlanRecord = dependency('PlanRecord', './plan-record.js');
         const Cid = dependency('Cid', './cid.js');
         if (!Array.isArray(records) || !records.length) throw new Error('Choose at least one design.');
         const designs = [...membersOf(records).values()].sort((a,b)=>a.cid < b.cid ? -1 : a.cid > b.cid ? 1 : 0);
-        const content = PlanRecord.create(title, designs.map(d=>d.cid), view, schedule);
+        const content = PlanRecord.create(title, designs.map(d=>d.cid), view, schedule, codes);
         return snapshotRow(Cid.cidOfObject(content), content, designs);
     }
     // A stored plan ({ cid, content }) with its members' records. Its content is kept exactly as
@@ -84,7 +85,7 @@
         validate(row);
         const PlanRecord = dependency('PlanRecord', './plan-record.js');
         const Cid = dependency('Cid', './cid.js');
-        const content = PlanRecord.create(row.content.title, row.content.designCids, row.content.view, schedule);
+        const content = PlanRecord.create(row.content.title, row.content.designCids, row.content.view, schedule, row.content.codes);
         const next = { ...deepCopy(row), cid: Cid.cidOfObject(content), content: deepCopy(content) };
         delete next.published;
         validate(next);

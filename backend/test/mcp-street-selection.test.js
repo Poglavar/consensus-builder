@@ -62,6 +62,8 @@ describe('ugt_select_parcels action street', () => {
         expect(north.selection.parcelIds).toEqual(['ne0', 'ne1', 'ne2', 'ne3', 'ne4', 'ne5']);
         expect(north.streetReference).toMatchObject({ name: 'Hughes Road', part: 'segment', side: 'left', official: { scheme: 'GB-USRN', id: '21000001' },
             from: { kind: 'branch', names: ['Cross Road'] }, to: { kind: 'end' }, osmWayIds: ['11'] });
+        // ne0 is also along Cross Road: a corner plot (Strong Suburbs para 6.1), as the map's picker marks it.
+        expect(north.streetReference.corners).toEqual([{ parcelId: 'ne0', streets: ['Cross Road'] }]);
         // The voting record takes the reference as it comes.
         const voting = V.configuration({ schema: 'community-voting/v2', id: '6f1c1a52-7c1e-4b5e-9a37-0c6f2d1f4a10', codeHashes: ['a'.repeat(64)], street: north.streetReference });
         expect(voting.street).toEqual(north.streetReference);

@@ -8333,7 +8333,7 @@
             "measure": "Buscar vecinos afectados",
             "noGuides": "Este lugar no establece guías para vecinos, así que no se mide nada: añade una parcela vecina por su id.",
             "candidates": "Añadir parcelas afectadas a este acuerdo",
-            "candidatesHint": "Las parcelas fuera de una guía están marcadas. Cada una se añade como renuncia con sus mediciones; fija sus condiciones abajo.",
+            "candidatesHint": "Las parcelas que superan una guía están marcadas. Cada una se añade como renuncia con sus lecturas, o como compensación debida cuando lo dice el código de calle del plan; fije sus condiciones abajo.",
             "candidate": "Parcela {{parcelId}}, {{grade}}",
             "added": "ya está en este acuerdo",
             "isInput": "una parcela de entrada",
@@ -8356,7 +8356,7 @@
                 "outlook": "Vistas y cielo",
                 "garden": "Límite del jardín",
                 "privacy": "Privacidad y vistas sobre la parcela",
-                "other": "Otro derecho (indica cuál en la nota)"
+                "another": "Otro derecho (indica cuál en la nota)"
             },
             "note": "Nota (qué derecho, si es otro)",
             "readings": "Mediciones al añadirla",
@@ -8383,7 +8383,7 @@
             "multiple": {
                 "label": "Compensación a vecinos",
                 "none": "1× la pérdida declarada (sin fijar)",
-                "strongSuburbs": "Strong Suburbs: 150% de la pérdida declarada (cifra aún sin verificar)",
+                "strongSuburbs": "Strong Suburbs: 150 % de la pérdida de valor de mercado (párr. 54–57)",
                 "custom": "Otro múltiplo",
                 "value": "Múltiplo de la pérdida declarada"
             }
@@ -8639,6 +8639,10 @@
             "eligibilityMissing": "Compruebe las condiciones de las casas incluidas antes de crear esta votación.",
             "eligibilityStale": "El plan incluye otras casas que la última comprobación: vuelva a comprobar.",
             "eligibilityFailed": "Aún no se sabe si todas las casas incluidas cumplen: vea Casas incluidas.",
+            "streetCodeMissing": "Compruebe el plan frente al código de calle antes de crear esta votación de calle.",
+            "streetCodeStale": "El plan o la calle han cambiado desde la última comprobación del código de calle: vuelva a comprobarlo.",
+            "streetCodeUnclaimed": "Esta regla de votación solo permite la votación sobre un plan que declara cumplir el {{code}}. Añádalo a los códigos de calle del plan con Editar plan.",
+            "streetCodeFailed": "La votación solo se celebra sobre un plan que cumple el {{code}}. Estos edificios lo incumplen o quedan excluidos por él: {{buildings}}",
             "communityAllocations": "Un acuerdo comunitario no vinculante no puede asignar terrenos.",
             "communityMoney": "Un acuerdo comunitario no vinculante no puede incluir pagos en efectivo.",
             "noDesigns": "Elige al menos un diseño.",
@@ -9039,7 +9043,8 @@
             "noSky": "Luz natural en las estancias (línea sin cielo)",
             "angle": "Ángulo sobre una ventana enfrentada",
             "splay": "Abanico junto a una ventana",
-            "distance": "Distancia enfrentada"
+            "distance": "Distancia enfrentada",
+            "boundary": "Ángulo desde el lindero de la parcela"
         },
         "filterLabel": "Mostrar parcelas por lectura",
         "filterAll": "Todas",
@@ -9088,7 +9093,8 @@
             "sw": "suroeste",
             "w": "oeste",
             "nw": "noroeste"
-        }
+        },
+        "boundary": "Se eleva {{after}} sobre el lindero de la parcela, por encima de la línea de {{degrees}} (antes: {{before}})"
     },
     "permittedCheck": {
         "heightUnknown": "Altura {{measured}}: el límite depende de la altura existente, que no consta",
@@ -9107,6 +9113,8 @@
         "placeUnnamed": "{{designation}}",
         "placeBuilding": "{{designation}} «{{name}}»",
         "sourceLink": "(fuente: {{source}})",
+        "gpdoClass": "Parte {{part}} Clase {{letters}}",
+        "gpdoPart": "Parte {{part}}",
         "restriction": {
             "prohibit": "En {{place}}: aquí no se permite nueva edificación",
             "keep": "{{place}} debe conservarse: un edificio nuevo no puede sustituirlo",
@@ -9131,7 +9139,8 @@
             "greenBelt": "la nueva edificación no procede salvo circunstancias muy especiales",
             "floodZone3": "alta probabilidad de inundación; se aplican las pruebas de riesgo de inundación",
             "worldHeritageSite": "el valor patrimonial del sitio pesa en toda decisión",
-            "treePreservation": "los árboles protegidos requieren autorización antes de cualquier trabajo"
+            "treePreservation": "los árboles protegidos requieren autorización antes de cualquier trabajo",
+            "rightsUnused": "solo retira derechos de desarrollo permitido que un diseño no usa ({{rights}})"
         },
         "condition": {
             "noHarmToCharacter": "si no daña el carácter general de la zona"
@@ -9531,7 +9540,8 @@
         },
         "eligibility": {
             "set": {
-                "gb-living-tradition-mansards": "Mansardas según Living Tradition"
+                "gb-living-tradition-mansards": "Mansardas según Living Tradition",
+                "gb-strong-suburbs-street-code": "Código de calle de Strong Suburbs"
             },
             "verdict": {
                 "eligible": "Cumple todas las condiciones que la aplicación puede comprobar",
@@ -9542,7 +9552,8 @@
                 "pass": "Sí",
                 "fail": "No",
                 "unknown": "Desconocido",
-                "unchecked": "La aplicación no lo comprueba"
+                "unchecked": "La aplicación no lo comprueba",
+                "notApplicable": "No se aplica"
             },
             "withGrade": "{{status}}, grado {{grade}}",
             "test": {
@@ -9555,7 +9566,62 @@
                 "footprint": "Huella de 100 m² como máximo",
                 "originalUse": "Construido como vivienda, o como tienda con estancias encima",
                 "listing": "No catalogado de grado I ni II*",
-                "topWindows": "Ventanas de la última planta de al menos 80 cm de alto"
+                "topWindows": "Ventanas de la última planta de al menos 80 cm de alto",
+                "ssListed": "No es un edificio catalogado",
+                "ssPre1918": "Construido en 1918 o después",
+                "ssGreenBelt": "Ningún edificio nuevo en suelo de cinturón verde",
+                "ssOpenLand": "No está en Metropolitan Open Land",
+                "ssNature": "No está en un parque nacional, AONB ni SSSI",
+                "ssStoreys": "Plantas dentro del límite por densidad",
+                "ssSetbackPlane": "Planta retranqueada bajo un plano de 75°",
+                "ssSetbacks": "No más plantas retranqueadas de las permitidas",
+                "ssLightPlanes": "Bajo los planos de luz desde parcelas de otras calles",
+                "ssCeilingMax": "Techos de 3,5 m como máximo",
+                "ssCeilingMin": "Techos de 2,5 m como mínimo",
+                "ssSetbackCeiling": "Techo de la planta retranqueada de 3 m como máximo",
+                "ssAddedCeiling": "Plantas añadidas no más altas que la planta existente más alta",
+                "ssHistoric": "Como máximo 3+1 plantas cerca de diez edificios anteriores a 1918",
+                "ssPlotUse": "Construir hacia atrás como máximo el 25 % de la distancia a las parcelas de otras calles",
+                "ssFrontDoors": "Como máximo 15 m entre puertas de entrada",
+                "ssSideWindows": "Ventanas laterales a 2 m o más del lindero",
+                "ssSemiDetached": "Consienten ambas casas de un pareado",
+                "ssDetached": "Bajo un plano de 70° desde el lindero de un vecino aislado"
+            },
+            "fact": {
+                "proposedStoreys": "{{storeys}} plantas propuestas",
+                "storeyCap": "límite {{cap}}: {{density}} habitantes/ha en {{area}}",
+                "storeyCapUnknown": {
+                    "densityUnread": "No se pudo leer la densidad de las áreas pequeñas",
+                    "noBuildings": "El plan no tiene edificios que situar",
+                    "noStreet": "La votación no nombra calle: el límite es como máximo {{cap}}, según las áreas bajo los edificios del plan",
+                    "noArea": "Ninguna área pequeña de la fuente de densidad está a menos de 200 m de la calle",
+                    "densityUnknown": "Un área pequeña cerca de la calle no tiene densidad"
+                },
+                "historicNone": "{{count}} edificios anteriores a 1918 a menos de 100 m de la calle ({{unknown}} sin fecha): sin límite 3+1",
+                "historicCap": "{{count}} edificios anteriores a 1918 a menos de 100 m de la calle: como máximo {{storeys}}+{{setbacks}} plantas",
+                "historicUnknown": {
+                    "noStreet": "La votación no nombra calle, así que no se cuentan los edificios anteriores a 1918 cercanos",
+                    "buildingsUnread": "No se pudieron leer los edificios cerca de la calle",
+                    "datesUnknown": "{{count}} edificios anteriores a 1918 a menos de 100 m y {{unknown}} sin fecha: no se sabe si son diez",
+                    "existingTotal": "La mitad de los edificios de la calle ya supera 3+1: el límite es su total existente, que la aplicación no mide",
+                    "storeysUnknown": "No se sabe si la mitad de los edificios de la calle ya supera 3+1"
+                },
+                "proposedSetbacks": "{{setbacks}} plantas retranqueadas",
+                "setbacksAllowed": "{{setbacks}} permitidas",
+                "setbackMansard": "una mansarda, por completo bajo {{degrees}}°",
+                "storeyHeight": "plantas de {{metres}} m de suelo a suelo; un techo es más bajo por el grosor del forjado, que el diseño no indica",
+                "setbackRise": "la planta retranqueada sube {{metres}} m",
+                "designations": "está en: {{datasets}}",
+                "designationsUnread": "No se pudieron leer las designaciones"
+            },
+            "notChecked": {
+                "noSource": "planning.data.gov.uk aún no publica Metropolitan Open Land",
+                "otherStreets": "requiere saber qué parcelas vecinas están en otras calles",
+                "ceilings": "el diseño no indica alturas de techo",
+                "plotUse": "requiere la huella construida en la primera votación y las parcelas de otras calles",
+                "doors": "el diseño no sitúa puertas",
+                "windows": "el diseño no sitúa ventanas laterales",
+                "consent": "el consentimiento de un vecino se da en un acuerdo, no se mide"
             }
         },
         "survey": "Levantamiento de alturas",
@@ -10133,7 +10199,9 @@
         "membersMissing": "{{count}} de los {{total}} diseños del plan no están ni en este navegador ni en el servidor.",
         "revisionChanged": "La copia de este plan en el servidor no coincide con su enlace.",
         "publicationFailed": "No se pudo publicar «{{title}}»: {{reason}}",
-        "shareDesignHint": "Compartir este diseño"
+        "shareDesignHint": "Compartir este diseño",
+        "codes": "Códigos de calle",
+        "codesHint": "Los códigos que este plan afirma respetar. Solo una afirmación: una votación de calle sobre el plan la comprueba."
     },
     "sharedPlan": {
         "applying": "Aplicando los cambios aceptados…",
@@ -10291,6 +10359,8 @@
         "refreshResults": "Actualizar resultados",
         "rule": "Regla de votación",
         "ruleNone": "Ninguna: mostrar solo los totales",
+        "ruleVersion": "{{name}} (versión del {{version}})",
+        "ruleRequiresCode": "Solo se celebra sobre un plan que declara cumplir el {{code}} y cuya comprobación no encuentra ningún edificio que lo incumpla o que quede excluido por él.",
         "householdBatch": "Hogar de estas personas (opcional)",
         "householdHint": "Las personas que viven juntas comparten una etiqueta de hogar. Un código sin etiqueta cuenta como un hogar propio. Las etiquetas de hogar quedan en este equipo; el acuerdo solo registra qué códigos comparten hogar.",
         "importCsv": "Generar códigos desde un CSV de residentes",
@@ -10356,6 +10426,27 @@
                 "ineligible": "No cumple",
                 "unknown": "Desconocido"
             }
+        },
+        "streetCode": {
+            "title": "Código de calle: {{code}}",
+            "hint": "El plan afirma respetar este código. Aquí se comprueba cada uno de sus edificios, regla a regla, a partir del diseño, el lugar y los datos de los edificios; la afirmación sola no se da por cumplida.",
+            "checking": "Comprobando el plan con el código…",
+            "summary": "{{eligible}} de {{total}} edificios cumplen el código, {{ineligible}} lo incumplen, {{unknown}} aún no se sabe",
+            "cap": "Límite de plantas {{cap}} (párr. 30): densidad más baja {{density}} habitantes/ha, en {{area}}.",
+            "approximate": "(la calle se traza recta entre sus extremos)",
+            "unread": "Sin leer: {{what}} ({{error}})",
+            "newBuilding": "Edificio nuevo {{index}} del diseño {{design}}",
+            "verdict": {
+                "eligible": "Cumple el código",
+                "ineligible": "Incumple el código",
+                "excluded": "Excluido por el código",
+                "unknown": "Aún no se sabe"
+            },
+            "unclaimed": "Esta regla de votación solo permite la votación sobre un plan que declara cumplir este código, y este plan no lo declara. Añádalo a los códigos de calle del plan con Editar plan, o elija otra regla de votación.",
+            "required": "Esta regla de votación solo permite la votación sobre un plan que cumple el código: un edificio que lo incumple o que queda excluido por él impide guardar este acuerdo. Las reglas aún desconocidas o no comprobadas no lo impiden. La votación registra esta comprobación.",
+            "noBuildings": "El plan no tiene edificios que comprobar.",
+            "unchecked": "Reglas que la aplicación no comprueba",
+            "check": "Comprobar el código"
         }
     },
     "criticTour": {

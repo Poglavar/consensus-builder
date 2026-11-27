@@ -3,7 +3,8 @@
 // and the whole street, and the sides by compass. "Select parcels" puts the parcels whose boundary
 // runs along the chosen part on the chosen side into the ordinary parcel selection, the same path the
 // chat agent uses (ChatNavigation.apply), so the plan, agreement and street-vote flows take them
-// unchanged. The last pick is kept for the street vote to name (lastPick). Geometry is the pure
+// unchanged. The last pick is kept for the street vote to name (lastPick); its street reference lists
+// the corner plots selected (plots also along another road at a part's end). Geometry is the pure
 // streets/street-segments.js; the street comes from GET /streets/segments.
 (function (root, factory) {
     const api = factory(root);
@@ -95,6 +96,7 @@
     }
 
     // The plots along `parts` on `side` from the live parcels: loads the ground around them first.
+    // `corners`: the plots whose boundary also runs along another road at a part's end, with its names.
     async function plotsAlong(parts, side) {
         const all = parts.flatMap(part => part.coordinates);
         const pad = 0.0006;
@@ -109,12 +111,15 @@
         const fabric = root.LiveParcelFabric;
         const parcels = (fabric.peekBounds(bounds) || []).map(feature => ({ id: String(fabric.featureId(feature) ?? ''), geometry: feature.geometry })).filter(row => row.id && row.geometry);
         const transparent = new Set([...(roads.ids || []).map(String), ...parcels.map(row => row.id).filter(id => typeof root.isRoadParcel === 'function' && root.isRoadParcel(id))]);
-        const ids = [];
+        const ids = [], corners = new Map();
         for (const part of parts) {
-            for (const plot of streets().plotsAlong({ coordinates: part.coordinates, parcels, side, transparent })) if (!ids.includes(plot.id)) ids.push(plot.id);
+            for (const plot of streets().plotsAlong({ coordinates: part.coordinates, parcels, side, transparent, arms: streets().armsOf(part) })) {
+                if (!ids.includes(plot.id)) ids.push(plot.id);
+                if (plot.corner) corners.set(plot.id, [...new Set([...(corners.get(plot.id) || []), ...plot.corner.streets])]);
+            }
         }
-        log(`${ids.length} parcels along ${parts.length} part(s), side ${side}; ${parcels.length} parcels read (${loaded.status})`);
-        return { ids, complete: loaded.status === 'ready' };
+        log(`${ids.length} parcels along ${parts.length} part(s), side ${side}, ${corners.size} on a corner; ${parcels.length} parcels read (${loaded.status})`);
+        return { ids, corners, complete: loaded.status === 'ready' };
     }
 
     /** Opens the picker for the street at a click: { lat, lng }. `control` shows the busy spinner. */
@@ -179,7 +184,7 @@
             status.textContent = t('streets.picker.selecting', 'Finding the parcels along it…');
             try {
                 // One busy span: reading the parcels, loading the selection applier and applying it.
-                const { ids, complete } = await root.BusyControl.track(button, async () => {
+                const { ids, corners, complete } = await root.BusyControl.track(button, async () => {
                     const found = await plotsAlong(parts, side);
                     if (!found.ids.length) return found;
                     if (!root.ChatNavigation) await root.ensureOptionalTool('mapSelection');
@@ -189,12 +194,17 @@
                 });
                 if (!ids.length) { status.textContent = t('streets.picker.none', 'No parcel boundary runs along this part on that side.'); return; }
                 const segment = value === 'whole' ? null : parts[0];
-                const reference = S.reference(found.street, segment, side, (segment && segment.official) || official || null);
                 const where = segment ? segmentLabel(segment) : t('streets.picker.whole', 'The whole street');
                 const sideText = side === 'both' ? t('streets.side.both', 'Both sides') : body.querySelector(`input[name="street-side"][value="${side}"]`)?.closest('label')?.textContent || side;
                 // The cadastral parcels behind the selected pieces, to recognise the plan's land later.
                 const fabric = root.LiveParcelFabric;
-                const cadastreIds = [...new Set(ids.flatMap(id => { const feature = fabric.get(id); const bases = feature ? fabric.explicitCadastreIds(feature) : []; return bases.length ? bases.map(String) : [id]; }))];
+                const cadastreOf = id => { const feature = fabric.get(id); const bases = feature ? fabric.explicitCadastreIds(feature) : []; return bases.length ? bases.map(String) : [id]; };
+                const cadastreIds = [...new Set(ids.flatMap(cadastreOf))];
+                // Corner plots are recorded by their cadastral parcels too, as the vote's land is.
+                const cornerRows = new Map();
+                for (const [id, names] of corners) for (const parcelId of cadastreOf(id)) cornerRows.set(parcelId, [...new Set([...(cornerRows.get(parcelId) || []), ...names])]);
+                const reference = S.reference(found.street, segment, side, (segment && segment.official) || official || null,
+                    [...cornerRows].map(([parcelId, names]) => ({ parcelId, streets: names })));
                 last = { city: city(), reference, parcelIds: ids, cadastreIds, label: `${found.street.name} · ${where} · ${sideText}` };
                 const message = t('streets.picker.selected', 'Selected {{count}} parcels along {{street}}: {{where}}, {{side}}.', { count: ids.length, street: found.street.name, where, side: sideText.toLowerCase() })
                     + (complete ? '' : ` ${t('streets.picker.incomplete', 'Some parcels here have not loaded; check the map.')}`);

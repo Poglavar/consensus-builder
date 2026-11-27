@@ -285,7 +285,7 @@
             if (!win.AgreementRecord.matchesPlan(plan, [...cids.values()])) {
                 const planContent = win.PlanRecord.create(plan?.content.title || agreement.title
                     || agreement.designs[0]?.title || t('agreement.plan.untitled', 'Untitled plan'), [...cids.values()],
-                    plan?.content.view || win.MapShare.capture(win));
+                    plan?.content.view || win.MapShare.capture(win), null, plan?.content.codes);
                 plan = { cid: cidApi().cidOfObject(planContent), content: planContent };
             }
             agreement = store().save({ ...agreement, plan });

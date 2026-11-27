@@ -1,5 +1,6 @@
 // A named plan is an immutable selection of published designs and a saved map view, without agreement terms.
 // It may also schedule its members: a construction window per design, in months (docs/buildout-timeline.md).
+// It may name the street codes it claims to respect (`codes`), a claim that is checked, never trusted.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -33,6 +34,12 @@
     const ascending = values => Array.isArray(values) && values.every((value, index) => !index || values[index - 1] < value);
     const month = value => typeof value === 'string' && MONTH.test(value) && value >= MONTHS.first && value <= MONTHS.last;
     const constructionWindow = value => keys(value, ['start', 'end']) && month(value.start) && month(value.end) && value.start <= value.end;
+    // The street codes a plan claims to respect, each by exact revision (planning/eligibility.js
+    // `kind: 'street-code'`): a claim only, checked independently wherever it is relied on.
+    const CODE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/, CODE_VERSION = /^[0-9A-Za-z][0-9A-Za-z.-]{0,19}$/, MAX_CODES = 8;
+    const codeKey = code => `${code.id}@${code.version}`;
+    const code = value => keys(value, ['id', 'version']) && typeof value.id === 'string' && value.id.length <= 80 && CODE_ID.test(value.id)
+        && typeof value.version === 'string' && CODE_VERSION.test(value.version);
 
     // Structural rules and the two named semantic extensions share the runtime's constants/helpers.
     // Ordinary JSON Schema alone cannot order array members or bound numbers encoded inside a string.
@@ -41,7 +48,7 @@
         const boundedText = maxLength => ({ type: 'string', minLength: 1, maxLength, 'x-ugt-utf16-maxLength': maxLength });
         const exactObject = (properties, required = []) => ({ type: 'object', additionalProperties: false, properties, ...(required.length ? { required } : {}) });
         return { $schema: 'https://json-schema.org/draft/2020-12/schema', title: 'Named plan/v1',
-            $comment: 'Acceptance also requires ugt-map-location format, x-ugt-ascending, x-ugt-plan-members (schedule keys are designCids members, months within range, start ≤ end) and x-ugt-utf16-maxLength (JavaScript string lengths). These semantic extensions use PlanRecord.semanticRules, the same helpers as PlanRecord.validate. Clients ignoring extensions must not claim full validation.',
+            $comment: 'Acceptance also requires ugt-map-location format, x-ugt-ascending, x-ugt-plan-members (schedule keys are designCids members, months within range, start ≤ end), x-ugt-plan-codes (codes sorted by id@version without duplicates) and x-ugt-utf16-maxLength (JavaScript string lengths). These semantic extensions use PlanRecord.semanticRules, the same helpers as PlanRecord.validate. Clients ignoring extensions must not claim full validation.',
             ...exactObject({ schema: { const: SCHEMA },
                 title: { ...boundedText(MAX_TITLE), pattern: '^\\S(?:[\\s\\S]*\\S)?(?![\\s\\S])' },
                 designCids: { type: 'array', minItems: 1, maxItems: MAX_DESIGNS, uniqueItems: true,
@@ -58,12 +65,15 @@
                 }, ['at', 'mode']),
                 schedule: { type: 'object', minProperties: 1, propertyNames: { pattern: CID.source }, 'x-ugt-plan-members': true,
                     description: `Optional construction window per member design CID: start and end months (YYYY-MM, inclusive, ${MONTHS.first}–${MONTHS.last}, start ≤ end). Members without an entry are unscheduled; omit schedule when no member has a window.`,
-                    additionalProperties: exactObject({ start: { type: 'string', pattern: MONTH.source }, end: { type: 'string', pattern: MONTH.source } }, ['start', 'end']) }
+                    additionalProperties: exactObject({ start: { type: 'string', pattern: MONTH.source }, end: { type: 'string', pattern: MONTH.source } }, ['start', 'end']) },
+                codes: { type: 'array', minItems: 1, maxItems: MAX_CODES, 'x-ugt-plan-codes': true,
+                    description: 'Optional street codes the plan claims to respect, each by exact revision (id@version), sorted by id@version without duplicates. A claim only: checks of it are made independently. Omit codes when the plan claims none.',
+                    items: exactObject({ id: { type: 'string', pattern: CODE_ID.source, maxLength: 80 }, version: { type: 'string', pattern: CODE_VERSION.source } }, ['id', 'version']) }
             }, ['schema', 'title', 'designCids', 'view']) };
     }
 
     function validate(content) {
-        if (!keys(content, ['schema', 'title', 'designCids', 'view', 'schedule']) || content.schema !== SCHEMA) return 'Invalid named plan.';
+        if (!keys(content, ['schema', 'title', 'designCids', 'view', 'schedule', 'codes']) || content.schema !== SCHEMA) return 'Invalid named plan.';
         if (!text(content.title, MAX_TITLE) || content.title !== content.title.trim()) return `Enter a plan name of up to ${MAX_TITLE} characters.`;
         const cids = content.designCids;
         if (!Array.isArray(cids) || !cids.length || cids.length > MAX_DESIGNS || cids.some(cid => typeof cid !== 'string' || !CID.test(cid))
@@ -78,7 +88,13 @@
             || Math.abs(v.camera.targetLat) > LIMITS.latitude || Math.abs(v.camera.targetLng) > LIMITS.longitude
             || v.camera.pitchRad < -Math.PI / 2 || v.camera.pitchRad > 0 || v.camera.range < 1)) return 'Invalid saved camera.';
         if (v.settings != null && (!keys(v.settings, SETTINGS) || Object.values(v.settings).some(value => !text(value, LIMITS.setting)))) return 'Invalid saved display settings.';
-        return scheduleError(content.schedule, cids);
+        return scheduleError(content.schedule, cids) || codesError(content.codes);
+    }
+    function codesError(codes) {
+        if (codes === undefined) return null;
+        if (!Array.isArray(codes) || !codes.length || codes.length > MAX_CODES || !codes.every(code)) return `Name up to ${MAX_CODES} street codes by id and version, or omit them.`;
+        if (!ascending(codes.map(codeKey))) return 'List the street codes sorted, without duplicates.';
+        return null;
     }
 
     function scheduleError(schedule, cids) {
@@ -93,7 +109,8 @@
 
     // schedule: { [designCid]: { start, end } }; windows of designs no longer in the plan are dropped,
     // and an empty schedule is left out so an unscheduled plan keeps its content and CID.
-    function create(title, designCids, view, schedule = null) {
+    // codes: [{ id, version }] the plan claims to respect; sorted and deduplicated, left out when none.
+    function create(title, designCids, view, schedule = null, codes = null) {
         const members = [...new Set(designCids)].sort();
         const windows = Object.entries(schedule || {}).filter(([cid, window]) => members.includes(cid) && window)
             .map(([cid, window]) => [cid, { start: window.start, end: window.end }]);
@@ -102,10 +119,13 @@
                 camera: view.camera || null, rotate: view.mode !== '2d' && view.rotate === true,
                 settings: Object.fromEntries(SETTINGS.filter(key => view.settings?.[key] != null).map(key => [key, view.settings[key]])) },
             ...(windows.length ? { schedule: Object.fromEntries(windows) } : {}) };
+        const claimed = [...new Map((codes || []).map(entry => [codeKey(entry), { id: entry.id, version: entry.version }])).entries()]
+            .sort(([a], [b]) => (a < b ? -1 : 1)).map(([, entry]) => entry);
+        if (claimed.length) content.codes = claimed;
         const error = validate(content);
         if (error) throw new Error(error);
         return content;
     }
-    return Object.freeze({ SCHEMA, MAX_TITLE, MAX_DESIGNS, MONTHS, validate, create, jsonSchema,
-        semanticRules: Object.freeze({ location, ascending, text, month, constructionWindow, scheduleError }) });
+    return Object.freeze({ SCHEMA, MAX_TITLE, MAX_DESIGNS, MAX_CODES, MONTHS, validate, create, jsonSchema,
+        semanticRules: Object.freeze({ location, ascending, text, month, constructionWindow, scheduleError, codesError }) });
 });

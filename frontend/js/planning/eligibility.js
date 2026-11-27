@@ -39,22 +39,110 @@
             { id: 'listing', cite: '17.9', check: 'gradeNotIn', fact: 'heritage', grades: ['I', 'II*'] },
             { id: 'topWindows', cite: '17.10', check: 'unchecked' },
         ],
+    }, {
+        // A street code (`kind: 'street-code'`): the limits a street plan's buildings must keep. A plan
+        // names the codes it claims to respect (plan-record.js `codes`); the claim is checked here, per
+        // building of the plan, never trusted. Each building's facts are its building facts (raised
+        // existing ones only) and the facts planning/street-code.js derives from the design and the
+        // place. `applies`: 'existing' (a raised existing building), 'new', 'setback' (a building with a
+        // setback storey) or every building; a test that does not apply is `notApplicable`. `effect`:
+        // 'excluded' takes the building out of what a street vote may change, otherwise the plan breaks
+        // the code. Paragraph numbers are Strong Suburbs' (pages 41–54).
+        id: 'gb-strong-suburbs-street-code', version: '2021', kind: 'street-code', planningRuleSet: 'gb-eng-planning',
+        ballotRules: ['gb-street-vote-strong-suburbs'],
+        source: { label: 'Samuel Hughes and Ben Southwood, Strong Suburbs (Policy Exchange, 2021), paras 12–15, 30–42, 51–57', url: 'https://policyexchange.org.uk/wp-content/uploads/2022/10/Strong-Suburbs.pdf' },
+        text: { name: 'Strong Suburbs street code' },
+        // Para 30: the lower of the caps of every small area a property on the street falls in or that
+        // lies within 200 m of the street; people per hectare. "Between 20 and 60" and "between 60 and
+        // 120" share their ends: a density of exactly 60 takes the lower cap (the paragraph's "lower of").
+        density: { reachM: 200, bands: [{ below: 20, storeys: 2 }, { atMost: 60, storeys: 3 }, { atMost: 120, storeys: 4 }, { storeys: 5 }] },
+        // Paras 31–32: one setback storey under 75° everywhere, a second under 32.5° where four or five storeys are permitted.
+        setbacks: { first: { degrees: 75 }, second: { degrees: 32.5, minCap: 4 } },
+        // Para 37: ten or more buildings built before 1918 within 100 m of the street restrict it to 3+1,
+        // unless half the buildings on the street already have more floors (then the existing total).
+        historic: { reachM: 100, builtBefore: 1918, count: 10, storeys: 3, setbacks: 1, streetReachM: 40 },
+        // Para 54: a neighbour on another street is owed compensation for building over a 30° angle of
+        // elevation from the boundary of their plot (Effects on neighbours, `boundary`).
+        neighbourGuides: { boundary: { degrees: 30, effect: 'compensation', cite: '54' } },
+        tests: [
+            { id: 'ssListed', cite: '12', applies: 'existing', check: 'notListed', fact: 'heritage', effect: 'excluded' },
+            { id: 'ssPre1918', cite: '13', applies: 'existing', check: 'builtFrom', min: 1918, effect: 'excluded' },
+            // "Undeveloped Green Belt land": a raised existing building stands on developed land.
+            { id: 'ssGreenBelt', cite: '14', applies: 'new', check: 'notInAreas', fact: 'designations', datasets: ['green-belt'], effect: 'excluded' },
+            { id: 'ssOpenLand', cite: '14', check: 'unchecked', reason: 'noSource' },
+            { id: 'ssNature', cite: '15', check: 'notInAreas', fact: 'designations', datasets: ['national-park', 'area-of-outstanding-natural-beauty', 'site-of-special-scientific-interest'], effect: 'excluded' },
+            { id: 'ssStoreys', cite: '30', check: 'atMostFact', fact: 'proposed_storeys', limit: 'storey_cap' },
+            { id: 'ssSetbackPlane', cite: '31', applies: 'setback', check: 'factIs', fact: 'setback_under_plane', value: true },
+            { id: 'ssSetbacks', cite: '32', applies: 'setback', check: 'atMostFact', fact: 'proposed_setbacks', limit: 'setbacks_allowed' },
+            { id: 'ssLightPlanes', cite: '35', check: 'unchecked', reason: 'otherStreets' },
+            // Ceilings: the design states storey heights (floor to floor); a ceiling is lower by the
+            // floor's thickness, which it does not state. So a storey of at most 3.5 m keeps the
+            // maximum and one under 2.5 m breaks the minimum; anything else is unknown.
+            { id: 'ssCeilingMax', cite: '36', check: 'boundAtMost', fact: 'storey_height_m', max: 3.5 },
+            { id: 'ssCeilingMin', cite: '36', check: 'boundBelowFails', fact: 'storey_height_m', min: 2.5 },
+            { id: 'ssSetbackCeiling', cite: '36', applies: 'setback', check: 'boundAtMost', fact: 'setback_rise_m', max: 3 },
+            { id: 'ssAddedCeiling', cite: '36.2', applies: 'existing', check: 'unchecked', reason: 'ceilings' },
+            { id: 'ssHistoric', cite: '37', check: 'atMostFact', fact: 'proposed_storeys', limit: 'historic_storeys' },
+            { id: 'ssPlotUse', cite: '39', check: 'unchecked', reason: 'plotUse' },
+            { id: 'ssFrontDoors', cite: '41', check: 'unchecked', reason: 'doors' },
+            { id: 'ssSideWindows', cite: '42', check: 'unchecked', reason: 'windows' },
+            { id: 'ssSemiDetached', cite: '51', check: 'unchecked', reason: 'consent' },
+            { id: 'ssDetached', cite: '52', check: 'unchecked', reason: 'consent' },
+        ],
     }];
     const byKey = new Map(RULE_SETS.map(set => [`${set.id}@${set.version}`, set]));
     const get = (id, version) => byKey.get(`${id}@${version}`) || null;
     const latest = id => RULE_SETS.filter(set => set.id === id).sort((a, b) => (a.version < b.version ? 1 : -1))[0] || null;
-    // The newest version of each set that applies under a city's planning rule sets.
-    function forCity(planningRuleSetIds = []) {
-        return RULE_SETS.filter(set => latest(set.id) === set && planningRuleSetIds.includes(set.planningRuleSet));
+    // The newest version of each set of a kind (building eligibility, or 'street-code') that applies
+    // under a city's planning rule sets.
+    function forCity(planningRuleSetIds = [], { kind = 'building' } = {}) {
+        return RULE_SETS.filter(set => latest(set.id) === set && (set.kind || 'building') === kind && planningRuleSetIds.includes(set.planningRuleSet));
     }
+    // The street codes a ballot rule can carry a check of.
+    const codesForBallot = rule => RULE_SETS.filter(set => set.kind === 'street-code' && rule && set.ballotRules?.includes(rule.id));
 
     const valueOf = (facts, name) => (facts && facts[name] ? facts[name].value : null);
 
-    // One test → { id, cite, status: pass | fail | unknown | unchecked, value }.
+    // Whether a test applies to a building, by its `kind` fact (street codes: 'existing' or 'new') and
+    // its setback storeys; a set whose facts carry no kind (building eligibility) applies every test.
+    function applies(test, facts) {
+        if (!test.applies) return true;
+        const kind = valueOf(facts, 'kind');
+        if (test.applies === 'setback') { const setbacks = valueOf(facts, 'proposed_setbacks'); return !finite(setbacks) || setbacks > 0; }
+        return kind === null || kind === test.applies;
+    }
+
+    // One test → { id, cite, status: pass | fail | unknown | unchecked | notApplicable, value }.
+    // The operators are a closed set: builtBetween, builtFrom, factIs, factIsNot, factAtLeast,
+    // factAtMost, atMostFact (a fact against a limit fact; a limit of false means no limit),
+    // boundAtMost and boundBelowFails (the fact is an upper bound of what the rule limits: a bound
+    // within the maximum passes, one under the minimum fails, else unknown), gradeNotIn, notListed,
+    // notInAreas (the designation datasets a building lies in), row and unchecked.
     function runTest(test, facts) {
         const result = (status, value) => ({ id: test.id, cite: test.cite, status, ...(value === undefined ? {} : { value }) });
+        if (!applies(test, facts)) return result('notApplicable');
         const value = test.fact ? valueOf(facts, test.fact) : null;
         switch (test.check) {
+            case 'builtFrom': {
+                const span = valueOf(facts, 'built');
+                if (!span) return result('unknown');
+                if (finite(span.from) && span.from >= test.min) return result('pass', span);
+                return result(finite(span.to) && span.to < test.min ? 'fail' : 'unknown', span);
+            }
+            case 'atMostFact': {
+                const limit = valueOf(facts, test.limit);
+                if (limit === false) return result('pass', value);
+                return !finite(value) || !finite(limit) ? result('unknown', finite(value) ? value : undefined) : { ...result(value <= limit ? 'pass' : 'fail', value), limit };
+            }
+            case 'boundAtMost': return !finite(value) ? result('unknown') : result(value <= test.max ? 'pass' : 'unknown', value);
+            case 'boundBelowFails': return !finite(value) ? result('unknown') : result(value < test.min ? 'fail' : 'unknown', value);
+            case 'notListed': return !value || typeof value.listed !== 'boolean' ? result('unknown')
+                : { ...result(value.listed ? 'fail' : 'pass', value.listed ? 'listed' : 'not listed'), ...(value.grade ? { grade: value.grade } : {}) };
+            case 'notInAreas': {
+                if (!Array.isArray(value)) return result('unknown');
+                const inside = value.filter(dataset => test.datasets.includes(dataset));
+                return result(inside.length ? 'fail' : 'pass', inside);
+            }
             case 'builtBetween': {
                 const span = valueOf(facts, 'built');
                 if (!span) return result('unknown');
@@ -88,18 +176,25 @@
         return { set: { id: set.id, version: set.version }, verdict: has('fail') ? 'ineligible' : has('unknown') ? 'unknown' : 'eligible', tests };
     }
 
-    // The fact a test reads (the date test reads `built`).
-    const factOf = test => test.fact || (test.check === 'builtBetween' ? 'built' : null);
+    // The fact a test reads (the date tests read `built`).
+    const factOf = test => test.fact || (['builtBetween', 'builtFrom'].includes(test.check) ? 'built' : null);
     // Why a house is not eligible, test by test, in the words and links the building card uses
     // (buildings/building-facts.js factRow): each failing or unknown test with its label and status,
     // the fact's value in words, the source's key to add a missing fact under, the reason a register
     // gives for an unknown one, and the register entry link. `t` translates the card's keys
     // (`buildingFact.*`, `eligibility.*`); `building` is the contract's answer, or null.
-    function explain(set, result, building, t) {
+    // `facts`, when given, are the facts the result was judged on: a fact a street code derives
+    // (planning/street-code.js, `derived: true`) is told in its own words (`eligibility.fact.<name>`
+    // with the fact's `params`), with the limit it was read against.
+    function explain(set, result, building, t, facts = null) {
         return result.tests.filter(test => test.status === 'fail' || test.status === 'unknown').map(test => {
             const definition = set.tests.find(entry => entry.id === test.id) || {};
             const field = factOf(definition);
-            const row = field && building?.facts ? factsApi().factRow(building, field, (key, params) => t(`buildingFact.${key}`, params)) : null;
+            const derived = field && facts?.[field]?.derived ? facts[field] : null;
+            const limit = definition.limit && facts?.[definition.limit]?.derived ? facts[definition.limit] : null;
+            const words = fact => fact ? t(`eligibility.fact.${fact.name}`, fact.params || {}) : null;
+            const row = derived ? { text: [words(derived), words(limit)].filter(Boolean).join(' · ') || null, raw: null, key: null, reason: null, link: limit?.link || derived.link || null }
+                : field && building?.facts ? factsApi().factRow(building, field, (key, params) => t(`buildingFact.${key}`, params)) : null;
             const status = t(`eligibility.status.${test.status}`);
             return { cite: test.cite, id: test.id, status: test.status, label: t(`eligibility.test.${test.id}`),
                 statusText: test.grade ? t('eligibility.withGrade', { status, grade: test.grade }) : status,
@@ -179,5 +274,84 @@
         return blocked.length ? [{ code: 'eligibility-failed', houses: blocked }] : [];
     }
 
-    return { RULE_SETS, get, latest, forCity, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues };
+    // ── a street code a street vote requires (community/ballot-rules.js `requires.streetCode`) ──
+    const cidApi = () => (root && root.Cid) || require('../cid.js');
+    const streetsApi = () => (root && root.StreetSegments) || require('../streets/street-segments.js');
+    // A building's verdict under a street code, by its failing tests' effect: 'excluded' when a test
+    // whose failure takes it out of what a street vote may change fails, 'breaks' when another fails,
+    // 'unknown' while a test is unknown, else 'meets'. The first two hold the vote back.
+    const CODE_VERDICTS = ['meets', 'breaks', 'excluded', 'unknown'];
+    const CODE_BLOCKING = ['breaks', 'excluded'];
+    const effectOf = (set, id) => set.tests.find(test => test.id === id)?.effect || null;
+    function codeLists(set, result) {
+        const ids = status => result.tests.filter(test => test.status === status).map(test => test.id);
+        const failed = ids('fail');
+        return { failing: failed.filter(id => effectOf(set, id) !== 'excluded'), excluded: failed.filter(id => effectOf(set, id) === 'excluded'), unknown: ids('unknown') };
+    }
+    const verdictOfLists = ({ failing, excluded, unknown }) => (excluded.length ? 'excluded' : failing.length ? 'breaks' : unknown.length ? 'unknown' : 'meets');
+    const codeVerdict = (set, result) => verdictOfLists(codeLists(set, result));
+    // The street a check read, as the record keys it: the CID of the vote's street reference without
+    // its corner plots, which the check does not read; null when the vote names no street.
+    function streetKey(street) {
+        if (!street) return null;
+        const { corners: _corners, ...read } = streetsApi().normaliseReference(street);
+        return cidApi().cidOfObject(read);
+    }
+    /**
+     * What a street vote records of its street code check (planning/street-code.js check()): the code,
+     * when, the plan (its CID) and street it read, and each building of the plan with its verdict and
+     * the ids of the tests it breaks, is excluded by or leaves unknown.
+     */
+    function codeEvidence(set, outcome, { planCid, street = null }, checkedAt) {
+        return { set: { id: set.id, version: set.version }, checkedAt, planCid, street: streetKey(street),
+            buildings: outcome.buildings.map(building => {
+                const lists = codeLists(set, building.result);
+                return { design: building.design, index: building.index, factId: building.factId || null, kind: building.kind, verdict: verdictOfLists(lists), ...lists };
+            }) };
+    }
+    const exactKeys = (value, names) => value && typeof value === 'object' && !Array.isArray(value)
+        && Object.keys(value).length === names.length && names.every(name => Object.hasOwn(value, name));
+    // A recorded street code check, checked for shape; a verdict must follow from its test lists.
+    function normalizeCodeEvidence(raw) {
+        const fail = message => { throw new Error(message); };
+        if (!exactKeys(raw, ['set', 'checkedAt', 'planCid', 'street', 'buildings'])) fail('The street code check is malformed.');
+        const set = raw.set && get(raw.set.id, raw.set.version);
+        if (!set || set.kind !== 'street-code') fail('The street code check names an unknown street code.');
+        if (typeof raw.checkedAt !== 'string' || !Number.isFinite(Date.parse(raw.checkedAt))) fail('The street code check needs its time.');
+        if (!cidApi().isCid(raw.planCid)) fail('The street code check names the plan it read by CID.');
+        if (raw.street !== null && !cidApi().isCid(raw.street)) fail('The street code check names the street it read by CID, or none.');
+        if (!Array.isArray(raw.buildings) || raw.buildings.length > 500) fail('The street code check lists at most 500 buildings.');
+        const testIds = new Set(set.tests.map(test => test.id));
+        const buildings = raw.buildings.map(building => {
+            const lists = ['failing', 'excluded', 'unknown'];
+            if (!exactKeys(building, ['design', 'index', 'factId', 'kind', 'verdict', ...lists])
+                || !Number.isInteger(building.design) || building.design < 0 || building.design > 999
+                || !Number.isInteger(building.index) || building.index < 0 || building.index > 99999
+                || (building.factId !== null && !HOUSE_ID.test(String(building.factId))) || !['existing', 'new'].includes(building.kind)
+                || !CODE_VERDICTS.includes(building.verdict)
+                || !lists.every(name => Array.isArray(building[name]) && building[name].length <= set.tests.length && building[name].every(id => testIds.has(id)))
+                || !building.excluded.every(id => effectOf(set, id) === 'excluded') || building.failing.some(id => effectOf(set, id) === 'excluded')
+                || verdictOfLists(building) !== building.verdict) {
+                fail('A street code building entry is malformed.');
+            }
+            return { design: building.design, index: building.index, factId: building.factId, kind: building.kind, verdict: building.verdict,
+                failing: [...building.failing], excluded: [...building.excluded], unknown: [...building.unknown] };
+        });
+        return { set: { id: set.id, version: set.version }, checkedAt: new Date(Date.parse(raw.checkedAt)).toISOString(), planCid: raw.planCid, street: raw.street, buildings };
+    }
+    /**
+     * Why a recorded street code check does not let the vote start: [] when the plan claims the code,
+     * the check read this plan and street, and no building breaks the code or is excluded by it.
+     * Unknown and not-checked rules do not hold it back. `plan`: { cid, content } or null.
+     */
+    function codeIssues(set, recorded, { plan, street = null }) {
+        if (plan && !(plan.content?.codes || []).some(code => code.id === set.id && code.version === set.version)) return [{ code: 'street-code-unclaimed' }];
+        if (!recorded || recorded.set.id !== set.id || recorded.set.version !== set.version) return [{ code: 'street-code-missing' }];
+        if ((plan && recorded.planCid !== plan.cid) || recorded.street !== streetKey(street)) return [{ code: 'street-code-stale' }];
+        const blocked = recorded.buildings.filter(building => CODE_BLOCKING.includes(building.verdict));
+        return blocked.length ? [{ code: 'street-code-failed', buildings: blocked }] : [];
+    }
+
+    return { RULE_SETS, get, latest, forCity, codesForBallot, evaluate, explain, coveredHouses, check, evidence, normalizeEvidence, evidenceIssues,
+        CODE_VERDICTS, CODE_BLOCKING, codeVerdict, codeLists, streetKey, codeEvidence, normalizeCodeEvidence, codeIssues };
 });

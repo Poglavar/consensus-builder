@@ -17,6 +17,7 @@ const ajv=new Ajv2020();
 ajv.addFormat('ugt-map-location',{type:'string',validate:PlanRecord.semanticRules.location});
 ajv.addKeyword({keyword:'x-ugt-ascending',type:'array',schemaType:'boolean',validate:(enabled,value)=>!enabled||PlanRecord.semanticRules.ascending(value)});
 ajv.addKeyword({keyword:'x-ugt-utf16-maxLength',type:'string',schemaType:'number',validate:(limit,value)=>PlanRecord.semanticRules.text(value,limit)});
+ajv.addKeyword({keyword:'x-ugt-plan-codes',type:'array',schemaType:'boolean',validate:(enabled,value)=>!enabled||PlanRecord.semanticRules.codesError(value)===null});
 ajv.addKeyword({keyword:'x-ugt-plan-members',type:'object',schemaType:'boolean',validate:(enabled,value,parent,context)=>!enabled||PlanRecord.semanticRules.scheduleError(value,context.rootData.designCids)===null});
 const schema=PlanRecord.jsonSchema(),validate=ajv.compile(schema);
 describe('shared named-plan JSON Schema',()=>{
@@ -28,6 +29,19 @@ describe('shared named-plan JSON Schema',()=>{
         const scoped={...sparse,view:{...sparse.view,settings:{permittedScope:'surviving'}}};
         expect(PlanRecord.validate(scoped)).toBeNull();
         expect(cidOfObject(sparse)).toBe(cid);
+    });
+    it('names the street codes a plan claims sorted and deduplicated, and leaves them out when none, keeping the CID',()=>{
+        const plain=canonical();
+        expect(PlanRecord.create('Named plan',cids,{at:'45,15,17',mode:'2d',city:'london',language:'en'},null,[])).toEqual(plain);
+        const claimed=PlanRecord.create('Named plan',cids,{at:'45,15,17',mode:'2d',city:'london',language:'en'},null,
+            [{id:'gb-strong-suburbs-street-code',version:'2021'},{id:'a-code',version:'1'},{id:'gb-strong-suburbs-street-code',version:'2021'}]);
+        expect(claimed.codes).toEqual([{id:'a-code',version:'1'},{id:'gb-strong-suburbs-street-code',version:'2021'}]);
+        expect(PlanRecord.validate(claimed)).toBeNull();expect(validate(claimed)).toBe(true);
+        expect(cidOfObject(plain)).not.toBe(cidOfObject(claimed));
+        for(const codes of [[],[{id:'Bad Id',version:'1'}],[{id:'b',version:'1'},{id:'a',version:'1'}],[{id:'a',version:'1',extra:true}]]){
+            expect(PlanRecord.validate({...plain,codes}),JSON.stringify(codes)).toMatch(/street codes/);
+            expect(validate({...plain,codes}),JSON.stringify(codes)).toBe(false);
+        }
     });
     it('shares canonical limits and declares semantic extensions explicitly',()=>{
         expect(schema.properties.title.maxLength).toBe(PlanRecord.MAX_TITLE);expect(schema.properties.designCids.maxItems).toBe(PlanRecord.MAX_DESIGNS);

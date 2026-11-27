@@ -79,6 +79,22 @@
             option('rotate',win.i18n.t('proposals.share.view.rotate'),view.rotate===true).addEventListener('change',event=>{view.rotate=event.target.checked;});
             options.append(node('small','sheet-note',win.i18n.t('proposals.share.view.rotateHint')));body.append(options);
         }
+        // The street codes the plan claims to respect (plan-record.js codes): those of the city's
+        // planning rule sets, and any the revision already claims. A claim; agreements check it.
+        const claimed=new Map((baseRow?.content.codes||[]).map(code=>[`${code.id}@${code.version}`,code]));
+        const city=view.city||win.CityConfigManager?.getCurrentCityId?.()||null;
+        const offered=new Map([...(win.BuildingEligibility?.forCity(win.CityConfigManager?.getCityConfig?.(city)?.planning?.ruleSetIds||[],{kind:'street-code'})||[])
+            .map(set=>[`${set.id}@${set.version}`,{id:set.id,version:set.version}]),...claimed]);
+        if(offered.size){
+            const codes=node('fieldset','plan-dialog__codes');codes.append(node('legend','',t('codes')),node('p','sheet-note',t('codesHint')));
+            for(const [key,code] of offered){
+                const label=node('label','plan-dialog__code'),input=node('input');input.type='checkbox';input.checked=claimed.has(key);input.dataset.planCode=key;
+                input.addEventListener('change',()=>{if(input.checked)claimed.set(key,code);else claimed.delete(key);});
+                const known=win.BuildingEligibility?.get(code.id,code.version);
+                label.append(input,document.createTextNode(` ${known?win.i18n.t(`planningViews.eligibility.${`set.${code.id}`}`):code.id} (${code.version})`));codes.append(label);
+            }
+            body.append(codes);
+        }
         const status=node('p','plan-dialog__status'); status.setAttribute('role','status'); body.append(status);
         const footer=node('div','cb-actions plan-dialog__footer');
         let dialog;
@@ -98,7 +114,7 @@
                 }
             }
             // Members kept from the base revision keep their construction windows.
-            const row=win.PlanComposition.create(name.value,[...selected].map(cid=>sources.get(cid)),view,baseRow?.content.schedule);
+            const row=win.PlanComposition.create(name.value,[...selected].map(cid=>sources.get(cid)),view,baseRow?.content.schedule,[...claimed.values()]);
             if (!win.SharedPlanSession?.saveLocalRevision(baseRow,row)) win.PlanWorkspace.save(row);
             dialog.close();
             await win.ClickStack.showPlan(row, { designs: win.PlanComposition.localRecords(row, { apiBase: win.DesignSync.apiBase() }), draft: !row.published });

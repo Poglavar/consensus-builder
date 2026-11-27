@@ -121,9 +121,12 @@
     // `design`: { buildings: [{ id, footprint: Feature, heightM }] }. Answers the assessment with the
     // lot geometries it names and the guides it used, { status: 'notApplicable' } where the city has
     // no neighbour guides, or { status: 'unavailable', reason }.
+    // `design.guides` adds readings a plan's street code states (planning/eligibility.js
+    // `neighbourGuides`, Strong Suburbs' 30° boundary) to the place's own guides.
     async function assessDesign(design) {
         const turf = root.turf, fabric = root.LiveParcelFabric, effects = root.NeighbourEffects;
-        const guides = await guidesFor();
+        const own = await guidesFor();
+        const guides = own || design.guides ? { ...(own || {}), ...(design.guides || {}) } : null;
         if (!guides) return { status: 'notApplicable', lots: [] };
         const proposed = (design.buildings || []).filter(building => building.footprint?.geometry && building.heightM > 0)
             .map(building => ({ id: building.id, geometry: building.footprint.geometry, heightM: building.heightM }));
@@ -263,9 +266,9 @@
         return node;
     }
     // One icon per kind of reading, so a list can be read at a glance. Literal keys for the locale test.
-    const KIND_ICONS = { garden: 'fa-sun', sunlight: 'fa-cloud-sun', sky: 'fa-cloud', noSky: 'fa-house-chimney-window', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right' };
+    const KIND_ICONS = { garden: 'fa-sun', sunlight: 'fa-cloud-sun', sky: 'fa-cloud', noSky: 'fa-house-chimney-window', angle: 'fa-angle-up', splay: 'fa-ruler-combined', distance: 'fa-left-right', boundary: 'fa-mountain' };
     const KIND_KEYS = { garden: 'neighbourEffects.kind.garden', sunlight: 'neighbourEffects.kind.sunlight', sky: 'neighbourEffects.kind.sky', noSky: 'neighbourEffects.kind.noSky', angle: 'neighbourEffects.kind.angle',
-        splay: 'neighbourEffects.kind.splay', distance: 'neighbourEffects.kind.distance' };
+        splay: 'neighbourEffects.kind.splay', distance: 'neighbourEffects.kind.distance', boundary: 'neighbourEffects.kind.boundary' };
     // The rooms the no-sky line is measured in, as the planner names them. Literal keys for the locale test.
     const ROOM_KEYS = { living: 'neighbourEffects.room.living', kitchen: 'neighbourEffects.room.kitchen', bedroom: 'neighbourEffects.room.bedroom' };
     function icon(kind, status) {
@@ -287,6 +290,7 @@
         const value = lot[kind];
         if (kind === 'angle') return t('neighbourEffects.angle', { after: degrees(value.after), before: degrees(value.before), degrees: degrees(guides.angle.degrees) });
         if (kind === 'splay') return t('neighbourEffects.splay', { depth: reading(value.after), degrees: degrees(guides.splay.degrees) });
+        if (kind === 'boundary') return t('neighbourEffects.boundary', { after: degrees(value.after), before: degrees(value.before), degrees: degrees(guides.boundary.degrees) });
         if (kind === 'garden') return t('neighbourEffects.garden', { hours: format().formatNumber(guides.garden.hours), date: dayOf(guides.garden.date),
             before: share(value.before), after: share(value.after), share: share(guides.garden.share), ratio: ratio(guides.garden.ratio) });
         if (kind === 'noSky') return t('neighbourEffects.noSky', { room: ROOM_KEYS[value.room] ? t(ROOM_KEYS[value.room]) : value.room,

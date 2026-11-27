@@ -53,7 +53,7 @@
         const v1 = raw?.schema === 'community-voting/v1';
         const keys = raw && typeof raw === 'object' ? Object.keys(raw) : [];
         if (!(v1 ? exact(raw, ['schema', 'id', 'codeHashes']) : raw?.schema === SCHEMA
-            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule', 'eligibility', 'street'].includes(key)))
+            && ['schema', 'id', 'codeHashes'].every(key => keys.includes(key)) && keys.every(key => ['schema', 'id', 'codeHashes', 'households', 'rule', 'eligibility', 'streetCode', 'street'].includes(key)))
             || !UUID.test(raw.id)
             || !Array.isArray(raw.codeHashes) || !raw.codeHashes.length || raw.codeHashes.length > MAX_ENTRIES
             || raw.codeHashes.some(hash => typeof hash !== 'string' || !HASH.test(hash))
@@ -84,6 +84,16 @@
             const recorded = eligibility().normalizeEvidence(raw.eligibility);
             if (recorded.set.id !== required.id || recorded.set.version !== required.version) fail('The eligibility check is for another rule set.');
             result.eligibility = recorded;
+        }
+        // A rule held only on a plan that complies with a street code keeps the code's check of each
+        // building of the plan (planning/eligibility.js normalizeCodeEvidence).
+        const requiredCode = result.rule ? rules().get(result.rule.id, result.rule.version)?.requires?.streetCode : null;
+        if (raw.streetCode != null) {
+            if (!requiredCode) fail('Only a ballot rule that requires a street code records a street code check.');
+            let recorded;
+            try { recorded = eligibility().normalizeCodeEvidence(raw.streetCode); } catch (error) { fail(error.message); }
+            if (recorded.set.id !== requiredCode.id || recorded.set.version !== requiredCode.version) fail('The street code check is for another code.');
+            result.streetCode = recorded;
         }
         // The street (or one segment of it, by side) whose residents vote: its name, OSM ways, the
         // segment's ends and its official id where there is one (streets/street-segments.js).

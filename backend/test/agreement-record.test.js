@@ -754,3 +754,41 @@ describe('street vote eligibility', () => {
         expect(() => record.normalize(other)).toThrow('Only a ballot rule that covers eligible buildings');
     });
 });
+
+// Strong Suburbs para 2: a street vote under the 2026-11-27 rule is held only on a plan that claims
+// the Strong Suburbs street code, with a recorded check of this plan and street in which no building
+// breaks the code or is excluded by it. Buildings not known yet do not hold it back.
+describe('street vote on a plan that complies with its street code', () => {
+    const CODE = { id: 'gb-strong-suburbs-street-code', version: '2021' };
+    const claimed = PlanRecord.create('Block seven', [LAYOUT_CID, ROAD_CID], { at: '45.8,15.96,16', mode: '2d' }, null, [CODE]);
+    const CLAIMED = { cid: Cid.cidOfObject(claimed), content: claimed };
+    const codes = [1, 2].map(n => n.toString(16).padStart(64, '0'));
+    const building = (verdict, lists = {}) => ({ design: 0, index: 0, factId: 'osm:way/36', kind: 'existing', verdict, failing: [], excluded: [], unknown: [], ...lists });
+    const check = (buildings, planCid = CLAIMED.cid) => ({ set: CODE, checkedAt: '2026-11-27T15:00:00.000Z', planCid, street: null, buildings });
+    const vote = (streetCode, { plan = CLAIMED, version = '2026-11-27' } = {}) => ({ ...fixture(), plan, allocations: [], money: { currency: 'EUR', lines: [] },
+        rule: { electorate: 'community', binding: false, approvalConfig: null, lens: [] },
+        consultation: { organiser: null, participationUrl: null, voting: { schema: 'community-voting/v2', id: '6f1c2a3b-4d5e-4f60-8a71-92b3c4d5e6f7', codeHashes: codes,
+            rule: { id: 'gb-street-vote-strong-suburbs', version }, ...(streetCode ? { streetCode } : {}) } } });
+    const issues = raw => record.validate(raw).errors.filter(error => error.code.startsWith('voting-street-code')).map(error => error.code);
+
+    it('holds the vote on a building that breaks the code or that it excludes, and on a missing or stale check', () => {
+        expect(issues(vote(null))).toEqual(['voting-street-code-missing']);
+        expect(issues(vote(check([building('breaks', { failing: ['ssStoreys'] })])))).toEqual(['voting-street-code-failed']);
+        expect(issues(vote(check([building('excluded', { excluded: ['ssListed'], unknown: ['ssStoreys'] })])))).toEqual(['voting-street-code-failed']);
+        expect(issues(vote(check([building('meets')], PLAN.cid)))).toEqual(['voting-street-code-stale']);
+        const failed = record.validate(vote(check([building('breaks', { failing: ['ssStoreys'] })]))).errors.find(error => error.code === 'voting-street-code-failed');
+        expect(failed).toMatchObject({ set: CODE, buildings: [{ factId: 'osm:way/36', verdict: 'breaks', failing: ['ssStoreys'] }] });
+        expect(failed.message).toContain('osm:way/36 (breaks: 30 ssStoreys)');
+    });
+    it('lets a vote go ahead with buildings not known yet, and keeps the check in the published record', () => {
+        const unknown = check([building('unknown', { unknown: ['ssStoreys', 'ssCeilingMin'] }), { ...building('meets'), index: 1, factId: null, kind: 'new' }]);
+        expect(issues(vote(unknown))).toEqual([]);
+        expect(record.validate(vote(unknown)).valid).toBe(true);
+        expect(record.published(vote(unknown)).consultation.voting.streetCode).toEqual(unknown);
+    });
+    it('refuses a plan that does not claim the code, and leaves the advisory 2026-11-25 rule alone', () => {
+        expect(issues(vote(check([building('meets')], PLAN.cid), { plan: PLAN }))).toEqual(['voting-street-code-unclaimed']);
+        expect(issues(vote(null, { plan: PLAN, version: '2026-11-25' }))).toEqual([]);
+        expect(() => record.normalize(vote(check([building('meets')]), { version: '2026-11-25' }))).toThrow('requires a street code');
+    });
+});

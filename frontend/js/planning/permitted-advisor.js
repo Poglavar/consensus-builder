@@ -202,6 +202,14 @@
                     : root.i18n.t('permittedCheck.place', { designation, name: entry.name });
         if (entry.effect === 'prohibit') return root.i18n.t(entry.subject === 'existing-building' ? 'permittedCheck.restriction.keep' : 'permittedCheck.restriction.prohibit', { place });
         if (entry.effect === 'restrict') return root.i18n.t('permittedCheck.restriction.restrict', { place, requirement: translated(REQUIREMENT_KEYS, entry.requirement) });
+        // A direction removing only rights no design uses (a change of use): which ones, as GPDO classes.
+        if (entry.removedRights?.codes?.length) {
+            const rights = entry.removedRights.codes.map(code => {
+                const [, part, letters] = code.match(/^(\d+)([A-Z]*)$/) || [];
+                return letters ? root.i18n.t('permittedCheck.gpdoClass', { part, letters }) : root.i18n.t('permittedCheck.gpdoPart', { part: part || code });
+            }).join(', ');
+            return root.i18n.t('permittedCheck.restriction.note', { place, note: root.i18n.t('permittedCheck.note.rightsUnused', { rights }) });
+        }
         return root.i18n.t('permittedCheck.restriction.note', { place, note: translated(NOTE_KEYS, entry.reasonCode) });
     }
     // A list item for one designation, its source linked to the publisher's record of it.
