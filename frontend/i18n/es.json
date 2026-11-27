@@ -9476,6 +9476,8 @@
         "buildingFactsEdit": "Añadir o corregir en {{source}}",
         "buildingFactsNotFound": "{{source}} ya no tiene este edificio.",
         "buildingFactsAgain": "Volver a comprobar",
+        "buildingFactsWaiting": "OpenStreetMap muestra una edición uno o dos minutos después de guardarla: comprobando cada 30 segundos…",
+        "buildingFactsUnchanged": "{{source}} aún no muestra cambios. Si guardó una edición, vuelva a comprobar en un minuto.",
         "buildingFact": {
             "field": {
                 "storeys": "Plantas",
@@ -10315,6 +10317,8 @@
             "title": "Casas incluidas",
             "hint": "Esta votación de calle solo puede incluir casas que cumplan las condiciones de la regla. Sus datos se leen de OpenStreetMap y su catalogación del registro de patrimonio: añada en OpenStreetMap los que falten y vuelva a comprobar.",
             "checking": "Comprobando las casas incluidas…",
+            "waiting": "Esperando a OpenStreetMap: una edición aparece aquí uno o dos minutos después de guardarla. Comprobando cada 30 segundos…",
+            "unchanged": "OpenStreetMap aún no muestra cambios. Si guardó una edición, vuelva a comprobar en un minuto.",
             "failed": "No se pudo completar la comprobación: {{error}}",
             "summary": "{{eligible}} de {{total}} casas incluidas cumplen",
             "none": "El plan no eleva ningún edificio existente con una mansarda.",

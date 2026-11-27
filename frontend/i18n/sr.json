@@ -9504,6 +9504,8 @@
         "buildingFactsEdit": "Dodaj ili ispravi u {{source}}",
         "buildingFactsNotFound": "{{source}} više nema ovu zgradu.",
         "buildingFactsAgain": "Proveri ponovo",
+        "buildingFactsWaiting": "OpenStreetMap prikazuje izmenu minut-dva posle čuvanja: proveravam svakih 30 sekundi…",
+        "buildingFactsUnchanged": "{{source}} još ne prikazuje promenu. Ako ste sačuvali izmenu, proverite ponovo za minut.",
         "buildingFact": {
             "field": {
                 "storeys": "Broj spratova",
@@ -10344,6 +10346,8 @@
             "title": "Obuhvaćene kuće",
             "hint": "Ovo glasanje ulice sme da obuhvati samo kuće koje ispunjavaju uslove pravila. Podaci se čitaju iz OpenStreetMapa, a zaštita iz registra nasleđa: dodajte podatke koji nedostaju u OpenStreetMap, pa proverite ponovo.",
             "checking": "Proveravam obuhvaćene kuće…",
+            "waiting": "Čekam OpenStreetMap: izmena se ovde vidi minut-dva posle čuvanja. Proveravam svakih 30 sekundi…",
+            "unchanged": "OpenStreetMap još ne prikazuje promenu. Ako ste sačuvali izmenu, proverite ponovo za minut.",
             "failed": "Provera nije završena: {{error}}",
             "summary": "{{eligible}} od {{total}} obuhvaćenih kuća ispunjava uslove",
             "none": "Plan ne nadograđuje mansardom nijednu postojeću zgradu.",

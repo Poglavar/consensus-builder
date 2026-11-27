@@ -307,18 +307,28 @@
         record.buildingFacts = factReads.get(record.id) || { status: 'reading', id };
         return readFactsOf(record, id);
     }
+    // Check again (fresh) keeps reading until the source shows a change, since an OpenStreetMap
+    // edit reaches Overpass a minute or two after it is saved (BuildingFacts.readUntilChanged); the
+    // card says it is waiting meanwhile, and says so when nothing changed.
     function readFactsOf(record, id, options = {}) {
-        const read = root.BuildingFacts.read(id, options).then(building => ({ status: 'read', id, building }), error => {
-            console.error(`[${new Date().toISOString()}] [planning] Building facts could not be read for ${id}`, error);
-            return { status: 'failed', id };
-        }).then(state => {
+        const showState = state => {
             factReads.set(record.id, state);
             record.buildingFacts = state;
             const shown = selected();
             if (shown?.id === record.id) { shown.buildingFacts = state; renderInspector(); }
-        });
+        };
+        const before = factReads.get(record.id);
+        const waitFor = options.fresh && before?.status === 'read'
+            ? root.BuildingFacts.readUntilChanged([id], new Map([[id, before.building]]), async ids => new Map([[id, await root.BuildingFacts.read(ids[0], options)]]), {
+                onWaiting: () => showState({ ...before, waiting: pending }), stillWanted: () => selected()?.id === record.id })
+                .then(({ answer, changed }) => ({ status: 'read', id, building: answer.get(id), unchanged: !changed }))
+            : root.BuildingFacts.read(id, options).then(building => ({ status: 'read', id, building }));
+        const pending = waitFor.catch(error => {
+            console.error(`[${new Date().toISOString()}] [planning] Building facts could not be read for ${id}`, error);
+            return { status: 'failed', id };
+        }).then(showState);
         if (selected()?.id === record.id) renderInspector();
-        return read;
+        return pending;
     }
     // A rule set's conditions on what the building is (planning/eligibility.js), test by test, from
     // its building facts.
@@ -382,9 +392,17 @@
                 section.append(renderEligibility(set, state.building.facts));
             }
         }
+        // Beside the button that started it: waiting for the source to show an edit, or no change.
+        if (state.status === 'read' && (state.waiting || state.unchanged)) {
+            const line = element('p', 'planning-inspector__description', t(state.waiting ? 'buildingFactsWaiting' : 'buildingFactsUnchanged', { source: state.building.edit?.source || '' }));
+            line.setAttribute('role', 'status');
+            section.append(line);
+        }
         const again = element('button', 'btn planning-building-facts__again', t('buildingFactsAgain'));
         again.type = 'button';
-        again.disabled = state.status === 'reading';
+        again.disabled = state.status === 'reading' || Boolean(state.waiting);
+        // The card redraws while Check again waits; the new button keeps the spinner until it ends.
+        if (state.waiting) root.BusyControl.track(again, state.waiting);
         again.addEventListener('click', () => {
             const record = selected();
             if (record?.buildingFacts) root.BusyControl.track(again, () => readFactsOf(record, record.buildingFacts.id, { fresh: true }));

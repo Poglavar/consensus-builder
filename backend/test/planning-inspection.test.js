@@ -459,15 +459,22 @@ describe('building facts on the card', () => {
     const setup = (reads, shown, extra = {}) => {
         const renderInspector = vi.fn(), read = vi.fn(async () => reads.shift());
         const document = makeDocument();
-        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => work() }, ...extra },
+        const context = vm.createContext({ root: { BuildingFacts: { ...client, read }, BusyControl: { track: (_button, work) => Promise.resolve(typeof work === 'function' ? work() : work) }, ...extra },
             document, selected: () => shown.current, renderInspector, t, console, Map, Date });
-        vm.runInContext(`${pieces}\nthis.api = { readFacts, renderFacts };`, context);
-        return { ...context.api, read, renderInspector };
+        vm.runInContext(`${pieces}\nthis.api = { readFacts, readFactsOf, renderFacts };`, context);
+        // Check again with the wait between reads stubbed (the real one sleeps 30 s).
+        const again = (record, wait) => {
+            const realWait = client.readUntilChanged;
+            context.root.BuildingFacts.readUntilChanged = (ids, shownMap, readIds, options) => realWait(ids, shownMap, readIds, { ...options, wait });
+            return context.api.readFactsOf(record, record.buildingFacts.id, { fresh: true });
+        };
+        return { ...context.api, read, renderInspector, again };
     };
     const text = node => node.textContent;
     it('reads the facts, lists them with the missing ones to add at the source, and reads again on Check again', async () => {
         const first = record(), shown = { current: first };
-        const card = setup([building(false), building(true)], shown);
+        // Tagging the parapet is an OpenStreetMap edit, so it raises the building's version.
+        const card = setup([{ ...building(false), source_version: { version: 1 } }, { ...building(true), source_version: { version: 2 } }], shown);
         const reading = card.readFacts(first, { id: 'w1', properties: {} });
         expect(first.buildingFacts).toMatchObject({ status: 'reading', id: 'osm:way/1' });
         await reading;
@@ -483,6 +490,32 @@ describe('building facts on the card', () => {
         expect(card.read).toHaveBeenCalledTimes(2);
         expect(card.read).toHaveBeenLastCalledWith('osm:way/1', { fresh: true });
         expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+    });
+    it('waits on Check again until the source shows the edit, saying so, and says when nothing changed', async () => {
+        const first = record(), shown = { current: first };
+        const at = (parapet, version) => ({ ...building(parapet), source_version: { version } });
+        const card = setup([at(false, 4), at(false, 4), at(true, 5)], shown);
+        await card.readFacts(first, { id: 'w1', properties: {} });
+        let release;
+        card.BuildingFactsWait = new Promise(resolve => { release = resolve; });
+        const checking = card.again(first, () => card.BuildingFactsWait);
+        await new Promise(resolve => setImmediate(resolve));
+        // The first fresh read still shows version 4: the card waits and says why.
+        expect(first.buildingFacts.waiting).toBeTruthy();
+        const waitingCard = card.renderFacts(first);
+        expect(text(waitingCard)).toContain('buildingFactsWaiting(OpenStreetMap)');
+        expect(waitingCard.querySelector('button').disabled).toBe(true);
+        release();
+        await checking;
+        expect(card.read).toHaveBeenCalledTimes(3);
+        expect(first.buildingFacts.waiting).toBeUndefined();
+        expect(text(card.renderFacts(first))).toContain('buildingFact.field.parapet()buildingFact.parapetYes()');
+        // Checked again with nothing new: after its last read the card says nothing changed yet.
+        const same = setup([at(true, 5), ...Array(7).fill(at(true, 5))], shown);
+        await same.readFacts(first, { id: 'w1', properties: {} });
+        await same.again(first, async () => {});
+        expect(same.read).toHaveBeenCalledTimes(8);
+        expect(text(same.renderFacts(first))).toContain('buildingFactsUnchanged(OpenStreetMap)');
     });
     // London plans under English rules, so the card adds Living Tradition's tests for the house:
     // a parapet now stated, its row and footprint from the source's geometry, its roof shape unknown.

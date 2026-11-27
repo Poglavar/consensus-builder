@@ -56,6 +56,28 @@
         return (await readMany([id], options)).get(id);
     }
 
+    // "Check again" after an edit: OpenStreetMap publishes edits once a minute, so Overpass shows one
+    // a minute or two after it is saved. Read fresh at once, then every intervalMs while no building's
+    // source version differs from the one shown (shown: Map id → building), at most `attempts` reads
+    // (7 reads ≈ 3 minutes). onWaiting(attempt) runs before each wait; stillWanted() false stops it
+    // (the card or dialog closed). Resolves { answer: Map id → building, changed }.
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    async function readUntilChanged(ids, shown, read, { attempts = 7, intervalMs = 30_000, wait = sleep, onWaiting = () => {}, stillWanted = () => true } = {}) {
+        const versionOf = building => (building?.found ? String(building.source_version?.version ?? '') : 'none');
+        const before = new Map(ids.map(id => [id, versionOf(shown?.get(id))]));
+        let answer = null;
+        for (let attempt = 0; attempt < attempts; attempt++) {
+            if (attempt) {
+                onWaiting(attempt);
+                await wait(intervalMs);
+                if (!stillWanted()) break;
+            }
+            answer = await read(ids);
+            if (ids.some(id => versionOf(answer.get(id)) !== before.get(id))) return { answer, changed: true };
+        }
+        return { answer, changed: false };
+    }
+
     // { from, to } (whole years, either open) → the words for it.
     function builtWords(span, t) {
         const { from, to } = span || {};
@@ -105,5 +127,5 @@
         return CARD_FIELDS.map(field => factRow(building, field, t));
     }
 
-    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, builtWords, heritageWords, factRow, cardRows };
+    return { API_ROOT, CARD_FIELDS, factIdOf, apiRoot, read, readMany, readUntilChanged, builtWords, heritageWords, factRow, cardRows };
 });
