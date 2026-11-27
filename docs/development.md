@@ -7,6 +7,18 @@
 
 Production runs the [colosseum-worlds-fair branch](https://github.com/Poglavar/consensus-builder/tree/colosseum-worlds-fair), which contains the protocol, prediction-market and agent build. `main` stays frozen at its pre-hackathon state, for judging comparisons, until judging ends. Check your branch before reproducing a live UI issue; public guides describe the deployed app.
 
+## Where to change a feature
+
+Use this compact map to find the owner of a high-value flow before editing. The browser and MCP
+columns identify the parity surface; the persisted record column names durable state when one exists.
+
+| Flow | Owner | Browser surface | MCP surface | Persisted record | Behavior test |
+| --- | --- | --- | --- | --- | --- |
+| Parcel/design geometry edit | `frontend/js/proposal-manager.js`, `frontend/js/proposals.js` | Map proposal editor and parcel controls | `ugt_edit_design`, `ugt_modify_design`, `ugt_edit_plan` | Plan/design JSON and proposal storage | `backend/test/mcp-edit.test.js`, `e2e/tests/proposal-editor.spec.ts` |
+| Source discovery and reads | `frontend/js/source-contracts.js`, `frontend/js/source-runtime.js`, owning `backend/*/sources.js` | Source explorer and map readers | `ugt_list_sources`, `ugt_parcel_context`, `ugt_get_design` | Source descriptors in `frontend/data/source-catalog.json` | `backend/test/source-contracts.test.js`, `backend/test/source-runtime.test.js` |
+| Building/floor evidence | `backend/buildings/floor-models.js`, `frontend/js/building-floor-plans.js` | Building context and floor-model display | `ugt_inspect_design`, `ugt_import_model`, `ugt_edit_design` | Published floor-plan records and proposal attachments | `backend/test/mcp-assets.test.js` |
+| Shared-plan editing | `backend/routes/shared-plan-sessions.js`, `frontend/js/shared-plan-session.js` | Owner handover, inspect and edit controls | `ugt_inspect_shared_plan`, `ugt_edit_shared_plan` | Accepted shared-plan revision/session | `backend/test/mcp-shared-plan-tools.test.js`, `backend/test/shared-plan-browser.test.js` |
+
 ## Run the map and API
 
 Install Node.js, npm and the `serve` CLI used by `dev.sh`. Install the backend dependencies:
