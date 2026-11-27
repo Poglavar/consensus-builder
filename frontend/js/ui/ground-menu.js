@@ -35,7 +35,8 @@
             lat: latlng.lat,
             lng: latlng.lng,
             roadToolsEnabled: roadToolsEnabled(),
-            stationsEnabled: typeof win.startTransitStationPlacement === 'function'
+            stationsEnabled: typeof win.startTransitStationPlacement === 'function',
+            streetsEnabled: typeof win.StreetPicker?.open === 'function'
         };
     }
 
@@ -48,6 +49,7 @@
 
     const RUNNERS = {
         drawSite: facts => win.SiteTool.start({ ground: facts.kind }),
+        street: facts => win.StreetPicker.open({ lat: facts.lat, lng: facts.lng }, { control: win.document.querySelector('[data-command="ground.street"]') }),
         road: () => win.startParcelTransportTool('road'),
         track: () => win.startParcelTransportTool('track')
     };

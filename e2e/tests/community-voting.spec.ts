@@ -1,7 +1,7 @@
 // UI boundaries: identities remain local; shared ballots expose revision and private history.
 import fs from 'node:fs';
 import { test, expect } from '../helpers/fixtures';
-import { openCity, stubBasemapTiles } from '../helpers/runtime';
+import { openCity, stubBasemapTiles, PARCEL_ID } from '../helpers/runtime';
 import { applyLayout, agreementEditor, editorSave, editorClosed, storedAgreements, proposeOverPark, openAgreementDecision, agreementPanel } from '../helpers/agreements';
 import { fileAgreement, pageIndex } from '../helpers/mocks/shared-server';
 
@@ -257,4 +257,59 @@ test('a Living Tradition street vote waits until every covered house is eligible
   expect(saved.consultation.voting.rule).toEqual({ id: 'gb-street-vote-living-tradition', version: '2026-11-27' });
   expect(saved.consultation.voting.eligibility.houses.map((house: any) => [house.id, house.verdict])).toEqual([['osm:way/101', 'eligible'], ['osm:way/102', 'eligible']]);
   expect(reads.at(-1)).toBe('osm:way/101,osm:way/102');
+});
+
+// A street vote names its street: Street here picks a segment of a street and a side, the parcels
+// along it become the selection, and the agreement editor offers that street for the vote record.
+test('a street vote names the street segment picked with Street here', async ({ mockApi: page }) => {
+  test.setTimeout(180_000);
+  await stubBasemapTiles(page);
+  const { layoutId } = await applyLayout(page);
+  // A street running west to east 6 m south of the laid-out parcel, so the parcel is on its north side.
+  const street = await page.evaluate(id => {
+    const w = window as any, fabric = w.LiveParcelFabric;
+    const pieces = fabric.peekBounds(w.map.getBounds()).filter((f: any) => fabric.explicitCadastreIds(f).map(String).includes(id));
+    const [west, south, east] = w.turf.bbox({ type: 'FeatureCollection', features: pieces });
+    const lat = south - 6 / 111320, pad = 20 / (111320 * Math.cos(lat * Math.PI / 180));
+    return { coordinates: [[west - pad, lat], [east + pad, lat]], point: [(west + east) / 2, lat] };
+  }, PARCEL_ID);
+  const [start, end] = street.coordinates;
+  await page.route('**/streets/segments?**', route => route.fulfill({ json: {
+    street: { name: 'Acacia Avenue', wayIds: ['101'], lengthM: 120, official: { scheme: 'GB-USRN', id: '21000001' }, officialIds: [], complete: true },
+    points: [], coverage: { ways: 'overpass', waysComplete: true, buildings: 'osm', numbers: 'osm' },
+    segments: [{ id: '0.0', chain: 0, fromM: 0, toM: 120, lengthM: 120, coordinates: street.coordinates, wayIds: ['101'], numbers: [],
+      from: { id: 'p0', kind: 'branch', names: ['Mill Lane'], point: start }, to: { id: 'p1', kind: 'end', point: end } }] } }));
+  await page.evaluate(point => { (window as any).StreetPicker.open({ lng: point[0], lat: point[1] }); }, street.point);
+  const picker = page.getByRole('dialog', { name: 'Acacia Avenue' });
+  await expect(picker.getByRole('radio', { name: /Between Mill Lane and its end/ })).toBeChecked();
+  await picker.getByText('North side', { exact: true }).click();
+  await expect(picker.getByRole('radio', { name: 'North side' })).toBeChecked();
+  await picker.getByRole('button', { name: 'Select parcels' }).click();
+  await expect(picker).toHaveCount(0);
+  const selected: string[] = await page.evaluate(() => [...(window as any).multiParcelSelection.selectedParcels].map(String));
+  expect(selected.length).toBeGreaterThan(0);
+  await page.evaluate(id => {
+    const w = window as any;
+    const plan = w.PlanComposition.create('Acacia Avenue plan', [w.proposalStorage.getProposal(id)], w.MapShare.capture(w));
+    w.PlanWorkspace.save(plan); w.PlanDialog.details(plan);
+  }, layoutId);
+  await page.getByRole('button', { name: 'Create agreement', exact: true }).click();
+  const editor = agreementEditor(page), roster = editor.locator('[data-voting-roster]'), named = editor.locator('.voting-street');
+  await editor.getByRole('tab', { name: 'Rules', exact: true }).click();
+  await editor.locator('[data-agreement-electorate][value="community"]').check();
+  await roster.locator('[data-roster-count]').fill('2');
+  await roster.locator('[data-roster-action="generate"]').click();
+  await roster.getByLabel('Ballot rule').selectOption({ label: 'Street vote — Strong Suburbs' });
+  const box = named.getByRole('checkbox', { name: /Acacia Avenue · Between Mill Lane and its end · North side/ });
+  await expect(box).toBeChecked();
+  const downloaded = page.waitForEvent('download');
+  await roster.locator('[data-roster-action="save"]').click();
+  await downloaded;
+  await expect(editorSave(editor)).toBeEnabled();
+  await editorSave(editor).click();
+  await editorClosed(page);
+  const [saved] = await storedAgreements(page);
+  expect(saved.consultation.voting.street).toEqual({ name: 'Acacia Avenue', osmWayIds: ['101'], part: 'segment', side: 'left',
+    official: { scheme: 'GB-USRN', id: '21000001' }, from: { kind: 'branch', names: ['Mill Lane'], point: start.map((v: number) => Math.round(v * 1e7) / 1e7) },
+    to: { kind: 'end', point: end.map((v: number) => Math.round(v * 1e7) / 1e7) } });
 });

@@ -59,6 +59,7 @@
             displayId: model.displayParcelId(props, id),
             identityKind: model.parcelIdentityKind(props, id),
             isRoad: typeof win.isRoadParcel === 'function' ? !!win.isRoadParcel(id) : false,
+            streetsEnabled: typeof win.StreetPicker?.open === 'function',
             multiSelectActive: !!(multi && multi.isActive),
             historyIds,
             isGround,
@@ -133,7 +134,12 @@
         selectMore: () => win.multiParcelSelection.toggle(),
         detectBlock: () => win.animateFloodfillFromSelected(),
         // This parcel as the starting outline of an editable site (js/site-drawing.js).
-        useAsSite: facts => win.SiteTool.startFromParcels([facts.parcelId])
+        useAsSite: facts => win.SiteTool.startFromParcels([facts.parcelId]),
+        // The street at the click point, else at the parcel's own point.
+        street: facts => {
+            const point = win.ClickStack?.point?.() || (() => { const c = win.turf.pointOnFeature(featureFor(facts)).geometry.coordinates; return { lng: c[0], lat: c[1] }; })();
+            return win.StreetPicker.open(point, { control: doc.querySelector('[data-command="parcel.street"]') });
+        }
     };
 
     function runAction(action, facts) {

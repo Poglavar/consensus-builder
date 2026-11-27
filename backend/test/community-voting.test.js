@@ -109,3 +109,14 @@ describe('street-vote ballot rule on the public summary',()=>{
   expect(tools.get('ugt_draft_agreement').inputSchema.safeParse({plan:cid,rulePreset:'community-vote',consultation:{organiser:null,participationUrl:null,voting:streetVote()}}).success).toBe(true);
  });
 });
+
+describe('a street vote names its street on the public summary',()=>{
+ it('carries the recorded street reference, and none when the vote names no street',async()=>{
+  const street={name:'Hughes Road',osmWayIds:['11'],part:'segment',side:'left',from:{kind:'branch',names:['Cross Road'],point:[-0.1,51.5]},to:{kind:'end',point:[-0.09,51.5]}};
+  const named=V.configuration({schema:'community-voting/v2',id:ID,codeHashes:[hash],street});
+  expect((await fixture({voting:named}).service.summary(fixture({voting:named}).cid)).body.street).toEqual(street);
+  const f=fixture();
+  expect((await f.service.summary(f.cid)).body).not.toHaveProperty('street');
+  expect(()=>V.configuration({schema:'community-voting/v1',id:ID,codeHashes:[hash],street})).toThrow();
+ });
+});

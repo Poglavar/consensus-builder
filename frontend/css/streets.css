@@ -1,0 +1,14 @@
+/* The street picker (js/streets/street-picker.js): a cb-dialog with two native radio groups, the
+   part of the street (segment rows) and the side (cb-segmented). Tokens only; the map highlight of
+   the chosen part is drawn by MapHighlight with the street-picker-highlight class. */
+.street-picker { display: grid; gap: var(--cb-space-3); }
+.street-picker__facts { margin: 0; color: var(--cb-text-muted); font-size: var(--cb-text-sm); }
+.street-picker__group { display: grid; gap: var(--cb-space-1); margin: 0; padding: 0; border: 0; min-width: 0; }
+.street-picker__group legend { margin-bottom: var(--cb-space-1); padding: 0; font-weight: var(--cb-weight-semibold); }
+.street-picker__choice { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--cb-space-2);
+    min-height: var(--cb-control-height-sm); padding: var(--cb-space-1) var(--cb-space-2); border-radius: var(--cb-radius-sm); cursor: pointer; }
+.street-picker__choice:hover, .street-picker__choice:has(input:checked) { background: var(--cb-primary-soft); }
+.street-picker__choice-text { min-width: 0; overflow-wrap: anywhere; }
+.street-picker__meta { color: var(--cb-text-muted); font-size: var(--cb-text-sm); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.street-picker__status { margin: 0; min-height: 1.25em; font-size: var(--cb-text-sm); }
+.street-picker__status:empty { display: none; }

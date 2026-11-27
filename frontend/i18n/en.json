@@ -1,4 +1,52 @@
 {
+    "streets": {
+        "end": {
+            "fork": "the fork",
+            "sideRoad": "a side road",
+            "loop": "the loop",
+            "end": "its end",
+            "bend": "the bend",
+            "bridge": "the bridge",
+            "railwayBridge": "the railway bridge",
+            "overpass": "the bridge over it",
+            "gap": "the gap in the buildings",
+            "number": "No. {{number}}"
+        },
+        "picker": {
+            "between": "Between {{from}} and {{to}}",
+            "notFound": "No named street runs here. Click on the street itself.",
+            "failed": "The street could not be read.",
+            "official": "Official id {{id}}",
+            "osmOnly": "Source: OpenStreetMap",
+            "partial": "Only the part near here was read",
+            "part": "Part of the street",
+            "whole": "The whole street",
+            "side": "Side",
+            "select": "Select parcels",
+            "selecting": "Finding the parcels along it…",
+            "none": "No parcel boundary runs along this part on that side.",
+            "selected": {
+                "one": "Selected {{count}} parcel along {{street}}: {{where}}, {{side}}.",
+                "other": "Selected {{count}} parcels along {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Some parcels here have not loaded; check the map.",
+            "selectFailed": "The parcels could not be selected: {{error}}",
+            "cityChanged": "The city changed."
+        },
+        "side": {
+            "north": "North side",
+            "northeast": "Northeast side",
+            "east": "East side",
+            "southeast": "Southeast side",
+            "south": "South side",
+            "southwest": "Southwest side",
+            "west": "West side",
+            "northwest": "Northwest side",
+            "both": "Both sides",
+            "left": "Left side",
+            "right": "Right side"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Models on this device only",
         "publishMessage": "Imported 3D models in what you are publishing are kept only on this device. Upload them so others see them, or publish without them and others see a plain block. An uploaded model is public: anyone with a link to the design can download it.",
@@ -7346,6 +7394,7 @@
             "other": "{{count}} owners"
         },
         "actions": {
+            "street": "Street here",
             "propose": "Propose here",
             "selectMore": "Select more",
             "details": "Details",
@@ -7467,6 +7516,7 @@
         },
         "notLoaded": "Parcels are not loaded here yet — zoom in or wait for them to load.",
         "actions": {
+            "street": "Street here",
             "drawSite": "Draw a parcel"
         }
     },
@@ -9989,6 +10039,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Street: {{street}}",
+        "street": {
+            "title": "Street",
+            "include": "Name the street this vote covers: {{street}}",
+            "hint": "Picked with Street here on the map. The record keeps its name, OpenStreetMap ways, ends and side.",
+            "named": "The vote names {{street}}.",
+            "unnamed": "The vote names no street."
+        },
         "support": "Support",
         "oppose": "Oppose",
         "abstain": "Abstain",

@@ -49,6 +49,12 @@ describe('ground menu actions', () => {
         expect(Model.availableActions(facts({ kind: 'no-cadastre' }))[0]).toBe('drawSite');
     });
 
+    it('offers Street here, after Draw a site, where the street picker is loaded', () => {
+        expect(Model.availableActions(facts({ streetsEnabled: true }))).toEqual(['drawSite', 'street', 'road', 'track', 'roadStation', 'trackStation']);
+        expect(Model.isActionAvailable('street', facts({ streetsEnabled: true, kind: 'not-loaded' }))).toBe(false);
+        expect(Model.isActionAvailable('street', facts())).toBe(false);
+    });
+
     it('describes bare ground and ground without a cadastre differently', () => {
         expect(Model.describeGround('bare').titleKey).toBe('groundMenu.title.bare');
         expect(Model.describeGround('no-cadastre').factsKey).toBe('groundMenu.facts.noCadastre');

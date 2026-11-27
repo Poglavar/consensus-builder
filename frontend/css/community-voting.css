@@ -46,3 +46,9 @@
 .voting-eligibility { display: grid; gap: var(--cb-space-2); justify-items: start; }
 .voting-eligibility__houses { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cb-space-1); font-size: var(--cb-text-sm); }
 .voting-eligibility__houses [data-verdict="ineligible"] strong { color: var(--cb-danger-soft-ink); }
+/* The street a street vote names (agreement-dialog.js renderStreet). */
+.voting-street { display: grid; gap: var(--cb-space-2); }
+.voting-street h4 { margin: 0; }
+.voting-street__choice { display: flex; align-items: flex-start; gap: var(--cb-space-2); min-height: 44px; cursor: pointer; }
+.voting-street__choice input { margin-top: var(--cb-space-1); }
+.voting-street [data-voting-street-status]:empty { display: none; }

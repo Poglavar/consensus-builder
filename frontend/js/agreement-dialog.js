@@ -950,11 +950,53 @@
             const required = rule?.requires?.eligibility;
             return required ? root.BuildingEligibility.get(required.id, required.version) : null;
         };
-        const withEligibility = value => (value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value);
+        // The street a street vote covers (streets/street-picker.js): the record's own, else the last
+        // street picked with Street here in this tab, kept only while its box stays ticked. Ticked at
+        // first when the picked parcels are among the agreement's land (or that land is not read yet).
+        const streetNode = doc.createElement('section');
+        streetNode.className = 'voting-street';
+        streetNode.hidden = true;
+        eligibilityNode.after(streetNode);
+        const picked = state.values.voting?.street ? null : root.StreetPicker?.lastPick?.() || null;
+        const landIds = () => new Set((state.land?.inputs?.parcels || []).map(parcel => String(parcel.parcelId).replace(/#.*$/, '')));
+        // `included` stays undecided (null) for a pick until the plan's land has been read.
+        const overlaps = () => (picked.cadastreIds || picked.parcelIds).some(id => landIds().has(String(id).replace(/#.*$/, '')));
+        const street = { reference: state.values.voting?.street || picked?.reference || null,
+            included: state.values.voting?.street ? true : picked ? null : false };
+        const decideStreet = () => {
+            if (street.included !== null || state.loading || !state.land?.inputs?.parcels?.length) return;
+            street.included = overlaps();
+            state.values.voting = withStreet(state.values.voting);
+            renderStreet(); issues();
+        };
+        state.afterLand = decideStreet;
+        const withStreet = value => {
+            if (!value) return value;
+            const { street: _old, ...rest } = value;
+            return street.included === true && street.reference ? { ...rest, street: street.reference } : rest;
+        };
+        const withEligibility = value => withStreet(value && requiredSet(value) && eligibility.evidence ? { ...value, eligibility: eligibility.evidence } : value);
+        function renderStreet() {
+            streetNode.hidden = !street.reference || !state.values.voting;
+            if (streetNode.hidden) { streetNode.replaceChildren(); return; }
+            const label = root.StreetPicker ? root.StreetPicker.referenceLabel(street.reference) : street.reference.name;
+            streetNode.innerHTML = `<h4>${esc(t('voting.street.title', 'Street'))}</h4>`
+                + `<label class="voting-street__choice"><input type="checkbox" data-voting-street${street.included === true ? ' checked' : ''}>`
+                + `<span>${esc(t('voting.street.include', 'Name the street this vote covers: {{street}}', { street: label }))}</span></label>`
+                + `<p class="agreement-hint">${esc(t('voting.street.hint', 'Picked with Street here on the map. The record keeps its name, OpenStreetMap ways, ends and side.'))}</p>`
+                + '<p class="agreement-hint" role="status" data-voting-street-status></p>';
+            streetNode.querySelector('[data-voting-street]').addEventListener('change', event => {
+                street.included = event.currentTarget.checked;
+                state.values.voting = withStreet(state.values.voting);
+                streetNode.querySelector('[data-voting-street-status]').textContent = street.included
+                    ? t('voting.street.named', 'The vote names {{street}}.', { street: label }) : t('voting.street.unnamed', 'The vote names no street.');
+                issues();
+            });
+        }
         const roster = root.CommunityVotingRoster?.mount(part('[data-voting-roster]'), {
             value: state.values.voting,
             changed: (value, pending) => {
-                state.values.voting = withEligibility(value); rosterPending = pending;
+                state.values.voting = withEligibility(value); rosterPending = pending; renderStreet();
                 const set = requiredSet(value), key = set ? `${set.id}@${set.version}` : null;
                 if (key !== eligibility.key) { eligibility.key = key; eligibility.evidence = null; eligibility.judged = null; if (set) checkEligibility(); }
                 renderEligibility(); issues();
@@ -1009,6 +1051,8 @@
             eligibilityNode.querySelector('[data-voting-eligibility-check]').addEventListener('click', event => checkEligibility(event.currentTarget));
         }
         renderEligibility();
+        renderStreet();
+        decideStreet();
         // A reopened draft under such a rule is checked again: its houses' facts may have changed.
         if (requiredSet(state.values.voting)) { eligibility.key = `${requiredSet(state.values.voting).id}@${requiredSet(state.values.voting).version}`; checkEligibility(); }
         function finish(result) {
@@ -1201,7 +1245,7 @@
                 if (state.closed || sequence !== state.sequence) return;
                 state.landError = error.message; report(error);
             } finally {
-                if (!state.closed && sequence === state.sequence) { state.loading = false; renderRule(); renderLand(); }
+                if (!state.closed && sequence === state.sequence) { state.loading = false; renderRule(); renderLand(); state.afterLand?.(); }
             }
         }
         function openAuxiliary(kind) {

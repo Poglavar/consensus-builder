@@ -1,4 +1,52 @@
 {
+    "streets": {
+        "end": {
+            "fork": "a bifurcação",
+            "sideRoad": "uma rua lateral",
+            "loop": "o anel",
+            "end": "o seu fim",
+            "bend": "a curva",
+            "bridge": "a ponte",
+            "railwayBridge": "a ponte ferroviária",
+            "overpass": "o viaduto",
+            "gap": "o intervalo entre edifícios",
+            "number": "n.º {{number}}"
+        },
+        "picker": {
+            "between": "Entre {{from}} e {{to}}",
+            "notFound": "Nenhuma rua com nome passa aqui. Clique na própria rua.",
+            "failed": "Não foi possível ler a rua.",
+            "official": "Identificador oficial {{id}}",
+            "osmOnly": "Do OpenStreetMap",
+            "partial": "Só foi lida a parte próxima",
+            "part": "Parte da rua",
+            "whole": "A rua inteira",
+            "side": "Lado",
+            "select": "Selecionar parcelas",
+            "selecting": "A procurar as parcelas ao longo dela…",
+            "none": "Nenhum limite de parcela acompanha esta parte desse lado.",
+            "selected": {
+                "one": "Selecionada {{count}} parcela ao longo de {{street}}: {{where}}, {{side}}.",
+                "other": "Selecionadas {{count}} parcelas ao longo de {{street}}: {{where}}, {{side}}."
+            },
+            "incomplete": "Algumas parcelas aqui ainda não carregaram; verifique o mapa.",
+            "selectFailed": "Não foi possível selecionar as parcelas: {{error}}",
+            "cityChanged": "A cidade mudou."
+        },
+        "side": {
+            "north": "Lado norte",
+            "northeast": "Lado nordeste",
+            "east": "Lado este",
+            "southeast": "Lado sudeste",
+            "south": "Lado sul",
+            "southwest": "Lado sudoeste",
+            "west": "Lado oeste",
+            "northwest": "Lado noroeste",
+            "both": "Ambos os lados",
+            "left": "Lado esquerdo",
+            "right": "Lado direito"
+        }
+    },
     "deviceModels": {
         "publishTitle": "Modelos só neste dispositivo",
         "publishMessage": "Os modelos 3D importados no que está a publicar estão guardados só neste dispositivo. Carregue-os para que os outros os vejam, ou publique sem eles e os outros veem um bloco simples. Um modelo carregado é público: qualquer pessoa com uma ligação para o projeto pode descarregá-lo.",
@@ -5707,6 +5755,7 @@
     },
     "parcelMenu": {
         "actions": {
+            "street": "Rua aqui",
             "details": "Detalhes",
             "tools": "Ferramentas",
             "history": "Histórico",
@@ -9829,6 +9878,7 @@
         },
         "notLoaded": "As parcelas ainda não foram carregadas aqui — amplie o mapa ou aguarde pelo carregamento.",
         "actions": {
+            "street": "Rua aqui",
             "drawSite": "Desenhar uma parcela"
         }
     },
@@ -10040,6 +10090,14 @@
         }
     },
     "voting": {
+        "streetCovered": "Rua: {{street}}",
+        "street": {
+            "title": "Rua",
+            "include": "Indicar a rua abrangida por esta votação: {{street}}",
+            "hint": "Escolhida com Rua aqui no mapa. O registo guarda o nome, as vias do OpenStreetMap, os extremos e o lado.",
+            "named": "A votação indica {{street}}.",
+            "unnamed": "A votação não indica nenhuma rua."
+        },
         "support": "A favor",
         "oppose": "Contra",
         "abstain": "Abstenção",
