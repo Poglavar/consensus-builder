@@ -283,6 +283,17 @@
         }).filter(ring => ring.length >= 3);
         const numberPoints = (numbers || []).filter(row => row && row.number && Array.isArray(row.point)
             && normaliseName(row.street) === nameKey).map(row => ({ number: String(row.number), p: f.toM(row.point) }));
+        // Each house number belongs to the one chain it lies nearest (a corner house is not on both).
+        const chainLines = chains.map(keys => { const pts = keys.map(k => f.toM(coordOf.get(k))); return { pts, cumul: cumulative(pts) }; });
+        for (const row of numberPoints) {
+            let best = null;
+            chainLines.forEach(({ pts, cumul }, i) => {
+                const hit = projectOnLine(pts, cumul, row.p);
+                if (!best || hit.distance < best.hit.distance) best = { chain: i, hit };
+            });
+            row.chain = best && best.hit.distance <= NUMBER_REACH_M ? best.chain : -1;
+            row.hit = best && best.hit;
+        }
         const otherLines = ways.filter(way => !streetIds.has(way.id) && isBridge(way.tags) && (way.highway || way.railway))
             .map(way => ({ way, pts: way.coords.map(f.toM) }));
 
@@ -366,8 +377,7 @@
                 if (KIND_PRIORITY[point.kind] < KIND_PRIORITY[near.kind]) Object.assign(near, point, { m: near.m === 0 || near.m === total ? near.m : point.m });
             }
             cuts.sort((a, b) => a.m - b.m);
-            const numbersHere = numberPoints.map(row => ({ row, hit: projectOnLine(pts, cumul, row.p) }))
-                .filter(({ hit }) => hit.distance <= NUMBER_REACH_M)
+            const numbersHere = numberPoints.filter(row => row.chain === chainIndex).map(row => ({ row, hit: row.hit }))
                 .map(({ row, hit }) => ({ m: hit.measure, kind: 'number', houseNumber: row.number, side: hit.side > 0 ? 'left' : 'right' }));
             const all = [...cuts, ...numbersHere].sort((a, b) => a.m - b.m);
             const register = point => {
