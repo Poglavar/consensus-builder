@@ -208,10 +208,10 @@ module.exports = {
   societyJob('consensus-builder-backer', 'backer-01', '10 1-23/2 * * *', { actions: '3', usdc: '0.02' }),
   // Added 2026-11-26 (agents/README.md, "Developer rounds and homebuyers"): a developer that opens
   // crowdfunding rounds with apartments on the Alatau plans (developer-round.js; its settlement has
-  // lifecycle-01 confirm a funded apartment round from its wallet), and three homebuyers that reserve
-  // apartments, contribute to plain rounds and trade apartments in fixed-price offers
-  // (policies/homebuyer.js). A homebuyer's deposit is at most 4 devnet USDC; settling an accepted
-  // offer signs fund and execute.
+  // lifecycle-01 confirm a funded apartment round from its wallet, then state the round's buyers as first
+  // holders of their flats and confirm flat sales its statements back), and three homebuyers that
+  // reserve apartments, contribute to plain rounds and trade flats of executed rounds in USDC property
+  // offers (policies/homebuyer.js). A homebuyer's deposit, bid or purchase is at most 4 devnet USDC.
   // A round signs its mint, its listings (two transactions for five units) and its market (seed top-up and
   // opening); each settled round at most five (confirm-funding or the lens member's confirmation, execute,
   // release, resolve, reclaim): 5 + 3 × 5.

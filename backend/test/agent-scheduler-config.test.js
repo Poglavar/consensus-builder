@@ -187,6 +187,8 @@ describe('algorithmic agent schedule', () => {
             expect(homebuyer).toMatchObject({ role: 'homebuyer', policy: { cities: ['alatau'] } });
             expect(homebuyer.policy).not.toHaveProperty('offerLens');
             expect(Number(homebuyer.policy.maxDepositUsdc)).toBeLessThanOrEqual(Number(entry.env.AGENT_SOCIETY_USDC_CAP));
+            // A bid or a purchase pays its price into escrow within the same invocation cap.
+            expect(Number(homebuyer.policy.offerMaxUsdc)).toBeLessThanOrEqual(Number(entry.env.AGENT_SOCIETY_USDC_CAP));
             expect(Number(entry.env.AGENT_SOCIETY_ACTION_CAP)).toBeGreaterThanOrEqual(2);
         }
     });

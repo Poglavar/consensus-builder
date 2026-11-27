@@ -68,6 +68,15 @@ never sign or send funds. Locally, a wallet-holding agent takes the chain steps 
 `ugt_execute_property_offer`, `ugt_cancel_property_offer`, `ugt_expire_property_offer` and
 `ugt_state_holding` (`agents/property-offer-signer.js`).
 
+## Bots
+
+The homebuyer bots trade the flats of executed developer rounds in USDC through the same signer steps
+([agents README](../backend/agents/README.md#developer-rounds-and-homebuyers)). The round's lens
+member, whose key the developer's runner holds, states each round buyer as the flat's first holder
+(basis developer) and confirms a committed offer as the buyer's lens only when its own statements name
+the seller as holder; the bots trade only flats it states a holder for, and an offer it does not
+confirm expires and its escrow returns.
+
 ## Open: double sale and multi-parcel offers
 
 Unresolved as of 2026-11-27. The single-plot and single-apartment case is being built first; this
