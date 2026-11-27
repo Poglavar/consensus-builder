@@ -57,6 +57,12 @@ const SHARED_API = process.env.BUILDING_FACTS_API || Facts.API_ROOT;
 const APP_API = process.env.AREA_ESTIMATE_APP_API || 'https://api.urbangametheory.xyz';
 const CELL_DEG = 0.01;
 const FLOOR_H = 3.5;
+// Every read of the run (this script's, the building facts', the street code readers') gives up after READ_TIMEOUT_MS
+// unless it sets its own signal, so a request the server never answers is retried instead of stalling the run (two
+// such requests held one run for 22 and 12 minutes).
+const READ_TIMEOUT_MS = 180000;
+const fetchOnce = globalThis.fetch;
+globalThis.fetch = (url, init = {}) => fetchOnce(url, { ...init, signal: init.signal ?? AbortSignal.timeout(READ_TIMEOUT_MS) });
 // Street-code tests about what the designer chooses inside the storeys (ceiling heights), which no check of a site
 // can settle: 3.5 m storeys leave a 2.5 m ceiling under any ordinary floor, and the setback storey's ceiling is set
 // within its roof. An estimate counts them as met and says so.
