@@ -30,10 +30,7 @@
     // With the Permitted layer off, permitted massing and zoning outlines are context only: the
     // parcel or building under them opens first and they stay one row away (click-stack-model.js).
     const backgroundKinds = () => (global.PlanningViews?.getPolicy?.()?.permitted === 'off' ? ['permitted', 'permittedArea'] : []);
-    // A shape's own control (its keyboard action) names that shape: it opens even as context. Kept
-    // for the spot's rebuilds until the next click.
-    let clickBackground = null;
-    const buildStack = (hits, options = {}) => model.buildClickStack(hits, { ...options, background: clickBackground ?? backgroundKinds() });
+    const buildStack = (hits, options = {}) => model.buildClickStack(hits, { ...options, background: backgroundKinds() });
     const relationsFor = (kind, instance) => model.contextFor(kind, instance, state.hits)
         .filter(group => kind !== 'designs' || instance?.proposal?.goal !== 'parcel-layout' || !PANEL_RELATIONS.has(group.relation));
 
@@ -1013,8 +1010,10 @@
 
     // A reload for a new release reopens the spot the person had open with the same instances
     // selected, leaving the map where the address put it. False until all of them are back there.
-    function resume(latlng, { selected, selectedKind, expanded }) {
-        if (!latlng || blocked({})) return false;
+    // Also opens the stack on one chosen object, as a map shape's keyboard action does: the stack
+    // at its point with that object selected, whatever lies above it.
+    function resume(latlng, { selected, selectedKind, expanded, allowUrbanBlocks = false }) {
+        if (!latlng || blocked({ allowUrbanBlocks })) return false;
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
         let stack = buildStack(hits, { selected });
         if (!Object.entries(selected).every(([kind, id]) => model.selectedInstance(stack, kind)?.id === id)) return false;
@@ -1026,7 +1025,7 @@
 
     // Every map click on the 2D map arrives here, whichever layer received it. One physical click
     // can reach several layers' handlers; only the first counts.
-    function handleClick(latlng, { allowUrbanBlocks = false, shape = false } = {}) {
+    function handleClick(latlng, { allowUrbanBlocks = false } = {}) {
         if (!latlng) return false;
         // A surface picking designs (js/map-pick.js) takes the topmost design and nothing else. It
         // holds the edit lock itself, so it is asked before the lock refuses the click.
@@ -1058,7 +1057,6 @@
         // An ordinary map click replaces the retained selection with the new point context.
         if (global.multiParcelSelection?.selectedParcels?.size) global.multiParcelSelection.clearSelection();
         const hits = global.ClickStackHits.hitsAt(latlng, { onPublished: () => refreshSpot(latlng) });
-        clickBackground = shape ? [] : null;
         const stack = buildStack(hits);
         const previous = isOpen() ? model.selectedInstance(state.stack, state.stack.selectedKind)?.ref : null;
         const next = model.selectedInstance(stack, stack.selectedKind)?.ref;
