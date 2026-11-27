@@ -193,6 +193,11 @@ function adapterDynamicResourceAllowed(url, descriptor) {
     try { endpoint = new URL(descriptor.endpoint); } catch { return false; }
     if (url.origin !== endpoint.origin || url.username || url.password || url.hash) return false;
     const basePath = endpoint.pathname.replace(/\/$/, '');
+    // The cadastre serves each view at its own layer-scoped WFS address: parcels (the endpoint) and
+    // the state land views js/state-land.js reads through the same source.
+    if (descriptor.adapter === 'kazakhstan-pkk') {
+        return /^\/geoserver\/egkn\/(?:u_view|freelands_view|reqland_view)\/wfs$/.test(url.pathname);
+    }
     if (descriptor.adapter === 'vector-tiles' && Number.isSafeInteger(descriptor.zoom)
         && descriptor.zoom >= 10 && descriptor.zoom <= 18 && !url.search) {
         // The shared NCA descriptor retains z14 for existing cities. Hrodna's
@@ -597,17 +602,21 @@ export async function fetchParcelProviderRelay(request, options = {}) {
     if (custom) {
         const publicFetch = options.publicFetch || createPublicSourceFetch({ maxBytes: request.maxResponseBytes });
         transport = (url, init) => publicFetch(url.href, { ...init, redirect: 'error' });
-    } else if (descriptor.caCertificate) {
-        const caFetch = await getCaFetch(descriptor, options);
-        transport = (url, init) => caFetch(url.href, init);
     }
+    // Providers that refuse a request without a browser-like User-Agent (the Kazakhstan cadastre
+    // answers 403 since 2026-11-27).
     const userAgent = descriptor.adapter === 'dlrs-sheet'
         ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
         : descriptor.adapter === 'catastro-wfs'
             ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36'
             : descriptor.adapter === 'kerala-entebhoomi'
                 ? 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
-                : undefined;
+                : descriptor.adapter === 'kazakhstan-pkk' ? 'Mozilla/5.0' : undefined;
+    if (!transport && descriptor.caCertificate) {
+        const caFetch = await getCaFetch(descriptor, options);
+        transport = (url, init) => caFetch(url.href, userAgent
+            ? { ...init, headers: { ...Object.fromEntries(new Headers(init?.headers)), 'User-Agent': userAgent } } : init);
+    }
     if (!transport && descriptor.id === 'kr-cheongju-mapmoa-cadastral-wfs'
         && descriptor.adapter === 'cheongju-mapmoa' && descriptor.endpoint === CHEONGJU_ENDPOINT) {
         transport = (url, init) => fetchCheongjuMapmoa(url, init);

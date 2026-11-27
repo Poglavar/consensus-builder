@@ -359,6 +359,26 @@ describe('parcel provider relay GET reads', () => {
         expect(relayFetch).not.toHaveBeenCalled();
     });
 
+    it('admits the cadastre\'s layer-scoped addresses for parcels and state land, and no other layer', () => {
+        const read = path => validateParcelProviderRelayRequest(pkk.id,
+            { url: `https://map.gov4c.kz${path}?service=WFS&request=GetFeature`, method: 'GET' }, { sources: [pkk] });
+        for (const layer of ['u_view', 'freelands_view', 'reqland_view']) expect(read(`/geoserver/egkn/${layer}/wfs`).target.pathname).toBe(`/geoserver/egkn/${layer}/wfs`);
+        for (const path of ['/geoserver/egkn/users/wfs', '/geoserver/wfs', '/geoserver/egkn/u_view/ows', '/geoserver/egkn/u_view/wfs/extra']) {
+            expect(() => read(path)).toThrow();
+        }
+    });
+
+    it('sends the cadastre the browser-like User-Agent it now requires, over the certificate-supplemented transport', async () => {
+        const caFetch = vi.fn(async () => new Response('{}', { status: 200 }));
+        const request = validateParcelProviderRelayRequest(pkk.id,
+            { url: pkkUrl, method: 'GET', headers: { referer: 'https://map.gov4c.kz/egkn/' } }, { sources: [pkk] });
+        await fetchParcelProviderRelay(request, { caFetchFactory: () => caFetch });
+        const [url, init] = caFetch.mock.calls[0];
+        expect(url).toBe(pkkUrl);
+        expect(init.headers['User-Agent']).toBe('Mozilla/5.0');
+        expect(new Headers(init.headers).get('referer')).toBe('https://map.gov4c.kz/egkn/');
+    });
+
     it('is what the browser uses for a plain read, with the query in a fixed order; a body keeps POST', async () => {
         const calls = [];
         const fetchImpl = vi.fn(async (url, init) => { calls.push({ url, init }); return new Response('{}', { status: 200 }); });

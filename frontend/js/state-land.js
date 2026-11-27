@@ -10,7 +10,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
     'use strict';
 
-    const PKK_ENDPOINT = 'https://map.gov4c.kz/geoserver/wfs';
+    // Each view at its layer-scoped address: the shared /geoserver/wfs answers 403 since 2026-11-27.
+    const pkkEndpoint = typename => `https://map.gov4c.kz/geoserver/egkn/${typename.replace(/^egkn:/, '')}/wfs`;
     const PKK_VIEWER = 'https://map.gov4c.kz/egkn/';
     const PAGE_SIZE = 1000;
     const MAX_PAGES = 10;
@@ -101,7 +102,7 @@
             count: String(PAGE_SIZE), startIndex: String(startIndex), sortBy: 'gid',
             viewparams: `district_id:${config.districtId}`
         });
-        return `${PKK_ENDPOINT}?${params}`;
+        return `${pkkEndpoint(view.typename)}?${params}`;
     }
 
     // The provider through the backend relay, as a cacheable GET (backend/routes/parcel-provider-relay.js).
@@ -181,7 +182,7 @@
     }
 
     return Object.freeze({
-        VIEWS, STAGES, STATUSES, PAGE_SIZE, MAX_PAGES, PKK_ENDPOINT, normalizeConfig, projectionDefinition, viewUrl,
+        VIEWS, STAGES, STATUSES, PAGE_SIZE, MAX_PAGES, normalizeConfig, projectionDefinition, viewUrl,
         relayUrl, readPage, dayOf, statusOf, toDisplayFeature, summarize
     });
 });

@@ -4,7 +4,7 @@ import proj4 from 'proj4';
 import { createKazakhstanPkkSource, kazakhstanPkkProjection } from '../parcels/kazakhstan-pkk-source.js';
 import { validateParcelProviderRelayRequest } from '../parcels/provider-relay.js';
 
-const ENDPOINT = 'https://map.gov4c.kz/geoserver/wfs';
+const ENDPOINT = 'https://map.gov4c.kz/geoserver/egkn/u_view/wfs';
 const PREFIX = 'KZ-ASTANA-PKK-';
 const SOURCE_CRS = kazakhstanPkkProjection(12).definition;
 const SOURCE_CRS_URN = 'urn:ogc:def:crs:EPSG::404000';

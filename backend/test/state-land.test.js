@@ -20,12 +20,13 @@ describe('state land configuration and requests', () => {
 
     it('reads each view in the district with only its named fields, through the source relay', () => {
         const free = new URL(StateLand.viewUrl(config, 'free', { startIndex: 1000 }));
-        expect(free.origin + free.pathname).toBe('https://map.gov4c.kz/geoserver/wfs');
+        expect(free.origin + free.pathname).toBe('https://map.gov4c.kz/geoserver/egkn/freelands_view/wfs');
         expect(Object.fromEntries(free.searchParams)).toMatchObject({
             typename: 'egkn:freelands_view', propertyname: 'gid,id,usedesc_ru,create_time,update_time,auction_land_status_id,geom',
             viewparams: 'district_id:364', startIndex: '1000', count: '1000', sortBy: 'gid'
         });
         const applications = new URL(StateLand.viewUrl(config, 'applications'));
+        expect(applications.origin + applications.pathname).toBe('https://map.gov4c.kz/geoserver/egkn/reqland_view/wfs');
         expect(applications.searchParams.get('typename')).toBe('egkn:reqland_view');
         expect(applications.searchParams.get('propertyname')).toBe('gid,id,usedesc_ru,create_time,update_time,status_land_id,geom');
         expect(() => StateLand.viewUrl(config, 'registered')).toThrow(/Unknown/);

@@ -9,7 +9,10 @@ import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
 
-const ENDPOINT = 'https://map.gov4c.kz/geoserver/wfs';
+// Each view is read at its layer-scoped WFS address: since 2026-11-27 the cadastre answers 403 at
+// /geoserver/wfs, /geoserver/ows and the workspace addresses, while /geoserver/egkn/<layer>/wfs still answers.
+export const kazakhstanPkkLayerEndpoint = typename => `https://map.gov4c.kz/geoserver/egkn/${typename.replace(/^egkn:/, '')}/wfs`;
+const ENDPOINT = kazakhstanPkkLayerEndpoint('egkn:u_view');
 const VIEWER = 'https://map.gov4c.kz/egkn/';
 const FEATURE_TYPE = 'egkn:u_view';
 const DISTRICT_ID = 254;
