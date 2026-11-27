@@ -221,6 +221,26 @@
         return file;
     }
 
+    // What each ugt_role means (the part before "/<index>"), written into every GeoJSON export so GIS
+    // users can filter by role: layers of one design overlap, and summing them counts land twice.
+    const ROLE_LEGEND = Object.freeze({
+        site: 'The land the design is drawn on: measure a design\'s area from this role.',
+        geometry: 'The design\'s own drawn outline; may repeat its site.',
+        landTake: 'The land the design takes from its parcels.',
+        ruleMassing: 'The envelope its urban rule permits.',
+        surroundings: 'Landscaping drawn around its buildings.',
+        parkGraphics: 'Park paths, planting and features.',
+        squareGraphics: 'Square paving and features.',
+        lakeGraphics: 'Lake water and shore features.',
+        stationGraphics: 'Station platforms and features.',
+        building: 'One building footprint per feature.',
+        corridor: 'A road or track outline.',
+        'corridor-feature': 'A road or track detail (lane, kerb, verge or similar).',
+        structure: 'A park, square, lake or station outline; may repeat its site.',
+        plot: 'One plot of a parcel layout per feature.',
+        centerline: 'A road or track centre line.'
+    });
+
     function geographicCollection(file) {
         const features = [];
         for (const { cid, content } of file.designs) {
@@ -232,10 +252,18 @@
                         ugt_title: content.title, ugt_goal: content.goal, ugt_city: content.city } });
             });
         }
+        const roleCounts = {};
+        features.forEach(feature => {
+            const role = feature.properties.ugt_role.split('/')[0];
+            roleCounts[role] = (roleCounts[role] || 0) + 1;
+        });
+        const roles = Object.fromEntries(Object.keys(roleCounts).map(role => [role, ROLE_LEGEND[role] || null]));
         return { type: 'FeatureCollection', name: file.plan.title,
             ugt: { schema: 'ugt-geojson/v1', planCid: api('Cid').cidOfObject(file.plan),
                 coordinates: 'WGS84 longitude, latitude in degrees; any third ordinate retains its authored basis.',
-                scope: 'Authored sites and geographic drawings; overlapping layers are retained. No rendered meshes or source basemap.' }, features };
+                scope: 'Authored sites and geographic drawings; overlapping layers are retained. No rendered meshes or source basemap.',
+                areas: 'Layers of one design overlap: filter by ugt_role (the part before "/") before adding areas.',
+                roles, roleCounts }, features };
     }
 
     function geojson(file) { validate(file); return geographicCollection(file); }

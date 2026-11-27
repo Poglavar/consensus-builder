@@ -112,6 +112,13 @@ describe('portable editable plan files', () => {
         expect(geo.type).toBe('FeatureCollection'); expect(geo.features.find(x => x.properties.ugt_role === 'site').geometry.coordinates).toHaveLength(2);
         expect(geo.features.every(x => x.properties.ugt_design_cid === f.designs[0].cid)).toBe(true);
         expect(geo.ugt.coordinates).toContain('longitude, latitude');
+        // Each role present is explained and counted, so a GIS user filters before adding areas.
+        const roles = [...new Set(geo.features.map(x => x.properties.ugt_role.split('/')[0]))].sort();
+        expect(Object.keys(geo.ugt.roles).sort()).toEqual(roles);
+        expect(Object.values(geo.ugt.roles).every(text => typeof text === 'string' && text.length > 0)).toBe(true);
+        expect(geo.ugt.roles.site).toMatch(/measure/);
+        expect(Object.values(geo.ugt.roleCounts).reduce((a, b) => a + b, 0)).toBe(geo.features.length);
+        expect(geo.ugt.areas).toMatch(/ugt_role/);
         const external = park({ structureProposal: { geometry: box(), modelUrl: 'https://offline.example/model.glb' } });
         expect(File.geojsonRecords([external], options).features.length).toBeGreaterThan(0);
     });
