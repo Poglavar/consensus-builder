@@ -646,13 +646,41 @@ describe('detached rule limits', () => {
     });
 });
 
+describe('the mansard roof on the rule', () => {
+    it('is kept by all three typologies and offered by the shared roof select', () => {
+        for (const rule of [V.normalizeBlockRule({ roof: 'mansard' }), V.normalizeBlockRule({ typology: 'row', roof: 'mansard' }),
+            V.normalizeParcelRule({ roof: 'mansard' })]) expect(rule.roof).toBe('mansard');
+        expect(V.normalizeBlockRule({ roof: 'gambrel' })).not.toHaveProperty('roof');
+        expect(V.ROOF_KINDS).toEqual(['flat', 'pitched', 'mansard']);
+        const markup = V.extrasControlsMarkup('rule');
+        expect(markup).toMatch(/<select id="rule-roof">/);
+        for (const kind of V.ROOF_KINDS) expect(markup).toContain(`<option value="${kind}"`);
+    });
+});
+
 describe('the shared Use, Access, balconies and roof controls', () => {
+    it('reads the roof from its select and puts a saved roof back', () => {
+        const { container, controls, fire } = fakeControls('rule');
+        const seen = [];
+        V.bindExtrasControls(container, 'rule', extras => seen.push(extras));
+        controls.roof.value = 'mansard';
+        fire();
+        expect(seen.at(-1)).toEqual({ use: 'residential', roof: 'mansard' });
+        controls.roof.value = 'flat';
+        fire();
+        expect(seen.at(-1)).toEqual({ use: 'residential' });
+        V.syncExtrasControls(container, 'rule', { roof: 'pitched' });
+        expect(controls.roof.value).toBe('pitched');
+        V.syncExtrasControls(container, 'rule', {});
+        expect(controls.roof.value).toBe('flat');
+    });
+
     // A container answering querySelector('#<prefix>-<name>') with plain control objects.
     function fakeControls(prefix) {
         const listeners = [];
         const control = props => ({ ...props, addEventListener: (type, fn) => listeners.push(fn), closest: () => ({ hidden: false }) });
         const controls = { use: control({ value: 'residential', querySelector: () => null }), access: control({ value: 'auto' }),
-            balconies: control({ checked: false }), 'balcony-depth': control({ value: '1.5' }), 'slanted-roof': control({ checked: false }) };
+            balconies: control({ checked: false }), 'balcony-depth': control({ value: '1.5' }), roof: control({ value: 'flat' }) };
         const container = { querySelector: selector => controls[selector.replace(`#${prefix}-`, '')] || null };
         return { container, controls, fire: () => listeners.forEach(fn => fn()) };
     }

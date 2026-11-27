@@ -71,7 +71,7 @@ function showBlockifyModalEditor() {
                         <span data-i18n-key="blockify.modal.existing.additionalFloors" data-i18n-attr="text">Additional storeys:</span>
                         <span id="additional-floors-value">${DEFAULT_ADDITIONAL_FLOORS}</span>
                     </label>
-                    <input type="range" id="additional-floors-slider" min="1" max="20" value="${DEFAULT_ADDITIONAL_FLOORS}" step="1" disabled>
+                    <input type="range" id="additional-floors-slider" min="0" max="20" value="${DEFAULT_ADDITIONAL_FLOORS}" step="1" disabled>
                 </div>
                 <div class="parameter-group blockify-existing-only" style="display:none">
                     <label for="floor-height-slider">
@@ -79,6 +79,12 @@ function showBlockifyModalEditor() {
                         <span id="floor-height-value">${CbFormat.formatNumber(DEFAULT_FLOOR_HEIGHT_M, { maxFractionDigits: 1, minFractionDigits: 1 })}</span>
                     </label>
                     <input type="range" id="floor-height-slider" min="2.5" max="5" value="${DEFAULT_FLOOR_HEIGHT_M}" step="0.1">
+                </div>
+                <div class="parameter-group urban-rule-extras blockify-existing-only" style="display:none">
+                    <label class="urban-rule-extras__use" for="blockify-existing-roof">
+                        <span data-i18n-key="urbanRule.roofLabel" data-i18n-attr="text">Roof</span>
+                        <select id="blockify-existing-roof">${window.UrbanRuleVariation.roofOptionsMarkup()}</select>
+                    </label>
                 </div>
                 <div class="parameter-group blockify-freeform-only">
                     <label for="setback-slider">
@@ -493,9 +499,18 @@ function showBlockifyModalEditor() {
         const additionalFloorsSlider = document.getElementById('additional-floors-slider');
         if (additionalFloorsSlider) {
             additionalFloorsSlider.addEventListener('input', function (e) {
-                currentAdditionalFloors = parseInt(e.target.value) || DEFAULT_ADDITIONAL_FLOORS;
+                const floors = parseInt(e.target.value);
+                currentAdditionalFloors = Number.isFinite(floors) && floors >= 0 ? floors : DEFAULT_ADDITIONAL_FLOORS;
                 setExistingRule('additional');
                 updateExistingValueLabels();
+                generateExistingBuildingsInModal();
+            });
+        }
+
+        const existingRoofSelect = document.getElementById('blockify-existing-roof');
+        if (existingRoofSelect) {
+            existingRoofSelect.addEventListener('change', function (e) {
+                existingRoof = window.UrbanRuleVariation.ROOF_KINDS.includes(e.target.value) ? e.target.value : 'flat';
                 generateExistingBuildingsInModal();
             });
         }

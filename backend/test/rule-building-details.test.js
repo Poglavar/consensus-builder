@@ -136,3 +136,100 @@ describe('roof shade', () => {
         }
     });
 });
+
+describe('the mansard roof', () => {
+    // A terrace house: 5 m of street frontage (along x), 9 m deep, neighbours on both sides.
+    const terrace = [[0, 0], [5, 0], [5, 9], [0, 9]];
+    const party = [false, true, false, true];
+    const frame = D.roofFrame(terrace, { party, kind: 'mansard' });
+    const lowerRun = D.MANSARD.lowerRiseM / Math.tan(70 * Math.PI / 180);
+
+    it('starts behind the parapet, rises steeply for a storey, then shallowly', () => {
+        expect(frame.kind).toBe('mansard');
+        expect(D.roofHeightAt(frame, 2.5, 0.2)).toBe(0);                                  // the gutter behind the parapet
+        expect(D.roofHeightAt(frame, 2.5, D.MANSARD.setbackM)).toBeCloseTo(0, 6);
+        expect(D.roofHeightAt(frame, 2.5, D.MANSARD.setbackM + lowerRun)).toBeCloseTo(2.25, 6);
+        const slopes = D.roofFaces(terrace, frame).filter(face => face.side === 1).map(face => Math.round(face.pitch * 180 / Math.PI));
+        expect(slopes).toEqual([0, 70, 30]);                                              // gutter, lower slope, upper slope
+        // The same on the garden side.
+        expect(D.roofHeightAt(frame, 2.5, 9 - D.MANSARD.setbackM - lowerRun)).toBeCloseTo(2.25, 6);
+        // 4.5 m in, the upper slope has risen (4.5 − 0.38 − lowerRun) · tan 30°, under its 2 m limit.
+        expect(frame.riseM).toBeCloseTo(2.25 + (4.5 - D.MANSARD.setbackM - lowerRun) * Math.tan(30 * Math.PI / 180), 6);
+        expect(frame.riseM).toBeLessThan(4.25);
+    });
+
+    it('lowers the upper slope on a deep building so it stays 2 m above the lower one', () => {
+        const deep = [[0, 0], [30, 0], [30, 24], [0, 24]];
+        const neighbours = [[[-30, 0], [0, 0], [0, 24], [-30, 24]], [[30, 0], [60, 0], [60, 24], [30, 24]]];
+        const deepFrame = D.roofFrame(deep, { party: D.partyEdges(D.ccw(deep), neighbours, 1), kind: 'mansard' });
+        expect(deepFrame.riseM).toBeCloseTo(4.25, 6);
+        expect(D.roofHeightAt(deepFrame, 15, 12)).toBeCloseTo(4.25, 6);
+        const pitches = D.roofFaces(deep, deepFrame).filter(face => face.side === 1).map(face => face.pitch * 180 / Math.PI);
+        expect(pitches.slice(0, 2).map(Math.round)).toEqual([0, 70]);
+        expect(pitches[2]).toBeCloseTo(Math.atan2(2, 12 - D.MANSARD.setbackM - lowerRun) * 180 / Math.PI, 6);
+        expect(pitches[2]).toBeLessThan(30);
+        // The faces cover the footprint exactly.
+        const covered = D.roofFaces(deep, deepFrame).reduce((sum, face) => sum + Math.abs(D.signedArea(face.ring)), 0);
+        expect(covered).toBeCloseTo(30 * 24, 6);
+    });
+
+    it('is hipped on a free end and gabled on a party wall', () => {
+        // The end of a terrace: a neighbour to the west only.
+        const end = D.roofFrame(terrace, { party: [false, false, false, true], kind: 'mansard' });
+        expect(end.sides.map(side => side.key)).toEqual([1, -1, 'hip-max']);
+        expect(D.roofHeightAt(end, 5, 4.5)).toBe(0);                       // the free east wall stays at the eave
+        expect(D.roofHeightAt(end, 5 - D.MANSARD.setbackM - lowerRun, 4.5)).toBeCloseTo(2.25, 6);
+        expect(D.roofHeightAt(end, 0, 4.5)).toBeCloseTo(end.riseM, 6);    // the party wall is a gable
+        expect(D.atticWalls(terrace, end)).toHaveLength(1);
+        const faces = D.roofFaces(terrace, end);
+        expect(faces.filter(face => face.side === 'hip-max').map(face => Math.round(face.pitch * 180 / Math.PI))).toEqual([0, 70, 30]);
+        expect(faces.reduce((sum, face) => sum + Math.abs(D.signedArea(face.ring)), 0)).toBeCloseTo(45, 6);
+        // The storey loses the setback on the free end too.
+        expect(D.mansardFloorAreaM2(terrace, end)).toBeCloseTo((5 - D.MANSARD.setbackM) * (9 - 2 * D.MANSARD.setbackM), 6);
+        // Free-standing: every side slopes, no wall rises above the eave. A pitched roof keeps its gables.
+        const alone = D.roofFrame(terrace, { kind: 'mansard' });
+        expect(alone.sides).toHaveLength(4);
+        expect(D.atticWalls(terrace, alone)).toEqual([]);
+        expect(D.roofFrame(terrace).sides).toHaveLength(2);
+        expect(D.atticWalls(terrace, D.roofFrame(terrace))).toHaveLength(2);
+    });
+
+    it('raises the party walls in the mansard outline, starting behind the setback', () => {
+        const walls = D.atticWalls(terrace, frame);
+        expect(walls).toHaveLength(2);                                   // the two party walls; the street and garden walls stay at the eave
+        for (const wall of walls) {
+            const base = wall.points.filter(p => p[2] === 0).map(p => p[1]).sort((a, b) => a - b);
+            expect(base[0]).toBeCloseTo(D.MANSARD.setbackM, 6);
+            expect(base[1]).toBeCloseTo(9 - D.MANSARD.setbackM, 6);
+            expect(Math.max(...wall.points.map(p => p[2]))).toBeCloseTo(frame.riseM, 6);
+            // The triangles fill the outline: same area as the roof's cross-section.
+            const area = wall.triangles.reduce((sum, [a, b, c]) => sum + Math.abs((b[1] - a[1]) * (c[2] - a[2]) - (c[1] - a[1]) * (b[2] - a[2])) / 2, 0);
+            const section = 2 * (lowerRun * 2.25 / 2 + (4.5 - D.MANSARD.setbackM - lowerRun) * (2.25 + frame.riseM) / 2);
+            expect(area).toBeCloseTo(section, 6);
+        }
+    });
+
+    it('puts dormers in the street and garden slopes, none in party walls, none on a pitched roof', () => {
+        const dormers = D.dormers(terrace, frame, party);
+        expect(dormers).toHaveLength(2);
+        expect(dormers.map(d => d.normal[1]).sort()).toEqual([-1, 1]);
+        for (const dormer of dormers) expect(Math.min(dormer.center[1], 9 - dormer.center[1])).toBeCloseTo(D.MANSARD.setbackM, 6);
+        expect(D.dormers(terrace, D.roofFrame(terrace, { party }), party)).toEqual([]);
+        expect(D.plan(rule({ roof: 'mansard' }), terrace, { eaveM: 9 }).dormers.length).toBeGreaterThan(0);
+        expect(D.plan(rule({ roof: 'pitched' }), terrace, { eaveM: 9 }).dormers).toEqual([]);
+        const prisms = D.dormerPrisms(dormers[0], 9, 1);
+        for (const solid of [prisms.body, prisms.frame, prisms.glass]) expect(solid.length % 9).toBe(0);
+    });
+
+    it('holds a storey: the footprint behind the two setbacks', () => {
+        expect(D.mansardFloorAreaM2(terrace, frame)).toBeCloseTo(5 * (9 - 2 * D.MANSARD.setbackM), 6);
+    });
+
+    it('is read from a building\'s rule, else from the building itself', () => {
+        expect(D.roofKindOf({ properties: { urbanRule: { roof: 'mansard' } } })).toBe('mansard');
+        expect(D.roofKindOf({ properties: { roof: 'pitched' } })).toBe('pitched');
+        expect(D.roofKindOf({ properties: { roof: 'flat' } })).toBeNull();
+        expect(D.detailRuleOf({ properties: { roof: 'mansard' } })).toMatchObject({ roof: 'mansard' });
+        expect(D.detailRuleOf({ properties: { height: 9 } })).toBeNull();
+    });
+});

@@ -53,7 +53,7 @@ test('Balconies and a slanted roof are saved on the rule, restored on edit, and 
 
   const balconies = page.locator('#blockify-balconies');
   const depth = page.locator('#blockify-balcony-depth');
-  const roof = page.locator('#blockify-slanted-roof');
+  const roof = page.locator('#blockify-roof');
   const use = page.locator('#blockify-use');
   await expect(use).toHaveValue('');
   await expect(use.locator('option[value=""]')).toHaveText(/Automatic/);
@@ -66,7 +66,8 @@ test('Balconies and a slanted roof are saved on the rule, restored on edit, and 
   await expect(depth).toHaveValue('2');
   await depth.fill('1.5');
   await depth.press('Tab');
-  await roof.check();
+  await expect(roof).toHaveValue('flat');
+  await selectNativeOption(roof, 'pitched');
 
   await page.locator('#btn-blockify-done').click();
   await expect.poll(() => appliedBuildingId(page)).not.toBeNull();
@@ -83,12 +84,13 @@ test('Balconies and a slanted roof are saved on the rule, restored on edit, and 
   await expect(balconies).toBeVisible();
   await expect(balconies).toBeChecked();
   await expect(depth).toHaveValue('1.5');
-  await expect(roof).toBeChecked();
+  await expect(roof).toHaveValue('pitched');
+  await expect(roof.locator('option[value="mansard"]')).toHaveText(/Mansard/);
   await expect(use).toHaveValue('office');
   await selectNativeOption(use, '');
   await balconies.uncheck();
   await expect(depth).toBeHidden();
-  await roof.uncheck();
+  await selectNativeOption(roof, 'flat');
   await page.locator('#btn-blockify-done').click();
   await expect.poll(async () => {
     const current = await appliedBuildingId(page);

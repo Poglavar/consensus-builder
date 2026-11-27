@@ -9021,7 +9021,7 @@
             byProposal.get(id).push(f);
         });
         const ruleDetails = (drawn, height, feat) => {
-            if (!drawn?.properties?.urbanRule) return null;
+            if (!window.__ruleBuildingDetails?.detailRuleOf(drawn)) return null;
             try {
                 return ruleRoofs.planFor(drawn, height, (byProposal.get(feat.properties?.proposalId) || []).filter(f => f !== feat));
             } catch (error) {

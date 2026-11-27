@@ -101,6 +101,9 @@
     "urbanRule": {
         "balconies": "شرفات",
         "balconyDepth": "يمكن أن تبرز خارج الغلاف بمقدار (م):",
+        "roofLabel": "السقف",
+        "roofFlat": "مسطح",
+        "roofMansard": "سقف مانسارد (طابق داخل السقف)",
         "slantedRoof": "سقف مائل مع علّية",
         "useAutomatic": "تلقائي: متاجر في الطابق الأرضي من 5 طوابق",
         "accessLabel": "الوصول إلى الشقق",

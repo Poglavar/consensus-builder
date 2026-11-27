@@ -26,6 +26,18 @@ describe('built form', () => {
         expect(form.floorAreaRatio).toBeCloseTo(9000 / turf.area(LAND), 6);
     });
 
+    it('counts a mansard roof in the tallest building, its storeys and the height the Permitted check takes', () => {
+        const house = properties => building(square(15.885, 43.735, 15.8851, 43.7351), { height: 9, ...properties });
+        const flat = decision.builtForm({ records: [design('a', [house({})])], turf });
+        const mansard = decision.builtForm({ records: [design('a', [house({ roof: 'mansard' })])], turf });
+        expect(flat).toMatchObject({ maxHeightM: 9, maxStoreys: 3 });
+        expect(mansard.maxStoreys).toBe(4);
+        expect(mansard.maxHeightM).toBeGreaterThan(9 + 2.25);
+        expect(mansard.maxHeightM).toBeLessThanOrEqual(9 + 4.25);
+        const [checked] = decision.permittedBuildings([design('a', [house({ roof: 'mansard' })])]);
+        expect(checked).toMatchObject({ heightM: mansard.maxHeightM, floors: 4 });
+    });
+
     it('leaves the ratios unknown without land, and the height unknown when no building states one', () => {
         const unstated = building(square(15.885, 43.735, 15.886, 43.7365), {});
         const form = decision.builtForm({ records: [design('a', [unstated])], grossFloorAreaM2: 0, turf });

@@ -685,7 +685,13 @@ How X-ray shows the interior of an uploaded building model: a horizontal cut 1.2
 
 An authored rule governing possible building form on land, such as Block, Row or Detached. The design's permitted envelopes express that rule; an example build-out illustrates one realization.
 
-Any of the three may also permit **balconies** (`balconyDepthM`: how far, in metres, they may stand out of the envelope; absent means none) and a **slanted roof** (`roof: "pitched"`: a roof with its attic set on the top floor, ridge parallel to the street side; absent means flat). Both ride on the rule each building carries.
+Any of the three may also permit **balconies** (`balconyDepthM`: how far, in metres, they may stand out of the envelope; absent means none) and a roof (`roof`, absent means flat): a **slanted roof** (`"pitched"`: a roof with its attic set on the top floor, ridge parallel to the street side) or a **mansard** (`"mansard"`). Both ride on the rule each building carries.
+
+A **mansard** is a roof holding a storey: on the street and the garden side it starts 0.38 m (15 inches) behind the wall top (the parapet), rises at 70° for 2.25 m, then at 30° for at most 2 m more, and is flat beyond that; walls shared with a neighbour rise as gables to its outline, and the lower slope carries dormer windows. These are the limits of the mansard guide in *Living Tradition* (S. Hughes, Create Streets, 2021). Its storey counts: one more storey, the footprint behind the two setbacks as floor area, and the roof's rise in the building's height for Compare plans and the Permitted check. A slanted roof's attic counts for none of these.
+
+### Raised existing buildings
+
+The Block editor's **Based on existing buildings** mode (`parameters.mode: "existing"`): the design's buildings are the existing buildings on its parcels, each redrawn on its own footprint at a stated number of storeys (`rule: "exact"`) or at its existing height plus added storeys (`rule: "additional"`, which may be none), with a roof of its own (`parameters.roof`, on each building as `properties.roof`). It carries no urban rule and takes no land: it clears only the buildings it redraws. A mansard on a terrace is this mode with no added storeys and the mansard roof.
 
 ### Block rule
 
@@ -912,7 +918,7 @@ The semantic faces of a building's shell: roof surfaces, wall surfaces, the grou
 
 ### Roof type
 
-The shape class of a building's roof: flat, gabled (saddle), hipped, mansard, shed and similar, as a city model states it (CityGML `roofType`, a code list each source defines). A permitted slanted roof (`roof: "pitched"`) is a rule allowance, not an observed roof type.
+The shape class of a building's roof: flat, gabled (saddle), hipped, mansard, shed and similar, as a city model states it (CityGML `roofType`, a code list each source defines). A permitted slanted roof or mansard (`roof: "pitched"`, `"mansard"`) is a rule allowance, or the roof set on a raised existing building; neither is an observed roof type.
 
 ### City model
 

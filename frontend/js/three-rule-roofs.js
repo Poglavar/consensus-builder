@@ -1,4 +1,5 @@
-// Meshes for the pitched roofs, attic walls, gable windows and balconies an urban rule asks for.
+// Meshes for the pitched and mansard roofs, attic walls, gable windows, dormers and balconies an
+// urban rule (or a raised existing building's own roof) asks for.
 // The plan geometry comes from rule-building-details.js; three-mode.js supplies the scene's
 // coordinate transform and its mesh bookkeeping, and calls in when it draws a planned building.
 (function (root) {
@@ -84,9 +85,10 @@
         // What one building gets, decided once: the roof frame comes from the whole footprint, so
         // every parcel slice of it raises its attic walls to the same roof.
         function planFor(feature, eaveM, neighbourFeatures) {
-            const rule = feature?.properties?.urbanRule;
-            if (!details || !rule || !(eaveM > 0)) return null;
-            if (rule.roof !== 'pitched' && !(rule.balconyDepthM > 0)) return null;
+            const rule = details && details.detailRuleOf(feature);
+            if (!rule || !(eaveM > 0)) return null;
+            const roofed = details.ROOF_KINDS.includes(rule.roof);
+            if (!roofed && !(rule.balconyDepthM > 0)) return null;
             const parts = outerRings(feature.geometry);
             if (!parts.length) return null;
             const metresPerUnit = metresPerUnitOf(feature.geometry);
@@ -97,7 +99,7 @@
             const plans = rings.map(part => details.plan(rule, part.xy, { metresPerUnit, neighbours, eaveM, hasHoles: part.holes }))
                 .filter(Boolean);
             if (!plans.length) return null;
-            return { eaveM, metresPerUnit, plans, frame: plans[0].frame, pitched: rule.roof === 'pitched', feature };
+            return { eaveM, metresPerUnit, plans, frame: plans[0].frame, pitched: roofed, feature };
         }
 
         function meshFrom(positions, material, uvs = null) {
@@ -113,13 +115,13 @@
         // The attic walls over one slice of the building (or the whole of it), in the slice's own
         // material so they read as the same wall carried up into the gable.
         function atticMeshes(plan, sliceFeature, material) {
-            if (!plan || !plan.pitched) return [];
+            // No roof (a footprint with a courtyard), no attic walls under it.
+            if (!plan || !plan.pitched || !plan.plans.some(part => part.roof)) return [];
             const positions = [];
             for (const part of outerRings(sliceFeature.geometry)) {
                 for (const wall of details.atticWalls(toXY(part.ring), plan.frame)) {
-                    const p = wall.points.map(([x, y, z]) => [x, y, plan.eaveM + z]);
-                    for (let i = 1; i + 1 < p.length; i++) {
-                        const a = p[0], b = p[i], c = p[i + 1];
+                    for (const triangle of wall.triangles) {
+                        const [a, b, c] = triangle.map(([x, y, z]) => [x, y, plan.eaveM + z]);
                         const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
                         const vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
                         // Wall triangles that collapse onto the eave line are dropped.
@@ -134,7 +136,7 @@
         // Roof surfaces, gable windows and balconies of one building.
         function detailMeshes(plan, buildingMaterial) {
             const out = [];
-            const roof = [], uv = [], slabs = [], railings = [], frames = [], glass = [];
+            const roof = [], uv = [], slabs = [], railings = [], frames = [], glass = [], dormers = [];
             const mpu = plan.metresPerUnit, eave = plan.eaveM;
             for (const part of plan.plans) {
                 if (part.roof) {
@@ -145,15 +147,18 @@
                             for (const index of [i, j, k]) {
                                 const [x, y] = face.ring[index];
                                 roof.push(x, y, eave + details.roofHeightAt(frame, x, y));
-                                const alongM = (x * frame.axis[0] + y * frame.axis[1]) * mpu;
-                                const acrossM = Math.abs(x * frame.normal[0] + y * frame.normal[1] - frame.ridge) * mpu / Math.cos(frame.pitch);
-                                uv.push(alongM / SHINGLE_TILE_M, acrossM / SHINGLE_TILE_M);
+                                const alongM = (x * face.along[0] + y * face.along[1]) * mpu;
+                                uv.push(alongM / SHINGLE_TILE_M, details.roofSlopeLengthAt(frame, x, y) / SHINGLE_TILE_M);
                             }
                         }
                     }
                     for (const window of part.windows) {
                         const prisms = details.windowPrisms(window, eave, mpu);
                         frames.push(...prisms.frame); glass.push(...prisms.glass);
+                    }
+                    for (const dormer of part.dormers) {
+                        const prisms = details.dormerPrisms(dormer, eave, mpu);
+                        dormers.push(...prisms.body); frames.push(...prisms.frame); glass.push(...prisms.glass);
                     }
                 }
                 for (const balcony of part.balconies) {
@@ -162,6 +167,7 @@
                 }
             }
             if (roof.length) out.push(meshFrom(roof, roofMaterial(buildingMaterial, plan.feature), uv));
+            if (dormers.length) out.push(meshFrom(dormers, materials.slab));
             if (slabs.length) out.push(meshFrom(slabs, materials.slab));
             if (railings.length) out.push(meshFrom(railings, materials.railing));
             if (frames.length) out.push(meshFrom(frames, materials.frame));

@@ -1105,6 +1105,9 @@
     "urbanRule": {
         "balconies": "Balkoni",
         "balconyDepth": "Smiju izaći iz gabarita za (m):",
+        "roofLabel": "Krov",
+        "roofFlat": "Ravni",
+        "roofMansard": "Mansardni krov (kat u krovu)",
         "slantedRoof": "Kosi krov s potkrovljem",
         "useAutomatic": "Automatski: trgovine u prizemlju od 5 etaža",
         "accessLabel": "Pristup stanovima",

@@ -31,7 +31,9 @@ describe('MCP shared construction generators', () => {
     it.each([['block', options], ['row', rowOptions], ['detached', options]])('carries balconies and a slanted roof on every %s building', (typology, selected) => {
         const design = buildTypedDesign({ ...common, typology, balconyDepthM: 2, roof: 'pitched' }, selected);
         for (const building of design.geometry.buildings) expect(building.properties.urbanRule).toMatchObject({ balconyDepthM: 2, roof: 'pitched' });
-        expect(() => buildTypedDesign({ ...common, typology, roof: 'gabled' }, selected)).toThrow(/flat or pitched/);
+        expect(() => buildTypedDesign({ ...common, typology, roof: 'gabled' }, selected)).toThrow(/flat, pitched or mansard/);
+        const mansard = buildTypedDesign({ ...common, typology, roof: 'mansard' }, selected);
+        for (const building of mansard.geometry.buildings) expect(building.properties.urbanRule.roof).toBe('mansard');
         expect(() => buildTypedDesign({ ...common, typology, balconyDepthM: 6 }, selected)).toThrow(/balconyDepthM/);
     });
     it('keeps a rule design\'s use on its rule: a Block automatic unless stated, Row and Detached housing', () => {

@@ -137,7 +137,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
         frontSetbackM: z.number().min(0).max(100).optional(), rearSetbackM: z.number().min(0).max(100).optional(), setbackHeightRatio: z.number().min(0).max(3).optional(),
         maxHeightM: z.number().positive().max(800).optional(), minFrontageM: z.number().min(0).max(1000).optional(), coverage: z.number().positive().max(1).optional(),
         minNaturalGround: z.number().min(0).max(1).optional(), maxFloorAreaRatio: z.number().positive().max(50).optional(), maxFootprintAreaM2: z.number().positive().max(1_000_000).optional(),
-        use: z.string().max(100).optional(), access: z.enum(['auto', 'point', 'corridor']).optional(), roof: z.enum(['flat', 'pitched']).optional(), balconyDepthM: z.number().min(0).max(5).optional(),
+        use: z.string().max(100).optional(), access: z.enum(['auto', 'point', 'corridor']).optional(), roof: z.enum(['flat', 'pitched', 'mansard']).optional(), balconyDepthM: z.number().min(0).max(5).optional(),
         seed: z.number().int().min(0).max(0xffffffff).optional(), simplifyM: z.number().min(0).max(50).optional(), chamferM: z.number().min(0).max(50).optional(),
         gapPositions: z.array(z.number().min(0).max(1)).max(10).optional(), gapWidthM: z.number().min(1).max(20).optional(),
         wingPositions: z.array(z.number().min(0).max(1)).max(10).optional(), wingLengthM: z.number().min(10).max(200).optional(),
@@ -166,7 +166,7 @@ export function registerMcpCompanion(server, { actions, handler, readOnly, disco
             maxFloorAreaRatio: z.number().positive().max(50).optional().describe('Detached: floor area over plot area.'),
             maxFootprintAreaM2: z.number().positive().max(1000000).optional().describe('Detached: the largest ground floor.'),
             balconyDepthM: z.number().min(0).max(5).optional().describe('Block, row and detached: balconies on the long facades may stand out of the envelope by this many metres; 0 or omitted means none.'),
-            roof: z.enum(['flat', 'pitched']).optional().describe('Block, row and detached: pitched adds a slanted roof with its attic on top of the last floor, ridge along the street side.'),
+            roof: z.enum(['flat', 'pitched', 'mansard']).optional().describe('Block, row and detached: pitched adds a slanted roof with its attic on top of the last floor, ridge along the street side. Mansard adds a storey inside a steep roof set back behind the parapet (lower slope 70° and 2.25 m high, upper slope 30°, at most 2 m more); that storey counts as a floor and in the floor area.'),
             seed: z.number().int().min(0).max(4294967295).optional(), permitted: z.boolean().optional(), planningSource: z.string().max(100).optional() }, 'draftBuilding');
     add('ugt_draft_track', 'Draft a rail corridor with an explicit gauge and speed target using the app geometry. Curvature is checked against the required radius; subsequent edits retain the constraints.',
         { ...site, points: z.array(point).min(2).max(200), gauge: z.union([z.literal(1000), z.literal(1435)]).default(1435),

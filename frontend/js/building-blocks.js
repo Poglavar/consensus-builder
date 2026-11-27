@@ -134,6 +134,7 @@ let existingRule = 'exact';             // 'exact' (proposed height) | 'addition
 let currentProposedHeightFloors = DEFAULT_PROPOSED_HEIGHT_FLOORS;
 let currentAdditionalFloors = DEFAULT_ADDITIONAL_FLOORS;
 let currentFloorHeightM = DEFAULT_FLOOR_HEIGHT_M;
+let existingRoof = 'flat';              // 'flat' | 'pitched' | 'mansard' on the raised buildings
 let existingFootprints = null;          // [{ id, geometry, height_m, floors }] for the current block
 let existingFootprintsPromise = null;   // in-flight/settled fetch; one per modal open
 let generatedBuildingFeatures = null;   // existing-mode result: one Feature per raised building
@@ -1468,6 +1469,7 @@ function applyBlockifySeedState(seed) {
         if (additionalFloors !== null) currentAdditionalFloors = additionalFloors;
         const floorHeight = num(seed.floorHeightM);
         if (floorHeight !== null) currentFloorHeightM = floorHeight;
+        existingRoof = window.UrbanRuleVariation.ROOF_KINDS.includes(seed.roof) ? seed.roof : 'flat';
     }
 
     if (seed.algorithm) {
@@ -1506,6 +1508,8 @@ function syncBlockifyControlsFromState() {
     setSlider('proposed-height-slider', 'proposed-height-value', currentProposedHeightFloors, 0);
     setSlider('additional-floors-slider', 'additional-floors-value', currentAdditionalFloors, 0);
     setSlider('floor-height-slider', 'floor-height-value', currentFloorHeightM);
+    const existingRoofSelect = document.getElementById('blockify-existing-roof');
+    if (existingRoofSelect) existingRoofSelect.value = existingRoof;
     if (typeof updateExistingValueLabels === 'function') updateExistingValueLabels();
 
     const ruleTypeSelect = document.getElementById('blockify-ruletype-select');
@@ -2061,6 +2065,7 @@ function autosaveBlockifyDraft(featuresOverride = null) {
             proposedHeightFloors: currentProposedHeightFloors,
             additionalFloors: currentAdditionalFloors,
             floorHeightM: currentFloorHeightM,
+            roof: existingRoof,
             algorithm: null
         }
         : {
@@ -2686,6 +2691,8 @@ function generateExistingBuildingsInModal() {
                 sourceBuildingId: fp.id != null ? fp.id : null,
                 existingHeight: existingH,
                 height: Math.round(proposedH * 100) / 100,
+                // The roof set on the raised building (rule-building-details.js reads it from here).
+                ...(existingRoof !== 'flat' ? { roof: existingRoof } : {}),
                 buildingIndex: features.length
             },
             geometry
@@ -3061,6 +3068,7 @@ async function saveBlockifyDesignForProposal() {
             proposedHeightFloors: currentProposedHeightFloors,
             additionalFloors: currentAdditionalFloors,
             floorHeightM: currentFloorHeightM,
+            roof: existingRoof,
             algorithm: null
         }
         : {

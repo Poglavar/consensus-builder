@@ -388,3 +388,43 @@ describe('freeform structures', () => {
         expect(planYield([park], { openSpaceAreaOf: () => null }).total.openSpaceM2).toBeCloseTo(geometryAreaM2(polygon(SIBENIK)), 3);
     });
 });
+
+describe('a mansard roof holds a storey', () => {
+    // Three terrace houses in London, each 5 m of frontage (east–west) and 9 m deep, 9 m to the eave.
+    const LAT = 51.5, R = 6378137;
+    const kx = Math.cos(LAT * Math.PI / 180) * R * Math.PI / 180, ky = R * Math.PI / 180;
+    const house = (x0, properties) => ({ type: 'Feature', properties: { height: 9, ...properties },
+        geometry: { type: 'Polygon', coordinates: [[[x0 / kx, LAT], [(x0 + 5) / kx, LAT], [(x0 + 5) / kx, LAT + 9 / ky], [x0 / kx, LAT + 9 / ky], [x0 / kx, LAT]]] } });
+
+    it('adds one floor with the area behind the parapet setbacks, and the roof to the height', () => {
+        const terrace = [house(0, { roof: 'mansard' }), house(5, { roof: 'mansard' }), house(10, { roof: 'mansard' })];
+        const flat = measureBuilding(house(5, {}), null, {});
+        const measured = measureBuilding(terrace[1], null, {}, terrace);
+        expect(flat).toMatchObject({ floors: 3, heightM: 9 });
+        expect(flat.topHeightM).toBeUndefined();
+        expect(measured.floors).toBe(4);
+        expect(measured.heightM).toBe(9);
+        // The storey: 5 m × (9 m − 2 × 0.38 m), the party walls deciding which sides slope.
+        expect(measured.mansardFloorAreaM2).toBeCloseTo(5 * (9 - 0.76), 1);
+        expect(measured.gfaM2).toBeCloseTo(flat.gfaM2 + 5 * (9 - 0.76), 1);
+        expect(measured.topHeightM).toBeCloseTo(9 + measured.roofRiseM, 6);
+        expect(measured.roofRiseM).toBeGreaterThan(2.25);
+        expect(measured.roofRiseM).toBeLessThanOrEqual(4.25);
+    });
+
+    it('is read from the rule too, and a pitched roof adds no floor', () => {
+        const ruled = measureBuilding(house(0, { urbanRule: { roof: 'mansard', floorHeightM: 3 } }), null, {});
+        expect(ruled.floors).toBe(4);
+        expect(measureBuilding(house(0, { urbanRule: { roof: 'pitched', floorHeightM: 3 } }), null, {}).floors).toBe(3);
+        expect(measureBuilding(house(0, { roof: 'pitched' }), null, {}).floors).toBe(3);
+    });
+
+    it('reaches the plan totals through the design\'s own buildings', () => {
+        const design = roof => ({ proposalId: 'p', buildingProposal: {}, geometry: { buildings: [0, 5, 10].map(x => house(x, roof ? { roof } : {})) } });
+        const flat = planYield([design(null)]).total.grossFloorAreaM2;
+        const mansard = planYield([design('mansard')]).total.grossFloorAreaM2;
+        // The middle house keeps its full width; each end house is hipped on its free end and
+        // loses the setback there too.
+        expect(mansard - flat).toBeCloseTo((5 + 2 * (5 - 0.38)) * (9 - 0.76), 0);
+    });
+});

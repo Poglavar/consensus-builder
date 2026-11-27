@@ -204,11 +204,13 @@ defined in [vocabulary.md](vocabulary.md#detached-rule)). They keep the model ab
 - Dwelling counts, parking, uses and neighbours' building lines are not limits of this rule: none
   of them bounds one envelope a sample can be drawn inside.
 
-## Balconies and slanted roof
+## Balconies and roofs
 
 All three typologies can permit **balconies** that stand out of the envelope by `balconyDepthM`
-(the editors default to 2 m, capped at 5 m) and a **slanted roof** (`roof: "pitched"`). Both are
-stored on the normalized rule only when used, so earlier rules keep their exact shape.
+(the editors default to 2 m, capped at 5 m) and a roof: a **slanted roof** (`roof: "pitched"`) or a
+**mansard** (`roof: "mansard"`). Both are stored on the normalized rule only when used, so earlier
+rules keep their exact shape. The Block editor's Based on existing buildings mode offers the same
+roofs on the buildings it raises (`properties.roof`).
 
 The roof starts where the top floor ends. Its ridge runs along the facade holding the most exterior
 wall length; walls shared with another building of the same design (party walls) do not count, so a
@@ -217,9 +219,17 @@ only where the roof rises above the eave line (the gables), and windows only in 
 party walls. Balconies line the exterior facades parallel to the ridge, one row per storey above the
 ground floor. A footprint with a courtyard hole gets balconies but stays flat.
 
+A roof is a profile: its height by the distance in from the eave edge, the same on both sides of the
+ridge line. A mansard's profile is the guide of *Living Tradition* (S. Hughes, Create Streets, 2021):
+flat for 0.38 m behind the parapet, 70° for 2.25 m of height, 30° for at most 2 m more, flat beyond.
+Party walls and end walls rise to that outline as gables; exterior walls along the ridge get dormers
+in the lower slope, about one per 3 m.
+
 These are drawn on the build-out and on a massing shown as the primary volume; the see-through
-envelope behind a build-out stays a plain box. Floor area, gain and stats still read the envelope:
-neither the attic nor the balconies add to them. Geometry: `frontend/js/rule-building-details.js`
+envelope behind a build-out stays a plain box. Floor area, gain and stats read the envelope: neither
+a slanted roof's attic nor the balconies add to them. A mansard's storey does count in Plan stats,
+Compare plans and the Permitted check (`plan-yield.js`: one more storey, the footprint behind the two
+setbacks, and the roof's rise in the height); the editors' own density readout does not include it. Geometry: `frontend/js/rule-building-details.js`
 (pure, tested); meshes: `frontend/js/three-rule-roofs.js`.
 
 ## Minimum parcel size

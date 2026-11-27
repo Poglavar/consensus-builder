@@ -117,8 +117,9 @@ export function buildTypedDesign(intent, { parcels = [] } = {}) {
         ? [runtime.sitePlots.siteSuperparcel(site, { turf })].map(superparcel => ({ feature: superparcel, parcelId: superparcel.properties.parcelId }))
         : entries;
     const minPlotAreaM2 = number(intent.minPlotAreaM2, 50, 'minPlotAreaM2', 0, 1_000_000);
-    // Balconies may stand out of the envelope by balconyDepthM; a pitched roof adds an attic on top.
-    if (intent.roof != null && !['flat', 'pitched'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat or pitched roof.', 'roof', { enum: ['flat', 'pitched'] });
+    // Balconies may stand out of the envelope by balconyDepthM; a pitched roof adds an attic on top,
+    // a mansard a storey inside the roof.
+    if (intent.roof != null && !['flat', 'pitched', 'mansard'].includes(intent.roof)) fail('invalid-roof', 'Choose a flat, pitched or mansard roof.', 'roof', { enum: ['flat', 'pitched', 'mansard'] });
     // The design's use is its rule's (building-use.js): a Block may leave it automatic (shops on the
     // ground floor from five storeys), a Row or Detached rule starts as housing.
     const ruleUse = intent.use == null ? null : runtime.use.normalize(String(intent.use));

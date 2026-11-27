@@ -310,13 +310,17 @@ test.describe('Designer controls persist their edits @features', () => {
     await page.locator('#floor-height-slider').focus();
     await page.locator('#floor-height-slider').press('ArrowRight');
     const floorHeight = Number(await page.locator('#floor-height-slider').inputValue());
+    const roof = page.locator('#blockify-existing-roof');
+    await expect(roof).toHaveValue('flat');
+    await selectNativeOption(roof, 'mansard');
     await page.locator('#btn-blockify-done').click();
 
     await expect.poll(() => page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .some((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'existing'))).toBe(true);
     const saved = await page.evaluate(() => (window as any).proposalStorage.getAllProposals()
       .find((proposal: any) => proposal.applied && proposal.buildingProposal?.parameters?.mode === 'existing'));
-    expect(saved.buildingProposal.parameters).toMatchObject({ mode: 'existing', rule: 'additional', additionalFloors: original + 1, floorHeightM: floorHeight });
+    expect(saved.buildingProposal.parameters).toMatchObject({ mode: 'existing', rule: 'additional', additionalFloors: original + 1, floorHeightM: floorHeight, roof: 'mansard' });
+    expect(saved.geometry.buildings.every((building: any) => building.properties.roof === 'mansard')).toBe(true);
     expect(saved.geometry.buildings.length).toBeGreaterThan(0);
     expect(saved.geometry.buildings.every((building: any) => Number(building.properties.height) > 12)).toBe(true);
     await expect.poll(() => page.evaluate(id => (window as any).proposedBuildings

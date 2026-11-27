@@ -41,6 +41,10 @@
     const useApi = () => (typeof window !== 'undefined' && window.BuildingUse)
         || (typeof require === 'function' ? require('../building-use.js') : null);
 
+    // Roof geometry (rule-building-details.js): a mansard holds a storey, measured from its shape.
+    const roofApi = () => (typeof window !== 'undefined' && window.__ruleBuildingDetails)
+        || (typeof require === 'function' ? require('../rule-building-details.js') : null);
+
     /** A number or null — never NaN, and never a 0 conjured out of null by Number(). */
     function num(value) {
         if (value === null || value === undefined || value === '') return null;
@@ -157,11 +161,46 @@
         return max ?? min;
     }
 
+    function outerRingsOf(feature) {
+        const geometry = feature && (feature.type === 'Feature' ? feature.geometry : feature);
+        if (!geometry || !Array.isArray(geometry.coordinates)) return [];
+        if (geometry.type === 'Polygon') return [{ ring: geometry.coordinates[0], holes: geometry.coordinates.length > 1 }];
+        if (geometry.type === 'MultiPolygon') return geometry.coordinates.map(rings => ({ ring: rings[0], holes: rings.length > 1 }));
+        return [];
+    }
+
+    /**
+     * The storey inside a building's mansard roof: { floorAreaM2, riseM }, or null without one.
+     * `siblings` are the design's other buildings: walls shared with them are party walls, which
+     * decide the side the roof slopes to. A footprint with a courtyard carries no roof.
+     */
+    function mansardStorey(feature, siblings) {
+        const details = roofApi();
+        if (!details) throw new Error('plan-yield: rule-building-details.js is not loaded, so a mansard cannot be measured');
+        const parts = outerRingsOf(feature).filter(part => Array.isArray(part.ring) && part.ring.length >= 4);
+        if (!parts.length) return null;
+        const lat0 = parts[0].ring[0][1];
+        const kx = Math.cos(lat0 * Math.PI / 180) * EARTH_RADIUS_M * Math.PI / 180, ky = EARTH_RADIUS_M * Math.PI / 180;
+        const metres = ring => ring.map(p => [p[0] * kx, p[1] * ky]);
+        const rings = parts.map(part => ({ xy: details.ccw(metres(part.ring)), holes: part.holes }))
+            .sort((a, b) => Math.abs(details.signedArea(b.xy)) - Math.abs(details.signedArea(a.xy)));
+        const neighbours = (siblings || []).filter(other => other && other !== feature)
+            .flatMap(other => outerRingsOf(other).map(part => metres(part.ring)));
+        const party = details.partyEdges(rings[0].xy, neighbours, 1);
+        const frame = details.roofFrame(rings[0].xy, { party, metresPerUnit: 1, kind: 'mansard' });
+        if (!frame) return null;
+        const floorAreaM2 = rings.reduce((sum, part) => sum + (part.holes ? 0 : details.mansardFloorAreaM2(part.xy, frame)), 0);
+        return floorAreaM2 > 0 ? { floorAreaM2, riseM: frame.riseM } : null;
+    }
+
     /**
      * One building measured. `gfaM2` is null — not 0 — when the height is unknown, so a caller that
      * sums it has to decide what to do about that instead of silently averaging in a zero.
+     * `heightM` is the height of the walls. A mansard roof adds its storey: one more in `floors`,
+     * its floor area in `gfaM2`, and `topHeightM` (the walls plus the roof's rise, `roofRiseM`).
+     * `siblings` (the design's buildings) default to the building proposal's own list.
      */
-    function measureBuilding(feature, bp, assumptions) {
+    function measureBuilding(feature, bp, assumptions, siblings) {
         const opts = { ...DEFAULTS, ...(assumptions || {}) };
         const footprintM2 = geometryAreaM2(feature);
         const rule = ruleOf(feature, bp);
@@ -181,7 +220,16 @@
             return { footprintM2, heightM: null, floorHeightM, floors: null, gfaM2: null, rule };
         }
         const floors = statedFloors !== null ? Math.max(1, Math.round(statedFloors)) : Math.max(1, Math.round(heightM / floorHeightM));
-        return { footprintM2, heightM, floorHeightM, floors, gfaM2: footprintM2 * floors, rule };
+        const measured = { footprintM2, heightM, floorHeightM, floors, gfaM2: footprintM2 * floors, rule };
+        if (((rule && rule.roof) || props.roof) === 'mansard') {
+            const others = siblings || ((bp && Array.isArray(bp.buildings)) ? bp.buildings.map(entry => (entry && entry.feature) || entry) : []);
+            const mansard = mansardStorey(feature, others);
+            if (mansard) {
+                Object.assign(measured, { floors: floors + 1, gfaM2: measured.gfaM2 + mansard.floorAreaM2,
+                    roofRiseM: mansard.riseM, topHeightM: heightM + mansard.riseM, mansardFloorAreaM2: mansard.floorAreaM2 });
+            }
+        }
+        return measured;
     }
 
     function emptyBucket(year) {
@@ -270,7 +318,7 @@
         let ruleDriven = false;
 
         features.forEach(feature => {
-            const measured = measureBuilding(feature, bp, opts);
+            const measured = measureBuilding(feature, bp, opts, features);
             bucket.buildings += 1;
             bucket.footprintM2 += measured.footprintM2;
             if (measured.gfaM2 === null) bucket.unmeasuredBuildings += 1;

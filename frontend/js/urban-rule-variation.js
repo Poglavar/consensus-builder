@@ -33,7 +33,7 @@
     const RULE_KINDS = ['max', 'range', 'exact']; // A / B / C in urban-rule-massing.md
     const DEFAULT_BALCONY_DEPTH_M = 2;
     const MAX_BALCONY_DEPTH_M = 5;
-    const ROOF_KINDS = ['flat', 'pitched'];
+    const ROOF_KINDS = ['flat', 'pitched', 'mansard'];
     // The detached rule's optional limits, each [min, max]. A limit is written only when set, so a
     // rule without it keeps exactly the shape (and the build-out) it always had.
     //   frontSetbackM / rearSetbackM — the yard along the street edge and opposite it; unset, the
@@ -118,14 +118,15 @@
     }
 
     // Balconies and the roof are the same for all three typologies. Balconies may stand out of the
-    // envelope by balconyDepthM; a pitched roof (with its attic) sits on top of the top floor. Both
+    // envelope by balconyDepthM; a pitched roof (with its attic) or a mansard (a storey inside a
+    // steep roof behind the parapet) sits on top of the top floor. Both
     // are written only when used, so a rule without them keeps exactly the shape it always had.
     function normalizeRuleExtras(params) {
         const source = (params && typeof params === 'object') ? params : {};
         const extras = {};
         const balconyDepthM = Math.min(MAX_BALCONY_DEPTH_M, nonNegative(source.balconyDepthM, 0));
         if (balconyDepthM > 0) extras.balconyDepthM = balconyDepthM;
-        if (source.roof === 'pitched') extras.roof = 'pitched';
+        if (source.roof === 'pitched' || source.roof === 'mansard') extras.roof = source.roof;
         // What the buildings are for (building-use.js). A Block rule without one keeps the suggested
         // layout's own ground floor: shops from five storeys.
         const use = buildingUse().normalize(source.use);
@@ -938,6 +939,13 @@
         return buildingUse().ACCESS.map(access => `<option value="${access}" data-i18n-key="${ACCESS_LABELS[access][0]}">${ACCESS_LABELS[access][1]}</option>`).join('');
     }
 
+    // The roof choices, shared by the rule editors and the raised-existing-buildings mode.
+    function roofOptionsMarkup() {
+        return `<option value="flat" data-i18n-key="urbanRule.roofFlat" data-i18n-attr="text">Flat</option>
+                        <option value="pitched" data-i18n-key="urbanRule.slantedRoof" data-i18n-attr="text">Slanted roof with attic</option>
+                        <option value="mansard" data-i18n-key="urbanRule.roofMansard" data-i18n-attr="text">Mansard (a storey in the roof)</option>`;
+    }
+
     // `automaticUse`: the Block editor, whose rule may leave the use to the suggested layout.
     function extrasControlsMarkup(prefix, { automaticUse = false } = {}) {
         return `
@@ -958,16 +966,16 @@
                     <span data-i18n-key="urbanRule.balconyDepth" data-i18n-attr="text">May stand out of the envelope by (m):</span>
                     <input type="number" id="${prefix}-balcony-depth" min="0.5" max="${MAX_BALCONY_DEPTH_M}" step="0.1" value="${DEFAULT_BALCONY_DEPTH_M}">
                 </label>
-                <label class="checkbox-label urban-rule-extras__toggle" for="${prefix}-slanted-roof">
-                    <input type="checkbox" id="${prefix}-slanted-roof">
-                    <span data-i18n-key="urbanRule.slantedRoof" data-i18n-attr="text">Slanted roof with attic</span>
+                <label class="urban-rule-extras__use" for="${prefix}-roof">
+                    <span data-i18n-key="urbanRule.roofLabel" data-i18n-attr="text">Roof</span>
+                    <select id="${prefix}-roof">${roofOptionsMarkup()}</select>
                 </label>
             </div>`;
     }
 
     function extrasControls(container, prefix) {
         const find = suffix => container && container.querySelector(`#${prefix}-${suffix}`);
-        return { use: find('use'), access: find('access'), balconies: find('balconies'), depth: find('balcony-depth'), roof: find('slanted-roof') };
+        return { use: find('use'), access: find('access'), balconies: find('balconies'), depth: find('balcony-depth'), roof: find('roof') };
     }
 
     function syncExtrasControls(container, prefix, extras) {
@@ -977,7 +985,7 @@
         c.balconies.checked = depth > 0;
         if (depth > 0) c.depth.value = String(depth);
         c.depth.closest('label').hidden = !(depth > 0);
-        c.roof.checked = !!(extras && extras.roof === 'pitched');
+        c.roof.value = (extras && ROOF_KINDS.includes(extras.roof)) ? extras.roof : 'flat';
         if (c.use) c.use.value = (extras && extras.use) || (c.use.querySelector('option[value=""]') ? '' : 'residential');
         if (c.access) c.access.value = (extras && extras.access) || 'auto';
     }
@@ -988,7 +996,7 @@
         if (!c.balconies || !c.depth || !c.roof) return;
         const read = () => normalizeRuleExtras({
             balconyDepthM: c.balconies.checked ? num(c.depth.value, DEFAULT_BALCONY_DEPTH_M) : 0,
-            roof: c.roof.checked ? 'pitched' : 'flat',
+            roof: c.roof.value,
             use: c.use ? c.use.value : null,
             access: c.access ? c.access.value : null
         });
@@ -1021,6 +1029,7 @@
         normalizeRuleExtras,
         defaultRuleExtras,
         extrasControlsMarkup,
+        roofOptionsMarkup,
         syncExtrasControls,
         bindExtrasControls,
         PARCEL_LIMITS,

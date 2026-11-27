@@ -101,6 +101,9 @@
     "urbanRule": {
         "balconies": "Balcons",
         "balconyDepth": "Peuvent dépasser de l'enveloppe de (m) :",
+        "roofLabel": "Toit",
+        "roofFlat": "Plat",
+        "roofMansard": "Toit à la Mansart (un étage dans le toit)",
         "slantedRoof": "Toit en pente avec combles",
         "useAutomatic": "Automatique : commerces au rez-de-chaussée dès 5 niveaux",
         "accessLabel": "Accès aux logements",

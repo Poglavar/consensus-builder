@@ -1,5 +1,6 @@
-// Pitched roofs, attic walls, gable windows and balconies for buildings drawn under an urban rule
-// (rule.roof === 'pitched', rule.balconyDepthM > 0). Pure plan geometry: footprints arrive as planar
+// Pitched and mansard roofs, attic walls, gable windows, dormers and balconies for buildings drawn
+// under an urban rule (rule.roof 'pitched' or 'mansard', rule.balconyDepthM > 0) or carrying a roof
+// of their own (properties.roof, a raised existing building). Pure plan geometry: footprints arrive as planar
 // [x, y] rings in any unit with `metresPerUnit` to convert, heights are metres. The 3D view turns
 // the result into meshes (three-rule-roofs.js); tests run it without a browser.
 //
@@ -7,6 +8,11 @@
 // length, where walls shared with neighbouring buildings of the same design (party walls) do not
 // count. For a free-standing house that is its longer side. The roof starts at the top of the last
 // floor, so the attic has walls only where the roof rises above that line, which is the gables.
+//
+// A roof is a profile: its height as a function of the distance in from its nearest sloping side.
+// A pitched roof slopes to the street and the garden and is one slope to the ridge. A mansard starts
+// behind the parapet, rises steeply for a storey, then shallowly to the ridge; it slopes on its
+// free ends too (hipped), and rises as a gable only on walls shared with a neighbour.
 (function (root, factory) {
     const api = factory();
     if (typeof module === 'object' && module.exports) module.exports = api;
@@ -15,6 +21,13 @@
     'use strict';
 
     const ROOF_PITCH_DEG = 35;
+    const ROOF_KINDS = ['pitched', 'mansard'];
+    // The mansard of Living Tradition's guide (S. Hughes, Create Streets 2021): the lower slope at
+    // most 70° and 2.25 m high, starting 15 inches behind the parapet; the upper slope at most 30°,
+    // rising at most 2 m above the lower one (on a deep plot its pitch is lowered to stay under
+    // that); an end of terrace or a free-standing building is hipped, not side-gabled.
+    const MANSARD = Object.freeze({ setbackM: 0.38, lowerDeg: 70, lowerRiseM: 2.25, upperDeg: 30, upperRiseM: 2 });
+    const DORMER = Object.freeze({ widthM: 1.1, heightM: 1.2, sillM: 0.7, pitchM: 3, minFacadeM: 2.5 });
     const AXIS_TOLERANCE_DEG = 15;      // edges this close in direction count as one facade
     const BALCONY_FACADE_TOLERANCE_DEG = 25;
     const PARTY_TOLERANCE_M = 0.3;      // how far apart two walls may be and still be one party wall
@@ -113,7 +126,72 @@
         return [Math.cos(a), Math.sin(a)];
     }
 
-    // Where the ridge sits and how steeply the roof rises. `party` marks the ring's party walls.
+    // The roof a building carries: its urban rule's, else its own (a raised existing building).
+    function roofKindOf(source) {
+        const props = (source && source.properties) || source || {};
+        const kind = (props.urbanRule && props.urbanRule.roof) || props.roof;
+        return ROOF_KINDS.includes(kind) ? kind : null;
+    }
+
+    // The rule a building's details are drawn from: its urban rule, else one made of its own roof.
+    function detailRuleOf(feature) {
+        const props = (feature && feature.properties) || {};
+        if (props.urbanRule && typeof props.urbanRule === 'object') return props.urbanRule;
+        return ROOF_KINDS.includes(props.roof) ? { roof: props.roof, floorHeightM: props.floorHeightM } : null;
+    }
+
+    // A roof's height profile: [metres in from the eave edge, metres above the eave] points, from
+    // the edge to the ridge line `halfDepthM` in. Cut where the building is too shallow for it.
+    function roofProfile(kind, halfDepthM, pitch) {
+        let points = [[0, 0], [halfDepthM, halfDepthM * Math.tan(pitch)]];
+        if (kind === 'mansard') {
+            const foot = MANSARD.setbackM + MANSARD.lowerRiseM / Math.tan(MANSARD.lowerDeg * Math.PI / 180);
+            points = [[0, 0], [MANSARD.setbackM, 0], [foot, MANSARD.lowerRiseM]];
+            // The upper slope reaches the ridge at 30°, or flatter where that would pass its limit.
+            if (halfDepthM > foot) {
+                points.push([halfDepthM, MANSARD.lowerRiseM
+                    + Math.min(MANSARD.upperRiseM, (halfDepthM - foot) * Math.tan(MANSARD.upperDeg * Math.PI / 180))]);
+            }
+        }
+        const out = [];
+        for (let i = 0; i < points.length; i++) {
+            const [u, h] = points[i];
+            if (u < halfDepthM) { out.push([u, h]); continue; }
+            const [u0, h0] = points[i - 1];
+            out.push([halfDepthM, u > u0 ? h0 + (h - h0) * (halfDepthM - u0) / (u - u0) : h0]);
+            break;
+        }
+        return out;
+    }
+
+    function profileHeight(profile, u) {
+        if (!(u > 0)) return 0;
+        for (let i = 1; i < profile.length; i++) {
+            const [u0, h0] = profile[i - 1], [u1, h1] = profile[i];
+            if (u <= u1) return u1 > u0 ? h0 + (h1 - h0) * (u - u0) / (u1 - u0) : h1;
+        }
+        return profile[profile.length - 1][1];
+    }
+
+    // Which ends of the building (lowest and highest along the ridge) stand free: more exterior
+    // than party wall across them. A mansard slopes on those ends too.
+    function freeEnds(footprint, party, axis, alongMin, alongMax, metresPerUnit) {
+        const near = 0.5 / metresPerUnit;
+        const sinTolerance = Math.sin(BALCONY_FACADE_TOLERANCE_DEG * Math.PI / 180);
+        const ends = { min: [0, 0], max: [0, 0] }; // [exterior length, party length]
+        edgesOf(footprint).forEach((edge, i) => {
+            if (!edge.length || Math.abs(edge.dir[0] * axis[0] + edge.dir[1] * axis[1]) > sinTolerance) return;
+            const along = ((edge.a[0] + edge.b[0]) * axis[0] + (edge.a[1] + edge.b[1]) * axis[1]) / 2;
+            const end = along - alongMin < near ? ends.min : alongMax - along < near ? ends.max : null;
+            if (end) end[party[i] ? 1 : 0] += edge.length;
+        });
+        return { min: ends.min[0] > ends.min[1], max: ends.max[0] > ends.max[1] };
+    }
+
+    // Where the ridge sits and how the roof rises. `party` marks the ring's party walls; `kind` is
+    // 'pitched' (the default) or 'mansard'. `sides` are the roof's sloping sides, each a linear
+    // function of the plan point (sideDistance): the street and the garden side, and for a mansard
+    // its free ends.
     function roofFrame(ring, options = {}) {
         const metresPerUnit = options.metresPerUnit > 0 ? options.metresPerUnit : 1;
         const footprint = ccw(ring);
@@ -124,26 +202,59 @@
         const across = footprint.map(p => p[0] * normal[0] + p[1] * normal[1]);
         const min = Math.min(...across), max = Math.max(...across);
         const pitch = (options.pitchDeg > 0 ? options.pitchDeg : ROOF_PITCH_DEG) * Math.PI / 180;
-        const halfDepth = (max - min) / 2;
+        const halfDepth = (max - min) / 2, ridge = (min + max) / 2;
+        const kind = options.kind === 'mansard' ? 'mansard' : 'pitched';
+        const profile = roofProfile(kind, halfDepth * metresPerUnit, pitch);
+        const sides = [
+            { key: 1, n: [-normal[0], -normal[1]], c: ridge + halfDepth, along: axis },
+            { key: -1, n: normal, c: halfDepth - ridge, along: axis }
+        ];
+        if (kind === 'mansard') {
+            const along = footprint.map(p => p[0] * axis[0] + p[1] * axis[1]);
+            const alongMin = Math.min(...along), alongMax = Math.max(...along);
+            const free = freeEnds(footprint, party, axis, alongMin, alongMax, metresPerUnit);
+            if (free.min) sides.push({ key: 'hip-min', n: axis, c: -alongMin, along: normal });
+            if (free.max) sides.push({ key: 'hip-max', n: [-axis[0], -axis[1]], c: alongMax, along: normal });
+        }
         return {
-            axis, normal, metresPerUnit,
-            ridge: (min + max) / 2,
-            halfDepth,
+            axis, normal, metresPerUnit, kind, profile, sides, ridge, halfDepth,
             slope: Math.tan(pitch),
             pitch,
-            riseM: halfDepth * metresPerUnit * Math.tan(pitch)
+            riseM: profile[profile.length - 1][1]
         };
+    }
+
+    // Metres in from one sloping side at a plan point.
+    function sideDistance(frame, side, p) {
+        return (side.c + p[0] * side.n[0] + p[1] * side.n[1]) * frame.metresPerUnit;
+    }
+
+    // Metres in from the nearest sloping side at a plan point (0 at the eave edge).
+    function insetAt(frame, x, y) {
+        return Math.max(0, Math.min(...frame.sides.map(side => sideDistance(frame, side, [x, y]))));
     }
 
     // Metres the roof stands above the eave at a plan point.
     function roofHeightAt(frame, x, y) {
-        const d = x * frame.normal[0] + y * frame.normal[1] - frame.ridge;
-        return Math.max(0, frame.halfDepth - Math.abs(d)) * frame.metresPerUnit * frame.slope;
+        return profileHeight(frame.profile, insetAt(frame, x, y));
     }
 
-    // Sutherland–Hodgman against one half-plane: keep points with side * (d - ridge) >= 0.
-    function clipSide(ring, frame, side) {
-        const value = p => side * (p[0] * frame.normal[0] + p[1] * frame.normal[1] - frame.ridge);
+    // Metres along the roof's surface from the ridge line down to a plan point (for tiling).
+    function roofSlopeLengthAt(frame, x, y) {
+        const u = insetAt(frame, x, y), profile = frame.profile;
+        let length = 0;
+        for (let i = profile.length - 1; i > 0; i--) {
+            const [u0, h0] = profile[i - 1], [u1, h1] = profile[i];
+            if (u >= u1) break;
+            const from = Math.max(u, u0);
+            length += Math.hypot(u1 - from, (h1 - h0) * (u1 - from) / ((u1 - u0) || 1));
+            if (u >= u0) break;
+        }
+        return length;
+    }
+
+    // Sutherland–Hodgman against one half-plane: keep points with value(p) >= 0.
+    function clipHalf(ring, value) {
         const out = [];
         for (let i = 0; i < ring.length; i++) {
             const a = ring[i], b = ring[(i + 1) % ring.length];
@@ -154,40 +265,131 @@
                 out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]);
             }
         }
-        return out.length >= 3 && Math.abs(signedArea(out)) > 0 ? out : null;
+        return out.length >= 3 && Math.abs(signedArea(out)) > 1e-12 ? out : null;
     }
 
-    // The two roof planes as plan rings (counter-clockwise); each point's height is roofHeightAt.
+    // The roof planes as plan rings (counter-clockwise); each point's height is roofHeightAt. Each
+    // sloping side owns the part of the footprint nearest to it, cut where its profile breaks: one
+    // plane a side for a pitched roof; a gutter strip and two slopes a side for a mansard.
+    // `along` is the horizontal direction of the plane (for tiling).
     function roofFaces(ring, frame) {
         const footprint = ccw(ring);
-        return [1, -1].map(side => ({ side, ring: clipSide(footprint, frame, side) })).filter(face => face.ring);
+        const faces = [];
+        for (const side of frame.sides) {
+            let region = footprint;
+            for (const other of frame.sides) {
+                if (other !== side && region) region = clipHalf(region, p => sideDistance(frame, other, p) - sideDistance(frame, side, p));
+            }
+            for (let i = 1; region && i < frame.profile.length; i++) {
+                const [u0, h0] = frame.profile[i - 1], [u1, h1] = frame.profile[i];
+                if (!(u1 > u0)) continue;
+                let band = u0 > 0 ? clipHalf(region, p => sideDistance(frame, side, p) - u0) : region;
+                if (band) band = clipHalf(band, p => u1 - sideDistance(frame, side, p));
+                if (band) faces.push({ side: side.key, ring: band, pitch: Math.atan2(h1 - h0, u1 - u0), along: side.along });
+            }
+        }
+        return faces;
     }
 
-    // The attic's walls: each footprint edge raised from the eave to the roof above it, with the
-    // ridge point inserted where an edge crosses it. Edges under the eave line give no wall.
-    // Points are [x, y, metres above the eave], in counter-clockwise order seen from outside.
+    // Square metres of the storey inside a mansard: the footprint behind the parapet setbacks.
+    function mansardFloorAreaM2(ring, frame) {
+        let region = ccw(ring);
+        for (const side of frame.sides) {
+            if (region) region = clipHalf(region, p => sideDistance(frame, side, p) - MANSARD.setbackM);
+        }
+        return region ? Math.abs(signedArea(region)) * frame.metresPerUnit * frame.metresPerUnit : 0;
+    }
+
+    // The attic's walls: each footprint edge raised from the eave to the roof above it, with a
+    // point inserted where the edge crosses the ridge, a hip or a break of the roof's profile. Edges under
+    // the eave line give no wall. `points` is the wall's outline, [x, y, metres above the eave] in
+    // counter-clockwise order seen from outside; `triangles` fills it.
     function atticWalls(ring, frame) {
         const footprint = ccw(ring);
         const epsilon = 0.01;
+        const breaks = frame.profile.slice(1, -1).map(([u]) => u);
         const walls = [];
         for (const edge of edgesOf(footprint)) {
             if (!edge.length) continue;
-            const top = [[edge.a[0], edge.a[1]]];
-            const da = edge.a[0] * frame.normal[0] + edge.a[1] * frame.normal[1] - frame.ridge;
-            const db = edge.b[0] * frame.normal[0] + edge.b[1] * frame.normal[1] - frame.ridge;
-            if ((da > 0) !== (db > 0) && da !== db) {
-                const t = da / (da - db);
-                top.push([edge.a[0] + (edge.b[0] - edge.a[0]) * t, edge.a[1] + (edge.b[1] - edge.a[1]) * t]);
-            }
-            top.push([edge.b[0], edge.b[1]]);
+            // Along the edge each side's distance is linear: cut where one meets a profile break,
+            // and where two sides are equally near (the ridge or a hip).
+            const ends = frame.sides.map(side => [sideDistance(frame, side, edge.a), sideDistance(frame, side, edge.b)]);
+            const found = [];
+            const add = t => { if (t > 1e-9 && t < 1 - 1e-9) found.push(t); };
+            ends.forEach(([ga, gb], i) => {
+                if (ga !== gb) for (const u of breaks) add((u - ga) / (gb - ga));
+                for (const [ha, hb] of ends.slice(i + 1)) {
+                    const gap = (gb - ga) - (hb - ha);
+                    if (gap !== 0) add((ha - ga) / gap);
+                }
+            });
+            const cuts = found.sort((p, q) => p - q).filter((t, i, all) => i === 0 || t - all[i - 1] > 1e-9);
+            const top = [[edge.a[0], edge.a[1]],
+                ...cuts.map(t => [edge.a[0] + (edge.b[0] - edge.a[0]) * t, edge.a[1] + (edge.b[1] - edge.a[1]) * t]),
+                [edge.b[0], edge.b[1]]];
             const heights = top.map(p => roofHeightAt(frame, p[0], p[1]));
             if (Math.max(...heights) <= epsilon) continue;
-            const points = [[edge.a[0], edge.a[1], 0], [edge.b[0], edge.b[1], 0]];
-            // A corner at the eave line is already the wall's base corner.
-            for (let i = top.length - 1; i >= 0; i--) if (heights[i] > epsilon) points.push([top[i][0], top[i][1], heights[i]]);
-            walls.push({ points, normal: edge.normal, edge });
+            // The wall stands where the roof does: its base starts and ends at the last point at
+            // the eave line before the roof rises (behind a mansard's setback, not at the corner).
+            let first = heights.findIndex(h => h > epsilon), last = heights.length - 1;
+            while (heights[last] <= epsilon) last--;
+            first = Math.max(0, first - 1); last = Math.min(heights.length - 1, last + 1);
+            const points = [[top[first][0], top[first][1], 0], [top[last][0], top[last][1], 0]];
+            for (let i = last; i >= first; i--) if (heights[i] > epsilon) points.push([top[i][0], top[i][1], heights[i]]);
+            const triangles = [];
+            for (let i = first; i < last; i++) {
+                const p = top[i], q = top[i + 1], hp = heights[i], hq = heights[i + 1];
+                if (hq > epsilon) triangles.push([[p[0], p[1], 0], [q[0], q[1], 0], [q[0], q[1], hq]]);
+                if (hp > epsilon) triangles.push([[p[0], p[1], 0], [q[0], q[1], hq], [p[0], p[1], hp]]);
+            }
+            walls.push({ points, triangles, normal: edge.normal, edge });
         }
         return walls;
+    }
+
+    // Dormer windows in a mansard's lower slope: on each exterior wall along the ridge that stands
+    // at the eave edge, evenly spaced. Each is { center, dir, normal, widthM, heightM, sillM,
+    // depthM }: `center` is on the lower slope's foot, `depthM` how far back the dormer runs to
+    // meet the slope at its own top.
+    function dormers(ring, frame, party) {
+        if (frame.kind !== 'mansard' || frame.profile.length < 3) return [];
+        const mpu = frame.metresPerUnit;
+        const cosTolerance = Math.cos(BALCONY_FACADE_TOLERANCE_DEG * Math.PI / 180);
+        const topM = DORMER.sillM + DORMER.heightM + 0.12;
+        if (frame.riseM < topM + 0.2) return [];
+        const depthM = topM / Math.tan(MANSARD.lowerDeg * Math.PI / 180);
+        const out = [];
+        edgesOf(ccw(ring)).forEach((edge, i) => {
+            const lengthM = edge.length * mpu;
+            if (party[i] || lengthM < DORMER.minFacadeM) return;
+            if (Math.abs(edge.dir[0] * frame.axis[0] + edge.dir[1] * frame.axis[1]) < cosTolerance) return;
+            const mid = [(edge.a[0] + edge.b[0]) / 2, (edge.a[1] + edge.b[1]) / 2];
+            if (insetAt(frame, mid[0], mid[1]) > 0.2) return; // a wall inside the roof, not at its edge
+            const count = Math.max(1, Math.floor(lengthM / DORMER.pitchM));
+            for (let k = 0; k < count; k++) {
+                const t = (k + 0.5) * edge.length / count;
+                out.push({
+                    center: [edge.a[0] + edge.dir[0] * t - edge.normal[0] * MANSARD.setbackM / mpu,
+                        edge.a[1] + edge.dir[1] * t - edge.normal[1] * MANSARD.setbackM / mpu],
+                    dir: edge.dir, normal: edge.normal, widthM: DORMER.widthM, heightM: DORMER.heightM, sillM: DORMER.sillM, depthM
+                });
+            }
+        });
+        return out;
+    }
+
+    // A dormer as three solids: its body running back into the roof, and a window on its front.
+    function dormerPrisms(dormer, eaveM, metresPerUnit) {
+        const mpu = metresPerUnit;
+        const at = (alongM, inM) => [dormer.center[0] + (dormer.dir[0] * alongM - dormer.normal[0] * inM) / mpu,
+            dormer.center[1] + (dormer.dir[1] * alongM - dormer.normal[1] * inM) / mpu];
+        const half = dormer.widthM / 2 + 0.12;
+        const top = eaveM + dormer.sillM + dormer.heightM + 0.12;
+        const window = windowPrisms({ ...dormer, center: at(0, 0) }, eaveM, mpu);
+        return {
+            body: prismPositions([at(-half, 0), at(half, 0), at(half, dormer.depthM), at(-half, dormer.depthM)], eaveM, top),
+            frame: window.frame, glass: window.glass
+        };
     }
 
     // Openings in the gables: a pair of windows where the attic is roomy enough, else one, else none.
@@ -325,17 +527,19 @@
     // `ring` is the footprint's outer ring; footprints with courtyards get balconies but no roof.
     function plan(rule, ring, options = {}) {
         if (!rule) return null;
-        const pitched = rule.roof === 'pitched';
+        const kind = ROOF_KINDS.includes(rule.roof) ? rule.roof : null;
+        const pitched = !!kind;
         const depthM = Number(rule.balconyDepthM) > 0 ? Number(rule.balconyDepthM) : 0;
         if (!pitched && !depthM) return null;
         const metresPerUnit = options.metresPerUnit > 0 ? options.metresPerUnit : 1;
         const footprint = ccw(ring);
         if (footprint.length < 3) return null;
         const party = partyEdges(footprint, options.neighbours, metresPerUnit);
-        const frame = roofFrame(footprint, { party, metresPerUnit });
+        const frame = roofFrame(footprint, { party, metresPerUnit, kind });
         if (!frame) return null;
         return {
             footprint, frame, party,
+            dormers: pitched && !options.hasHoles ? dormers(footprint, frame, party) : [],
             roof: pitched && !options.hasHoles,
             balconies: depthM ? balconies(footprint, frame, party, { depthM, floorHeightM: rule.floorHeightM, eaveM: options.eaveM }) : [],
             windows: pitched && !options.hasHoles ? gableWindows(footprint, frame, party) : []
@@ -343,7 +547,8 @@
     }
 
     return {
-        ROOF_PITCH_DEG, ccw, signedArea, partyEdges, ridgeAxis, roofFrame, roofHeightAt, roofFaces, atticWalls,
-        gableWindows, balconies, prismPositions, balconyPrisms, windowPrisms, plan, roofShade
+        ROOF_PITCH_DEG, ROOF_KINDS, MANSARD, ccw, signedArea, partyEdges, ridgeAxis, roofKindOf, detailRuleOf, roofFrame,
+        roofHeightAt, roofSlopeLengthAt, roofFaces, mansardFloorAreaM2, atticWalls, gableWindows, dormers, dormerPrisms,
+        balconies, prismPositions, balconyPrisms, windowPrisms, plan, roofShade
     };
 });

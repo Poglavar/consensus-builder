@@ -101,6 +101,9 @@
     "urbanRule": {
         "balconies": "Varandas",
         "balconyDepth": "Podem sair da envolvente até (m):",
+        "roofLabel": "Telhado",
+        "roofFlat": "Plano",
+        "roofMansard": "Mansarda (um piso dentro do telhado)",
         "slantedRoof": "Telhado inclinado com sótão",
         "useAutomatic": "Automático: lojas no rés-do-chão a partir de 5 pisos",
         "accessLabel": "Acesso às habitações",

@@ -59,7 +59,9 @@
                 buildings += 1;
                 const measured = plan.measureBuilding(feature, bp, {});
                 if (!finite(measured.heightM)) { unmeasured += 1; continue; }
-                if (maxHeightM === null || measured.heightM > maxHeightM) maxHeightM = measured.heightM;
+                // A mansard's roof holds a storey, so the building is as tall as its roof.
+                const topM = finite(measured.topHeightM) ? measured.topHeightM : measured.heightM;
+                if (maxHeightM === null || topM > maxHeightM) maxHeightM = topM;
                 if (finite(measured.floors) && (maxStoreys === null || measured.floors > maxStoreys)) maxStoreys = measured.floors;
             }
         }
@@ -127,7 +129,7 @@
         return (records || []).flatMap((record, recordIndex) => plan.buildingFeaturesOf(record).map((feature, index) => {
             const measured = plan.measureBuilding(feature, record?.buildingProposal || null, {});
             return { id: `${record?.proposalId ?? `design-${recordIndex}`}#${index}`, footprint: feature,
-                heightM: finite(measured.heightM) ? measured.heightM : null, floors: finite(measured.floors) ? measured.floors : null,
+                heightM: finite(measured.topHeightM) ? measured.topHeightM : finite(measured.heightM) ? measured.heightM : null, floors: finite(measured.floors) ? measured.floors : null,
                 floorAreaM2: finite(measured.gfaM2) ? measured.gfaM2 : null };
         }));
     }
