@@ -1164,8 +1164,10 @@ validation entry point. It returns structured errors/warnings, measured coverage
 output ownership, exact ledger cents, source-rights readiness and local funding readiness. The
 specialist designer, shared draft adapter, server publication, map apply and consent binding use it.
 
-- Polygon checks cover finite closed rings, distinct vertices, positive area, self-intersections,
-  invalid/overlapping holes and overlapping MultiPolygon parts. Geometry failures stop admission.
+- Polygon checks cover finite closed rings, distinct vertices, positive area, ring topology
+  (`polygon-topology.js`: each ring simple; rings may meet only at single points, without crossing,
+  sharing an edge, touching from outside or cutting the interior apart), invalid/overlapping holes
+  and overlapping MultiPolygon parts. Geometry failures stop admission.
 - The intended take is the saved pool, or the explicit site for a site subdivision. Without either,
   the authored output union defines the take. Whole cadastral parents are never silently substituted
   for a partial take. Site subdivisions must tile their declared site; cadastral land outside an LR

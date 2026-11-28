@@ -13,6 +13,9 @@
     const finite = value => typeof value === 'number' && Number.isFinite(value);
     const squareMetres = value => `${Math.round(value * 10) / 10} m²`;
     const feature = geometry => ({ type: 'Feature', properties: {}, geometry });
+    // Ring topology (polygon-topology.js): rings may touch at points, as a site merged from parcels does.
+    const topology = () => (root && root.PolygonTopology)
+        || (typeof require === 'function' ? require('./polygon-topology.js') : null);
     // An overlap, a gap in the pool or a part outside it fails when it is ground (the shared rule,
     // geometry-tolerances.js isGround); cutting debris passes. Overlap, gap and excess are each
     // judged on their own geometry, so a gap and an overlapping plot cannot cancel each other.
@@ -43,7 +46,8 @@
                 }
             }
             const part = feature({ type: 'Polygon', coordinates: rings });
-            if (turf.kinks(part).features.length) throw new Error('Polygon boundaries intersect themselves.');
+            const broken = topology().ringsProblem(rings);
+            if (broken) throw new Error(broken);
             const shell = feature({ type: 'Polygon', coordinates: [rings[0]] });
             const holes = rings.slice(1).map(ring => feature({ type: 'Polygon', coordinates: [ring] }));
             for (let i = 0; i < holes.length; i++) {
@@ -90,7 +94,7 @@
         const areas = [];
         if (!plots.length) issue('missing-plots', 'Add at least one plot.');
         if (plots.length > MAX_PLOTS) issue('too-many-plots', `Use at most ${MAX_PLOTS} plots in one layout.`);
-        if (!turf || ['area', 'intersect', 'difference', 'union', 'kinks'].some(key => typeof turf[key] !== 'function')) {
+        if (!turf || ['area', 'intersect', 'difference', 'union'].some(key => typeof turf[key] !== 'function')) {
             issue('geometry-unavailable', 'Geometry validation is unavailable. Try again after the map loads.');
             return { valid: false, errors, warnings, metrics, areas };
         }

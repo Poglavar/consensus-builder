@@ -22,6 +22,12 @@
             || (typeof require === 'function' ? require('../geometry-tolerances.js') : null);
     }
 
+    // Ring topology (polygon-topology.js): a fold is refused, rings touching at a point are not.
+    function topologyApi() {
+        return (typeof window !== 'undefined' && window.PolygonTopology)
+            || (typeof require === 'function' ? require('../polygon-topology.js') : null);
+    }
+
     function feature(geometry) {
         if (!geometry) return null;
         if (geometry.type === 'Feature') return geometry.geometry ? geometry : null;
@@ -128,7 +134,7 @@
             held = unionAll(turf, indices.map(index => from[index]));
         }
         // A self-intersecting ring has no meaningful area, so a fold is reported before any measuring.
-        const folded = indices.filter(index => to[index] && turf.kinks(feature(to[index])).features.length > 0);
+        const folded = indices.filter(index => to[index] && topologyApi().problem(to[index]) !== null);
         if (folded.length) return { ok: false, folded, gap: 0, overlap: 0, outside: 0, overlaps: [] };
         const plots = indices.map(index => to[index]).filter(Boolean);
         const overlaps = [];
