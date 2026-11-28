@@ -19,7 +19,9 @@ each reader sees it through the lens members they trust ([holder according to a 
    wallet (Lens requests, or the offer sheet's Confirm). A buyer's-lens member confirms only when its
    own statements name the seller as holder; its confirmation sits at an address fixed by the asset
    and the holding sold, so it cannot confirm a second sale of the same holding. The confirmation
-   that completes both lenses also pays the schedule, in the same approval.
+   that completes both lenses also pays the schedule: in the same transaction when both fit in
+   Solana's 1232 bytes, else in a second one sent right after (a USDC payout usually needs it; in
+   the browser that is a second wallet approval). A confirmation repeated after its payout failed pays out.
 4. **End.** The maker withdraws an offer nobody has taken; after the deadline anyone ends an unsettled
    offer and any escrow returns to the buyer.
 

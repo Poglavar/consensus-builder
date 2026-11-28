@@ -79,16 +79,13 @@
         if (/already in use/.test(logs)) return fail('alreadyStated', 'This lens member has already made this statement.', 'already-stated');
         return Object.assign(new Error(`Solana simulation failed: ${JSON.stringify(value.err)}`), { logs });
     }
-    // One legacy transaction holds 1232 bytes; a lens member's first statement registers its schema
-    // first when both do not fit together.
-    function fits(ctx, instructions) {
-        const probe = new win.solanaWeb3.Transaction({ feePayer: new win.solanaWeb3.PublicKey(ctx.wallet), recentBlockhash: win.solanaWeb3.PublicKey.default.toBase58() });
-        instructions.forEach(ix => probe.add(ix));
-        try { return probe.serialize({ requireAllSignatures: false, verifySignatures: false }).length <= 1232; } catch (_) { return false; }
-    }
-    async function sendWithSetup(ctx, setup, instructions, options) {
-        if (setup.length && !fits(ctx, [...setup, ...instructions])) { await send(ctx, setup, options); return send(ctx, instructions, options); }
-        return send(ctx, [...setup, ...instructions], options);
+    // Ordered instruction groups in as few transactions as fit (property-offer-client packParts), each
+    // confirmed before the next is sent: a payout that does not fit beside its confirmation asks a
+    // second approval. → the last signature.
+    async function sendParts(ctx, parts, options) {
+        let signature = null;
+        for (const group of api().packParts(parts, instructions => api().fitsTransaction(instructions, ctx.wallet))) signature = await send(ctx, group, options);
+        return signature;
     }
     async function persist(record, ctx, signature) {
         const chain = await readWith(record, ctx);
@@ -183,8 +180,8 @@
         const instructions = [issued.instruction, api().buildConfirmIx({ offer: ctx.address, attestation: issued.attestation, credential: issued.credential })];
         const other = role === 0 ? chain.sellerLens : chain.buyerLens;
         const completes = lens.confirmed.length + 1 >= lens.threshold && other.met;
-        if (completes) instructions.push(...api().buildExecuteIxs({ offer: ctx.address, currency: chain.currency, recipients: chain.payouts.map(p => p.recipient), payer: ctx.wallet }));
-        const signature = await sendWithSetup(ctx, setup, instructions, options);
+        const payout = completes ? api().buildExecuteIxs({ offer: ctx.address, currency: chain.currency, recipients: chain.payouts.map(p => p.recipient), payer: ctx.wallet }) : [];
+        const signature = await sendParts(ctx, [setup, instructions, payout], options);
         return { ...(await persist(record, ctx, signature)), executed: completes, attestation: issued.attestation };
     }
     async function execute(record, options) {
@@ -204,7 +201,7 @@
         const now = await ctx.connection.getBlockTime(await ctx.connection.getSlot('confirmed'));
         const issued = statements().buildHoldingIx({ payer: ctx.wallet, authority: ctx.wallet, assetHash, asset: win.PropertyOfferRecord.assetKey(asset), holder, basis, evidence, observedAt: now });
         const setup = await statements().setupIxs(ctx.connection, { payer: ctx.wallet, authority: ctx.wallet, kinds: ['holding'] });
-        const signature = await sendWithSetup(ctx, setup, [issued.instruction], options);
+        const signature = await sendParts(ctx, [setup, [issued.instruction]], options);
         return { signature, attestation: issued.attestation };
     }
     /** A lens member withdraws one of its own statements (a first holder, or a confirmation of a sale that did not complete). */

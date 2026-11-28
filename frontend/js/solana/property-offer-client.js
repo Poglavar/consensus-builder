@@ -16,7 +16,7 @@
         PROPERTY_OFFER_PROGRAM_ID: 'HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH', SAS_PROGRAM_ID: '22zoJMtdu4tQc2PzL74ZUT7FrwgB1Udec8DdW4yw4BdG',
         SYSTEM_PROGRAM_ID: '11111111111111111111111111111111', TOKEN_PROGRAM_ID: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
         ASSOCIATED_TOKEN_PROGRAM_ID: 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', USDC_MINT: '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
-        DEFAULT_PUBKEY: '11111111111111111111111111111111', OFFER_SEED: 'property-offer', MAX_CID_BYTES: 64, MAX_PAYOUTS: 16, MAX_LENS: 8,
+        DEFAULT_PUBKEY: '11111111111111111111111111111111', OFFER_SEED: 'property-offer', MAX_CID_BYTES: 64, MAX_PAYOUTS: 16, MAX_LENS: 8, TRANSACTION_LIMIT: 1232,
         SIDE_BUY: 0, SIDE_SELL: 1, STATUS_OPEN: 0, STATUS_COMMITTED: 1, STATUS_SETTLED: 2, STATUS_CANCELLED: 3, STATUS_EXPIRED: 4,
         ROLE_SELLER_HOLDS: 0, ROLE_BUYER_QUALIFIES: 1,
         DECISION_SCHEMA_NAME: 'PropertyOfferConfirmation', DECISION_SCHEMA_VERSION: 1, SAS_ATTESTATION_DISCRIMINATOR: 2
@@ -152,8 +152,24 @@
         return true;
     }
     async function fetchPropertyOffer(connection, { address, cid, maker, programId = constants.PROPERTY_OFFER_PROGRAM_ID } = {}) { const a = address ? key(address, 'address') : offerKey({ cid, maker, programId }); const info = await connection.getAccountInfo(a, 'confirmed'); if (!info) return null; if (!key(info.owner, 'owner').equals(key(programId, 'programId'))) throw new Error('account belongs to another program'); const value = readPropertyOffer(new Uint8Array(info.data), a.toBase58()); if (!value) throw new Error('not a PropertyOffer account'); return value; }
+    // A legacy transaction holds 1232 bytes. `parts` are instruction groups that must land in order (a
+    // lens member's schema setup, its statement and confirm, the payout): consecutive groups share a
+    // transaction while `fits(instructions)` says they do. → the transactions' instruction lists.
+    function packParts(parts, fits) {
+        const groups = [];
+        for (const part of parts.filter(p => p.length)) {
+            const last = groups[groups.length - 1];
+            if (last && fits([...last, ...part])) last.push(...part); else groups.push([...part]);
+        }
+        return groups;
+    }
+    function fitsTransaction(instructions, feePayer) {
+        const probe = new (web3().Transaction)({ feePayer: key(feePayer, 'feePayer'), recentBlockhash: web3().PublicKey.default.toBase58() });
+        instructions.forEach(ix => probe.add(ix));
+        try { return probe.serialize({ requireAllSignatures: false, verifySignatures: false }).length <= constants.TRANSACTION_LIMIT; } catch (_) { return false; }
+    }
     const api = { constants, IX_DISCRIMINATORS, ACCOUNT_DISCRIMINATORS, SIDE_NAMES, STATUS_NAMES, configure, requireCid, cidSeed, getOfferPda, associatedTokenAddress, buildCreateTokenAccountIx, payoutScheduleHash,
-        encodeCreateData, encodeCommitData, buildCreateIxs, buildCommitIxs, buildConfirmIx, buildExecuteIxs, buildCancelIx, buildExpireIx,
+        encodeCreateData, encodeCommitData, buildCreateIxs, buildCommitIxs, buildConfirmIx, buildExecuteIxs, buildCancelIx, buildExpireIx, packParts, fitsTransaction,
         readPropertyOffer, encodeDecisionPayload, decisionNonce, readDecisionAttestation, getDecisionSchemaPda, validateDecisionSchema, fetchPropertyOffer };
     return api;
 });

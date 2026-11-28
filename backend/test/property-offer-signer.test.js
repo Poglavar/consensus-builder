@@ -60,6 +60,20 @@ async function committedSell(row, chain, patch = {}) {
     await chain.set({ buyer: new PublicKey(buyer), status: { Committed: {} }, escrow: new anchor.BN(900), buyer_lens: lensOf([member], 1), ...patch });
 }
 const sender = effect => vi.fn(async (connection, transaction) => { await effect?.(transaction); return `sig${transaction.instructions.length}`; });
+const isIx = (ix, name) => Buffer.from(ix.data).subarray(0, 8).equals(disc(name));
+const ixName = ix => ix.programId.toBase58() === SAS ? 'SAS' : ['confirm', 'execute'].find(name => isIx(ix, name)) ?? 'other';
+// The transactions a sender was handed, each checked against Solana's 1232-byte limit as it would go out.
+function sentWithinLimit(sendAndConfirm) {
+    const sent = sendAndConfirm.mock.calls.map(call => call[1]);
+    for (const tx of sent) {
+        tx.recentBlockhash = PublicKey.default.toBase58();
+        expect(tx.serialize({ requireAllSignatures: false, verifySignatures: false }).length).toBeLessThanOrEqual(1232);
+    }
+    return sent;
+}
+// Settles when a transaction carries the payout, records the member's confirmation when it carries confirm.
+const settling = (chain, confirmed) => sender(tx => tx.instructions.some(ix => isIx(ix, 'execute')) ? chain.set({ status: { Settled: {} } })
+    : tx.instructions.some(ix => isIx(ix, 'confirm')) ? chain.set({ buyer_lens: confirmed }) : null);
 const recorder = () => vi.fn(async (ref, cid) => ({ cid, onchain: { account: ref.account } }));
 const base = (chain, row, keypair) => ({ connection: chain.connection, keypair, row, recordOnchain: recorder() });
 
@@ -110,12 +124,12 @@ describe('commit', () => {
 });
 
 describe('confirm', () => {
-    it('a buyer-lens member confirms the seller holds the asset: setup, attestation at the holding’s fixed address, confirm and execute in one transaction', async () => {
+    it('a buyer-lens member confirms the seller holds the asset: setup, attestation at the holding’s fixed address, confirm and execute, in order and in transactions that fit', async () => {
         const row = offerRow(), chain = fakeChain(row);
         await committedSell(row, chain);
-        const sendAndConfirm = sender(() => chain.set({ status: { Settled: {} } }));
+        const sendAndConfirm = settling(chain, lensOf([member], 1, 0b1));
         await confirmOffer({ ...base(chain, row, memberKp), holding: HOLDING, nowSeconds: NOW, sendAndConfirm });
-        const instructions = sendAndConfirm.mock.calls[0][1].instructions;
+        const instructions = sentWithinLimit(sendAndConfirm).flatMap(tx => tx.instructions);
         const nonce = client.decisionNonce({ role: 0, assetHash: Offer.assetHash(FLAT), holding: HOLDING, offer: chain.address });
         const attestation = Statements.confirmationAddress(member, nonce).toBase58();
         // credential + schema setup (none exist yet), the attestation, confirm, execute
@@ -141,6 +155,27 @@ describe('confirm', () => {
         await expect(confirmOffer({ ...base(chain, row, memberKp), holding: HOLDING, nowSeconds: NOW, sendAndConfirm })).rejects.toThrow(/another sale of this holding/);
         expect(sendAndConfirm).not.toHaveBeenCalled();
     });
+    it('a USDC sale confirmed by a member that has stated holders but never confirmed: the payout goes in the next transaction', async () => {
+        // As on devnet 2026-11-28: credential present, confirmation schema not yet, USDC payout; one
+        // transaction would be 1408 bytes and Solana refuses it.
+        const row = offerRow({ currency: 'USDC' }), chain = fakeChain(row);
+        await committedSell(row, chain);
+        chain.put(Statements.credentialPda(member), SAS, Buffer.alloc(8));
+        const sendAndConfirm = settling(chain, lensOf([member], 1, 0b1));
+        const result = await confirmOffer({ ...base(chain, row, memberKp), holding: HOLDING, nowSeconds: NOW, sendAndConfirm });
+        const sent = sentWithinLimit(sendAndConfirm);
+        expect(sent.length).toBe(2);
+        expect(sent.flatMap(tx => tx.instructions.map(ixName))).toEqual(['SAS', 'SAS', 'confirm', 'other', 'execute']);
+        expect(sent[1].instructions.map(ixName)).toEqual(['other', 'execute']);
+        expect(result).toMatchObject({ status: 'settled', signature: 'sig2' });
+    });
+    it('a member whose confirmation landed without its payout pays out when it confirms again', async () => {
+        const row = offerRow({ currency: 'USDC' }), chain = fakeChain(row);
+        await committedSell(row, chain, { buyer_lens: lensOf([member], 1, 0b1) });
+        const sendAndConfirm = sender(() => chain.set({ status: { Settled: {} } }));
+        expect(await confirmOffer({ ...base(chain, row, memberKp), holding: HOLDING, nowSeconds: NOW, sendAndConfirm })).toMatchObject({ status: 'settled', replayed: false });
+        expect(sendAndConfirm.mock.calls[0][1].instructions.some(ix => Buffer.from(ix.data).equals(disc('execute')))).toBe(true);
+    });
     it('a member that has confirmed already replays', async () => {
         const row = offerRow(), chain = fakeChain(row);
         await committedSell(row, chain, { buyer_lens: lensOf([member, seller], 2, 0b01) });
@@ -160,7 +195,7 @@ function holdingStatement(chain, holder) {
 }
 
 describe('confirm a sale as the buyer’s lens (confirmSale)', () => {
-    it('confirms only when the member’s own statements name the seller, through that holding, and executes in the same transaction', async () => {
+    it('confirms only when the member’s own statements name the seller, through that holding, and executes', async () => {
         const row = offerRow({ currency: 'USDC' }), chain = fakeChain(row);
         await committedSell(row, chain);
         const none = sender();
@@ -169,9 +204,9 @@ describe('confirm a sale as the buyer’s lens (confirmSale)', () => {
         await expect(confirmSale({ ...base(chain, row, memberKp), nowSeconds: NOW, sendAndConfirm: none })).rejects.toThrow(/not the seller/);
         expect(none).not.toHaveBeenCalled();
         const first = holdingStatement(chain, seller);
-        const sendAndConfirm = sender(() => chain.set({ status: { Settled: {} } }));
+        const sendAndConfirm = settling(chain, lensOf([member], 1, 0b1));
         expect((await confirmSale({ ...base(chain, row, memberKp), nowSeconds: NOW, sendAndConfirm })).status).toBe('settled');
-        const instructions = sendAndConfirm.mock.calls[0][1].instructions;
+        const instructions = sentWithinLimit(sendAndConfirm).flatMap(tx => tx.instructions);
         const nonce = client.decisionNonce({ role: 0, assetHash: Offer.assetHash(FLAT), holding: first, offer: chain.address });
         expect(instructions[2].keys[4].pubkey.toBase58()).toBe(Statements.confirmationAddress(member, nonce).toBase58());
         expect(Buffer.from(instructions[2].data).subarray(1 + 32 + 4).includes(Buffer.from(first))).toBe(true);

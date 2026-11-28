@@ -87,6 +87,14 @@ async function send(ctx, instructions, sendAndConfirm) {
     return sendAndConfirm(ctx.connection, transaction, [ctx.keypair], { commitment: 'confirmed' });
 }
 
+// Ordered instruction groups (setup, the confirmation, the payout) in as few transactions as fit
+// (property-offer-client packParts), each confirmed before the next is sent. → the last signature.
+async function sendParts(ctx, parts, sendAndConfirm) {
+    let signature = null;
+    for (const group of client.packParts(parts, instructions => client.fitsTransaction(instructions, ctx.signer))) signature = await send(ctx, group, sendAndConfirm);
+    return signature;
+}
+
 /** Read back, then index the reference (also on a replay, which re-syncs the index). */
 async function persist(ctx, signature) {
     const chain = await readChain(ctx);
@@ -105,8 +113,9 @@ async function mutate({ sendAndConfirm = web3.sendAndConfirmTransaction, nowSeco
     const ctx = await context(options);
     const chain = await readChain(ctx);
     if (!chain) refuse('Create this offer on Solana first');
-    const instructions = await plan(ctx, chain, nowSeconds ?? await chainNow(ctx.connection));
-    return persist(ctx, instructions ? await send(ctx, instructions, sendAndConfirm) : null);
+    const planned = await plan(ctx, chain, nowSeconds ?? await chainNow(ctx.connection));
+    if (!planned) return persist(ctx, null);
+    return persist(ctx, planned.parts ? await sendParts(ctx, planned.parts, sendAndConfirm) : await send(ctx, planned, sendAndConfirm));
 }
 
 const beforeDeadline = (chain, nowSeconds, what) => { if (BigInt(nowSeconds) > chain.deadline) refuse(`The offer deadline has passed; it can no longer be ${what}`); };
@@ -148,7 +157,9 @@ export function commitOffer({ lens = { members: [], threshold: 0 }, payouts, ...
 /**
  * A lens member of the offer confirms, with a PropertyOfferConfirmation-v1 attestation and the
  * program's confirm in one transaction (after any credential/schema setup), and executes when its
- * confirmation completes both lenses. Role 0 (the buyer's lens: the seller holds the asset) needs
+ * confirmation completes both lenses: in the same transaction when it fits in 1232 bytes, else in
+ * the next one (a USDC payout to a holding-bound confirmation does not fit). Repeated after the
+ * confirmation landed without its payout, it pays out. Role 0 (the buyer's lens: the seller holds the asset) needs
  * `holding`, the address of the statement through which the seller holds it (the member's
  * first-holder statement, or the settled offer the seller bought through); the confirmation lands at
  * an address fixed by asset and holding, so the member cannot confirm a second sale of that holding.
@@ -196,7 +207,8 @@ async function planConfirmation(ctx, chain, nowSeconds, role, holdingOf) {
     const roles = [[0, chain.buyerLens], [1, chain.sellerLens]].filter(([r, lens]) => lens.members.includes(ctx.signer) && (role === undefined || role === r));
     if (!roles.length) refuse(`${ctx.signer} is not a lens member of this offer${role === undefined ? '' : ` in role ${role}`}`);
     const open = roles.find(([, lens]) => !lens.confirmed.includes(ctx.signer));
-    if (!open) return null;
+    // Confirmed already: pay out if the payout did not follow (it is its own transaction when the two do not fit).
+    if (!open) return chain.buyerLens.met && chain.sellerLens.met && chain.escrow === chain.price ? executeIxs(ctx, chain) : null;
     const [chosen, lens] = open;
     const assetHash = Offer.assetHash(ctx.row.content.asset);
     const holding = chosen === 0 ? await holdingOf() : '';
@@ -215,8 +227,8 @@ async function planConfirmation(ctx, chain, nowSeconds, role, holdingOf) {
     const setup = await Statements.setupIxs(ctx.connection, { payer: ctx.signer, authority: ctx.signer, kinds: ['confirmation'] });
     const other = chosen === 0 ? chain.sellerLens : chain.buyerLens;
     const completes = lens.confirmed.length + 1 >= lens.threshold && other.met && chain.escrow === chain.price;
-    return [...setup, ...(existing ? [] : [issued.instruction]), client.buildConfirmIx({ offer: ctx.address, attestation: issued.attestation, credential: issued.credential }),
-        ...(completes ? executeIxs(ctx, chain) : [])];
+    return { parts: [setup, [...(existing ? [] : [issued.instruction]), client.buildConfirmIx({ offer: ctx.address, attestation: issued.attestation, credential: issued.credential })],
+        completes ? executeIxs(ctx, chain) : []] };
 }
 
 /** Pays the escrow to the schedule once both lenses are met (permissionless; the signer pays fees and any token accounts). */
