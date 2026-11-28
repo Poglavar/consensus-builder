@@ -319,6 +319,13 @@ describe('Bogotá parcel envelopes', () => {
         expect(result.items).toEqual([]);
         expect(result.unavailable).toEqual([{ parcelId: parcel().id, reason: 'status-not-configurable' }]);
     });
+    it('declares viewportZoning with 1-day cache and skips front-yard prefetch on wide zoning viewport reads', async () => {
+        expect(bogotaPotSource).toMatchObject({ viewportZoning: true, zoningPageLimit: 1000, cacheSeconds: 86400 });
+        const { provider, calls } = service();
+        const wideBbox = [-74.06, 4.66, -74.04, 4.68];
+        await provider.query({}, { bbox: wideBbox, limit: 1000, city: 'bogota', scenario: 'general' });
+        expect(calls.map(url => Number(url.pathname.split('/').at(-2)))).toEqual([15]);
+    });
     it('fails the whole read when the front-yard map cannot be read, instead of blaming parcel geometry', async () => {
         const { provider } = service({ fail: 22 });
         await expect(loadParcelEnvelopes({ city: 'bogota', source: 'bogota-pot-555', bbox }, envelopeOptions(provider))).rejects.toMatchObject({ status: 503 });

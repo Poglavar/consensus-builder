@@ -145,6 +145,7 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect.poll(() => requests.length).toBeGreaterThan(beforeCheck);
   const retry = panel.locator('#planning-view-retry');
   await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningLoading.state().permitted)).toBe(false);
   await expect(retry).toBeVisible();
   const failedRequests = requests.length;
   fail = false;

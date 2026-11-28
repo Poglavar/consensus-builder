@@ -1441,7 +1441,7 @@
     const zoningViewportCache = core.createViewportCache({ limit: 12, maxAgeMs: 10 * 60 * 1000 });
     // Upstream parcel services slow down under parallel reads (Bogotá's times cells out at four), so
     // two cells at a time, and a cell that fails is asked once more, alone, after the rest.
-    const CELL_CONCURRENCY = 2;
+    const CELL_CONCURRENCY = 4;
     const MOVE_REFRESH_DELAY_MS = 300;
     // A zone's pieces from neighbouring cells, joined back into its one shape (scene.js mergeAnswers).
     function joinAreas(areas) {
@@ -1663,8 +1663,11 @@
         };
         status = 'loading'; progress = { count: jobs.length - pending.length, total: jobs.length };
         if (answers.size) assemble(); else render({ updateInspector: false });
-        // Redraw when the first cell lands and then at each quarter, as the 3D buildings do.
-        let done = jobs.length - pending.length, nextDrawAt = done + 1, firstError = null;
+        // Redraw as cells land from the centre outward: immediately on the first cell, then
+        // whenever 400 ms have passed (so slow cold cells stream in one by one) or every few fast cells.
+        const DRAW_THROTTLE_MS = 400;
+        const drawStep = Math.max(4, Math.ceil(jobs.length / 6));
+        let done = jobs.length - pending.length, nextDrawAt = done + 1, lastDrawAt = Date.now(), firstError = null;
         const queue = [...pending].sort((a, b) => a.cell.distanceM - b.cell.distanceM), retries = [];
         const loadJob = async job => {
             try { answers.set(job.key, (await cacheFor(job).load(job.scope, job.cell.bbox, fetchCell(job))).value); return true; }
@@ -1680,8 +1683,10 @@
                 if (loaded === null || generation !== request) return;
                 if (!loaded) { retries.push(job); continue; }
                 done++; progress = { count: done, total: jobs.length };
-                if (done >= nextDrawAt && done < jobs.length) {
-                    nextDrawAt = Math.max(done + 1, Math.ceil(jobs.length * (Math.floor(done / jobs.length * 4) + 1) / 4));
+                const now = Date.now();
+                if (done < jobs.length && (done >= nextDrawAt || now - lastDrawAt >= DRAW_THROTTLE_MS)) {
+                    nextDrawAt = done + drawStep;
+                    lastDrawAt = now;
                     assemble();
                 } else render({ updateInspector: false });
             }

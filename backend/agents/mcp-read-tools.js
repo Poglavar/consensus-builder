@@ -56,6 +56,8 @@ const failure = (code, message, next) => Object.assign(new Error(message), { cod
 export const parcelSourceIdOf = value => value?.parcelSourceId
     || (value?.binding?.parcelSource?.sourceId === 'hr-cadastre' ? 'oss-wfs' : value?.binding?.parcelSource?.sourceId);
 
+const { hydrateAnswer } = require('../../frontend/js/planning/feed.js');
+
 export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
     async function request(path, query = {}, body, external = false) {
         const url = new URL(path, `${apiBase}/`);
@@ -81,7 +83,7 @@ export function createMcpReadTools({ apiBase, appOrigin, fetchImpl }) {
             { action: response.status === 429 ? 'Wait for the source rate limit, then retry.'
                 : response.status >= 500 ? 'Retry the unavailable source later.' : 'Check the city, source and parcel using ugt_find_place.' }),
             metadata, { upstream: data });
-        return data;
+        return data?.schemaVersion === 'planning-representations.v1' ? hydrateAnswer(data) : data;
     }
     const mapUrl = (city, bbox) => {
         const url = new URL('/', appOrigin);

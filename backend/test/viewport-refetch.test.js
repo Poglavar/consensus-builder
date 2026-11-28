@@ -203,7 +203,7 @@ describe('planning view refresh', () => {
         });
         const box = { current: view, zoom };
         const context = vm.createContext({
-            URL, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null, telemetry: { track() {} },
+            URL, Date, console: { ...console, error: vi.fn() }, Promise, Math, Array, ready: true, catalogReady: true, core: scene, request: 0, items: [], payload: null, status: 'loading', progress: null, telemetry: { track() {} },
             viewCache: scene.createViewportCache({ limit: 2048 }), CELL_CONCURRENCY: 2, assembled: '', failedCells: 0, drawn: new Map(),
             zoningViewportCache: scene.createViewportCache({ limit: 12 }), overviewSourceId: '', overview: null,
             overviewOnly: false, overviewRead: null, overviewLayer: null, overviewDisplay: '',
@@ -333,8 +333,19 @@ describe('planning view refresh', () => {
         expect(asked()).toHaveLength(cellsOf(view).length * 2);
         expect(context.status).toBe('ready');
         expect(context.items).toHaveLength(cellsOf(view).length * 2);
-        // The first cell, each quarter and the end each redraw.
+        // The first cell, progressive batches and the end each redraw.
         expect(context.drawMap.mock.calls.length).toBeGreaterThanOrEqual(4);
+    });
+
+    it('redraws each slow cell as it lands once the redraw throttle elapses instead of waiting for 25% chunks', async () => {
+        const view = [-74.08870, 4.61033, -74.07900, 4.61674];
+        const { context } = planningHarness({ view });
+        let fakeNow = 1000;
+        const nowSpy = vi.spyOn(Date, 'now').mockImplementation(() => { fakeNow += 500; return fakeNow; });
+        try {
+            await context.refresh();
+            expect(context.drawMap.mock.calls.length).toBe(cellsOf(view).length * 2);
+        } finally { nowSpy.mockRestore(); }
     });
 
     it('zoomed out past 16 asks for nothing and reads as zoom in', async () => {

@@ -1,4 +1,5 @@
 // Read-only, bounded provider results for the shared Built / Permitted / Proposed experience.
+import { createRequire } from 'node:module';
 import { AREA_LIMIT_CODE, validateBounds } from '../parcels/source-contract.js';
 import { planningRepresentations, planningParcel, planningRecord, getPlanningSources, providersFor, sourcesFor } from '../planning/sources.js';
 import { loadParcelStudy, readStudyZoning } from '../planning/parcel-study.js';
@@ -7,6 +8,9 @@ import { loadParcelEnvelopes } from '../planning/parcel-envelopes.js';
 import { validatePlanPlots } from '../planning/plan-plots.js';
 import { sourceRevision } from '../planning/source-proposal.js';
 import { createFrontageStreetRegistry, NETWORK_ENVIRONMENT_SOURCES } from '../sources/network-environment.js';
+
+const require = createRequire(import.meta.url);
+const { compactAnswer } = require('../../frontend/js/planning/feed.js');
 
 function validCity(city) { return city === undefined || typeof city === 'string' && /^[a-z][a-z0-9_-]{0,79}$/.test(city); }
 function validSource(source) { return source === undefined || (typeof source === 'string' && /^[a-z0-9_-]{1,100}$/.test(source)); }
@@ -68,7 +72,7 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
             const answer = await envelopeQuery({ city, source, scenario, bbox, ...(plots.length ? { plots } : {}) });
             if (plots.length) res.set('Cache-Control', 'private, no-store');
             else cacheableAnswer(res, answer);
-            res.json(answer);
+            res.json(compactAnswer(answer));
         } catch (error) {
             const status = [400, 422].includes(error.status) ? error.status : 503;
             if (status === 503) console.error(`[${new Date().toISOString()}] [planning-envelopes] Source read failed (${city} ${source} ${bbox})`, error);
@@ -174,7 +178,7 @@ export function setupPlanningRoutes(app, pool, { sources = getPlanningSources(),
                 ...(req.query.scenario === undefined ? {} : { scenario: req.query.scenario }),
                 ...(req.query.cursor === undefined ? {} : { cursor: req.query.cursor }) });
             cacheableAnswer(res, answer);
-            res.json(answer);
+            res.json(compactAnswer(answer));
         } catch (error) {
             if (error.status === 400) return res.status(400).json({ error: 'Choose a smaller map area.', code: 'invalid-planning-query' });
             console.error('[planning] Source read failed', error);

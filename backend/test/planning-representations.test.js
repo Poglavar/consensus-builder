@@ -279,6 +279,36 @@ describe('complete viewport loading', () => {
             .mockResolvedValueOnce({ ok: false, status: 503 });
         await expect(feed.loadViewport(url, { city: 'sample', fetchPage })).rejects.toMatchObject({ status: 503 });
     });
+    it('compacts shared source metadata, rules, constraints and duplicate geometries losslessly across loadViewport', async () => {
+        const descriptor = { id: 'source', label: 'City Plan', url: 'https://example.test/plan', attribution: 'Long attribution string', scenario: 'general' };
+        const rules = { decree: 'Decree 555/2021', citations: [{ article: 'Art. 1', url: 'https://example.test/decree' }] };
+        const constraints = [{ quantity: 'storeys', value: 5, unit: 'count' }, { quantity: 'height', value: 20, unit: 'm' }];
+        const sourceReference = { providerId: 'source', recordId: 'zone-1', revision: 'abc' };
+        const geom = { type: 'Polygon', coordinates: [[[10, 40], [10.001, 40], [10.001, 40.001], [10, 40.001], [10, 40]]] };
+        const raw = page(['p1', 'p2'].map(parcel => ({
+            id: `envelope:source:${parcel}`,
+            role: 'permitted',
+            parcelEnvelope: true,
+            source: { ...descriptor, scenario: null, parcel },
+            site: geom,
+            volumes: [{ id: `v:${parcel}`, geometry: geom, baseM: 0, topM: 20 }],
+            configurations: [{ id: 'general', constraints, sourceReference, volumes: [{ id: `cv:${parcel}`, geometry: geom, baseM: 0, topM: 20 }] }],
+            derivation: { parcel: geom, covered: geom, frontEdges: [0] },
+            sourceEvidence: { zoningRecordId: 'zone-1', rules }
+        })), null, { sources: [descriptor] });
+        const compacted = feed.compactAnswer(raw);
+        expect(JSON.stringify(compacted).length).toBeLessThan(JSON.stringify(raw).length * 0.7);
+        expect(compacted.shared.rules).toEqual([rules]);
+        expect(compacted.shared.constraints).toEqual([constraints]);
+        expect(compacted.shared.sourceReferences).toEqual([sourceReference]);
+        expect(compacted.items[0].source).toEqual({ id: 'source', scenario: null, parcel: 'p1' });
+        expect(compacted.items[0].site).toBeUndefined();
+        expect(compacted.items[0].siteRef).toBe(0);
+        expect(compacted.items[0].configurations[0].volumes[0].geometry).toBeUndefined();
+        expect(compacted.items[0].configurations[0].volumes[0].geometryRef).toBe(0);
+        const hydrated = await feed.loadViewport(url, { city: 'sample', fetchPage: vi.fn().mockResolvedValue(ok(JSON.parse(JSON.stringify(compacted)))) });
+        expect(hydrated).toEqual(raw);
+    });
     it('stops obsolete viewport reads before requesting another page', async () => {
         const controller = new AbortController(), fetchPage = vi.fn().mockResolvedValue(ok(page([{ id: 'a' }], 'second')));
         await expect(feed.loadViewport(url, { city: 'sample', fetchPage, signal: controller.signal,

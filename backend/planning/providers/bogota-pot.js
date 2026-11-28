@@ -5,6 +5,7 @@ import * as turf from '@turf/turf';
 import { clipToBounds } from '../display-clip.js';
 import { createPublicSourceFetch } from '../../parcels/public-source-fetch.js';
 import { validateGeometry } from '../../parcels/source-contract.js';
+import { wgs84BboxAreaKm2 } from '../../utils/helpers.js';
 import { withSourceProposal, sourceRevision } from '../source-proposal.js';
 import { interpretTreatment, antejardinConstraint, parcelReading, incentiveCandidacy, BOGOTA_RULES } from './bogota-pot-rules.js';
 
@@ -25,7 +26,11 @@ export const bogotaPotSource = Object.freeze({
     attribution: 'SDP Bogotá, POT Decreto 555/2021 · public ArcGIS Online copy of its geodatabase',
     capabilities: { volumes: false, areas: true, parcelEvidence: false, constraintEvaluation: false },
     parcelSourceId: 'co-bogota-uaecd-lote', parcelStudy: 'direct-dimensions.v1', parcelStanding: true,
-    scenarios: BOGOTA_POT_SCENARIOS, scenario: 'general'
+    // Treatment polygons cover whole sectors: read the viewport in one zoning query instead of per-cell.
+    zoningPageLimit: 1000, viewportZoning: true,
+    scenarios: BOGOTA_POT_SCENARIOS, scenario: 'general',
+    // Adopted decree: cacheable at the edge for a day (routes/planning.js).
+    cacheSeconds: 86400
 });
 
 const publicFetch = createPublicSourceFetch({ maxBytes: 64 * 1024 * 1024, timeoutMs: 60000 });
@@ -168,9 +173,12 @@ export function createBogotaPotProvider(descriptor = bogotaPotSource, { fetchImp
         async query(_pool, { bbox, limit, after = null, scenario = descriptor.scenario, city }) {
             if (after !== null && !/^\d{1,10}$/.test(String(after))) throw Object.assign(new Error('Invalid source cursor'), { status: 400 });
             const page = await readBounds(layers.treatment, bbox, { after, count: limit + 1 });
-            // Per-lot layers for the same area are fetched alongside; a failure surfaces on the parcel read.
-            antejardinUnder(bbox).catch(() => {});
-            if (scenario === 'sustainable') activityUnder(bbox).catch(() => {});
+            // Prefetch per-lot layers only for envelope-sized cells (<= 0.5 km²); a wide viewport
+            // zoning query does not need front-yard polygons and would exceed ArcGIS's 2,000-row cap.
+            if (wgs84BboxAreaKm2(...bbox) <= 0.5) {
+                antejardinUnder(bbox).catch(() => {});
+                if (scenario === 'sustainable') activityUnder(bbox).catch(() => {});
+            }
             const visible = page.features.slice(0, limit);
             const items = visible.map(feature => record(feature, clipToBounds(feature, bbox), city, scenario));
             const statuses = {};
