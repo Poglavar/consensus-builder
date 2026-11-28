@@ -1195,6 +1195,12 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     #click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > button:not(.btn-proposal-details) {
         display: inline-flex;
     }
+
+    /* A control hidden until it applies (Effects on neighbours, [hidden]) stays hidden. Same
+       specificity as the rule above and after it, so the Add to plan / Download rule still wins. */
+    #click-stack #proposal-details-panel.is-hosted .proposal-primary-actions > button[hidden] {
+        display: none;
+    }
 }
 
 .click-stack__row {
@@ -1482,7 +1488,9 @@ body.cadastre-view.on-map-editing:has(.on-map-reparcellization) .leaflet-map-pan
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.click-stack__section[data-kind="ground"] [data-command="ground.drawSite"] {
+/* Draw a parcel and Street here take a row each, so Road/Track and Road station/Track station
+   stay paired below them. */
+.click-stack__section[data-kind="ground"] :is([data-command="ground.drawSite"], [data-command="ground.street"]) {
     grid-column: 1 / -1;
 }
 

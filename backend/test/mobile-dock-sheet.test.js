@@ -218,6 +218,15 @@ describe('mobile dock sheet geometry', () => {
         expect(fixture.closeCount()).toBe(1);
     });
 
+    it('decides the release from where the pointer lifted, even when the last moves were not delivered', () => {
+        // A busy browser can deliver the pointerup before its trailing pointermoves: the release point counts.
+        const fixture = controllerFixture({ height: 350 });
+        fixture.fire('pointerdown', { clientY: 100, timeStamp: 0 });
+        fixture.fire('pointermove', { clientY: 120, timeStamp: 500 });
+        fixture.fire('pointerup', { clientY: 400, type: 'pointerup', timeStamp: 900 });
+        expect(fixture.closeCount()).toBe(1);
+    });
+
     it('suppresses the synthetic tap after a drag, then tap toggles between half and full height', () => {
         const fixture = controllerFixture({ height: 350 });
         fixture.fire('pointerdown', { clientY: 100, timeStamp: 0 });

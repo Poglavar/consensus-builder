@@ -238,6 +238,7 @@
             }
             const next = single ? [] : getEntries();
             keys.forEach(key => { if (!next.some(entry => entry.address === key)) next.push({ address: key, name: '' }); });
+            input.value = '';
             setEntries(next);
             rerender();
             container.querySelector('#lens-picker-paste-input')?.focus();
@@ -293,10 +294,18 @@
         const done = dialogApi.getActionButton('done');
         if (done) done.setAttribute('data-lens-picker-done', '');
 
+        // The directory and the parcel coverage arrive after the box opens and redraw it: a key being
+        // typed in the paste field stays there, with the focus.
         const rerender = () => {
             if (!overlay.isConnected) return;
+            const pasteInput = body.querySelector('#lens-picker-paste-input');
+            const typed = pasteInput ? pasteInput.value : '';
+            const typing = Boolean(pasteInput) && document.activeElement === pasteInput;
             renderBody(body, selection.getEntries(), single);
             wire(body, rerender, selection);
+            const nextInput = body.querySelector('#lens-picker-paste-input');
+            if (nextInput && typed) nextInput.value = typed;
+            if (nextInput && typing) nextInput.focus();
         };
         rerender();
         loadDirectory().then(() => {

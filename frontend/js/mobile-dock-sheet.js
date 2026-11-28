@@ -206,6 +206,12 @@
 
         const finishDrag = event => {
             if (!drag || event.pointerId !== drag.pointerId) return;
+            // The release point is where the finger lifted: a busy browser can deliver the pointerup
+            // before its trailing pointermoves, which would otherwise read as a shorter drag.
+            if (event.type === 'pointerup' && typeof event.clientY === 'number' && Number.isFinite(event.clientY)) {
+                drag.deltaY = event.clientY - drag.y;
+                drag.samples = [...drag.samples.filter(sample => event.timeStamp - sample.t < 100), { y: event.clientY, t: event.timeStamp }];
+            }
             handle.releasePointerCapture?.(event.pointerId);
             handle.classList.remove('is-dragging');
             panel.classList.remove('is-sheet-dragging');

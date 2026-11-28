@@ -1007,7 +1007,7 @@ async function showAgentDialog(agentId, options = {}) {
     const labelOwnedParcels = translateText('agentDialog.ownedParcels', 'Linked parcels ({{count}})', { count: initialParcels.length });
     const parcelBasisKey = isUserAgent ? 'agentDialog.walletParcelsBasis' : 'agentDialog.localParcelsBasis';
     const parcelBasisLabel = translateText(parcelBasisKey, isUserAgent
-        ? 'Parcels assigned in the local model, and parcels anchored with the connected wallet. An anchor grants no ownership, so anchored parcels are not counted in the land estimate.'
+        ? 'Parcels assigned in the local model, and parcels whose anchor the connected wallet minted. An anchor grants no ownership, so those parcels are not counted in the land estimate.'
         : 'Parcels assigned to this agent in the local model.');
     const labelAgentLog = translateText('agentDialog.agentLog', 'Agent Log');
     const labelUser = translateText('agentDialog.userLabel', 'You');

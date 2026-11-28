@@ -2464,8 +2464,13 @@ function updateUndoButtonState() {
     }
 }
 
-// The rubber band from the pen to the pointer, its outline and the parcels it lights up.
+// The rubber band from the pen to the pointer, its outline and the parcels it lights up, and the
+// metres and square metres it added to the info panel: with no band on the map the panel shows the
+// committed corridor only. A preview frame still waiting goes too, since its pointer position is
+// older than whatever cleared the band.
 function clearRoadRubberBand() {
+    cancelRoadPreviewFrame();
+    const bandShown = !!(roadPreviewLine || roadPreviewPolygonLayer);
     if (roadPreviewLine) {
         roadPreviewLine.removeFrom(map);
         roadPreviewLine = null;
@@ -2475,6 +2480,7 @@ function clearRoadRubberBand() {
         roadPreviewPolygonLayer = null;
     }
     clearPreviewAffectedParcels();
+    if (bandShown) showCommittedRoadMetrics();
 }
 
 // What the status line says while the pen is down: how to add, build, lift and place freely.
@@ -2834,6 +2840,8 @@ function undoLastRoadSegment() {
 async function handleRoadClick(e) {
     // Stop event propagation to prevent parcel selection or other click handlers
     L.DomEvent.stopPropagation(e);
+    // The click is a newer pointer position than any mousemove still waiting for its frame.
+    cancelRoadPreviewFrame();
 
     // The second click of a double-click adds nothing: the first placed the point, and the pair
     // builds the road (handleRoadDoubleClick).
@@ -2978,15 +2986,7 @@ async function handleRoadClick(e) {
         try {
             // Clear any existing *preview* highlighting and polygon layers
             // Do this *before* calculating the new committed polygon
-            clearPreviewAffectedParcels();
-            if (roadPreviewPolygonLayer) {
-                roadPreviewPolygonLayer.removeFrom(map);
-                roadPreviewPolygonLayer = null;
-            }
-            if (roadPreviewLine) {
-                roadPreviewLine.removeFrom(map);
-                roadPreviewLine = null;
-            }
+            clearRoadRubberBand();
 
             // The committed land is rebuilt from the whole centre line by the shared construction in
             // the session frame: one construction path, so the land seen while drawing is the land
@@ -3110,6 +3110,15 @@ function writeStreetConnectionsToDraft(draftId, connections, centerline) {
 // Handle road mouse movement for preview
 let roadPreviewFrame = null;
 let roadPreviewEvent = null;
+// Drop the mousemove still waiting for its frame. Its pointer position is stale once the pen has
+// moved on: Leaflet's canvas renderer passes on at most one mousemove per 32 ms, so the moves of
+// quick clicks can be lost, and a frame that only came after them drew the band from the new last
+// point back to where the pointer had been (on a straight road, twice its length on the panel).
+function cancelRoadPreviewFrame() {
+    roadPreviewEvent = null;
+    if (roadPreviewFrame) { cancelAnimationFrame(roadPreviewFrame); roadPreviewFrame = null; }
+}
+
 function handleRoadMouseMove(e) {
     roadPreviewEvent = e;
     if (roadPreviewFrame) return;
@@ -3158,6 +3167,8 @@ function renderRoadMouseMove(e) {
         roadPreviewPolygonLayer = null;
     }
     clearPreviewAffectedParcels();
+    // No land for this band, so none of its metres either: the panel shows the committed corridor.
+    showCommittedRoadMetrics();
 }
 
 // Keep the edge under decision on the map, at the width it will actually be built at, while the
@@ -3192,45 +3203,18 @@ function clearPendingRoadSegment() {
 function handleRoadMouseOut(e) {
     if (!roadDrawingMode) return; // Only act if in drawing mode
 
-    roadPreviewEvent = null;
-    if (roadPreviewFrame) { cancelAnimationFrame(roadPreviewFrame); roadPreviewFrame = null; }
-
     clearRoadSnapMarker();
-
-    // Clear preview line
-    if (roadPreviewLine) {
-        roadPreviewLine.removeFrom(map);
-        roadPreviewLine = null;
-    }
-
-    // Clear preview polygon
-    if (roadPreviewPolygonLayer) {
-        roadPreviewPolygonLayer.removeFrom(map);
-        roadPreviewPolygonLayer = null;
-    }
-
-    // Clear only the preview highlighting
-    clearPreviewAffectedParcels();
+    // The band, its highlighting and its metres on the panel; the committed road stays.
+    clearRoadRubberBand();
 }
 
 // Stop following the cursor with a preview line/polygon (used when finishing)
 function stopRoadPreviewTracking() {
-    roadPreviewEvent = null;
-    if (roadPreviewFrame) { cancelAnimationFrame(roadPreviewFrame); roadPreviewFrame = null; }
     try {
         map.off('mousemove', handleRoadMouseMove);
         map.off('mouseout', handleRoadMouseOut);
     } catch (_) { }
-
-    if (roadPreviewLine) {
-        map.removeLayer(roadPreviewLine);
-        roadPreviewLine = null;
-    }
-    if (roadPreviewPolygonLayer) {
-        roadPreviewPolygonLayer.removeFrom(map);
-        roadPreviewPolygonLayer = null;
-    }
-    clearPreviewAffectedParcels();
+    clearRoadRubberBand();
 }
 
 // The map and keyboard handlers a live drawing listens on; suspendRoadDrawingInteractivity is the inverse.
@@ -3666,6 +3650,14 @@ function updateRoadInfoPanel() {
         committedRoadMetrics.length = 0;
         committedRoadMetrics.area = 0;
     }
+}
+
+// The info panel's length and area with no rubber band drawn: the committed corridor's alone.
+function showCommittedRoadMetrics() {
+    const roadLengthElement = document.getElementById('road-length');
+    const roadAreaElement = document.getElementById('road-area');
+    if (roadLengthElement) roadLengthElement.textContent = CbFormat.formatLength(committedRoadMetrics.length);
+    if (roadAreaElement) roadAreaElement.textContent = CbFormat.formatArea(committedRoadMetrics.area);
 }
 
 // PERFORMANCE: Fast update of road info during preview

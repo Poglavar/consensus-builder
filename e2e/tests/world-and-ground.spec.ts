@@ -453,12 +453,15 @@ test.describe('World navigation and open ground @features', () => {
     for (const width of [1280, 390]) {
       await page.setViewportSize({ width, height: 844 });
       const boxes = await ground.locator('.click-stack__actions > button').evaluateAll(buttons => buttons.map(button => {
-        const { x, y, width } = button.getBoundingClientRect(); return { x, y, width };
+        const { x, y, width } = button.getBoundingClientRect(); return { x, y, width, command: button.dataset.command };
       }));
-      // Draw a parcel, then Road/Track and Road station/Track station in pairs (1f2fae6e1).
-      expect(boxes).toHaveLength(5);
-      expect(boxes[0].width).toBeGreaterThan(boxes[1].width * 1.9);
-      for (const i of [1, 3]) {
+      // Draw a parcel and Street here (6ef3bb251) a row each, then Road/Track and Road station/Track
+      // station in pairs (1f2fae6e1).
+      expect(boxes.map(box => box.command)).toEqual(['ground.drawSite', 'ground.street', 'ground.road', 'ground.track', 'ground.roadStation', 'ground.trackStation']);
+      expect(boxes[0].width).toBeGreaterThan(boxes[2].width * 1.9);
+      expect(Math.abs(boxes[1].width - boxes[0].width)).toBeLessThan(1);
+      expect(boxes[1].y).toBeGreaterThan(boxes[0].y);
+      for (const i of [2, 4]) {
         expect(Math.abs(boxes[i].width - boxes[i + 1].width)).toBeLessThan(1);
         expect(Math.abs(boxes[i].y - boxes[i + 1].y)).toBeLessThan(1);
         expect(boxes[i + 1].x).toBeGreaterThan(boxes[i].x);

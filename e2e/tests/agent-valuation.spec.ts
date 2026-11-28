@@ -77,7 +77,7 @@ test('agent profiles keep connected-wallet observations out of other agents', as
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.user);
   await expect.poll(() => page.evaluate(() => (window as any).__profileWalletCalls)).toBe(1);
-  await expect(dialog.locator('[data-agent-parcels-basis]')).toContainText('parcels anchored with the connected wallet');
+  await expect(dialog.locator('[data-agent-parcels-basis]')).toContainText('parcels whose anchor the connected wallet minted');
   await dialog.locator('.agent-dialog-modal-close').click();
   await page.evaluate(id => (window as any).showAgentDialog(id), ids.other);
   await page.evaluate(async () => {

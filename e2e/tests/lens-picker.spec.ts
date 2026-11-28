@@ -177,4 +177,28 @@ test.describe('Lens settings @features', () => {
     expect(await page.evaluate(() => (window as any).agreementLensEdit.map((entry: any) => entry.address))).toEqual([MEMBER]);
     await lens.locator('[data-lens-picker-done]').click();
   });
+
+  test('a key typed while the directory loads stays in the paste field when the directory arrives', async ({ mockApi: page }) => {
+    let release!: () => void;
+    const held = new Promise<void>(resolve => { release = resolve; });
+    await page.route('**/lenses/members', async route => {
+      await held;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ members: [{ key: MEMBER, name: 'Parcel Lens' }] }) });
+    });
+    await openCity(page);
+    await page.evaluate(() => (window as any).showLensModal({ chain: 'solana' }));
+    const lens = page.locator('.lens-modal-overlay');
+    const input = lens.locator('#lens-picker-paste-input');
+    // The dialog puts its initial focus on Done one frame after opening; type after that, as a person would.
+    await expect(lens.locator('[data-lens-picker-done]')).toBeFocused();
+    await input.fill(PASTED_MEMBER);
+    release();
+    await expect(lens.locator(`[data-lens-member="${MEMBER}"]`)).toBeVisible();
+    await expect(input).toHaveValue(PASTED_MEMBER);
+    await expect(input).toBeFocused();
+    await lens.locator('[data-lens-paste-add]').click();
+    await expect(lens.locator(`[data-lens-remove="${PASTED_MEMBER}"]`)).toBeVisible();
+    await expect(input).toHaveValue('');
+    await lens.locator('[data-lens-picker-done]').click();
+  });
 });

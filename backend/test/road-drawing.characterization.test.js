@@ -452,6 +452,55 @@ describe('snapping', () => {
     });
 });
 
+describe('the rubber band and the panel figures', () => {
+    // Holds the tool's preview frames until the test runs them, as a loaded browser holds them.
+    function holdPreviewFrames() {
+        const held = new Map();
+        let next = 0;
+        globalThis.requestAnimationFrame = callback => { next += 1; held.set(next, callback); return next; };
+        globalThis.cancelAnimationFrame = id => { held.delete(id); };
+        return () => {
+            const callbacks = [...held.values()];
+            held.clear();
+            callbacks.forEach(callback => callback(Date.now()));
+            return callbacks.length;
+        };
+    }
+
+    it('a mousemove whose frame comes only after later clicks draws no band from their point', async () => {
+        const world = open();
+        await openTool(world);
+        const runFrames = holdPreviewFrames();
+        // The pointer moves to the first point and clicks there; its moves to the next two points
+        // never arrive (Leaflet's canvas renderer passes on one mousemove per 32 ms), and the frame
+        // for the first move only comes after all three clicks.
+        await world.move(at(0, 0));
+        await world.click(at(0, 0));
+        await world.click(at(15, 0));
+        await world.click(at(35, 0));
+        const drawn = globalThis.CbFormat.formatLength(world.api.polylineLengthMeters(world.session.roadSegments[0]));
+        expect(world.element('road-length').textContent).toBe(drawn);
+        runFrames();
+        // Rendered, that move drew the band from the last point back to the first: twice the road.
+        expect(world.session.roadPreviewLine).toBeNull();
+        expect(world.element('road-length').textContent).toBe(drawn);
+    });
+
+    it('the band adds its metres to the panel, and they leave with it', async () => {
+        const world = open();
+        await openTool(world);
+        await world.click(at(0, 0));
+        await world.click(at(100, 0));
+        const { formatLength, formatArea } = globalThis.CbFormat;
+        const committed = { ...world.session.committedRoadMetrics };
+        await world.move(at(150, 0));
+        expect(world.element('road-length').textContent).toBe(formatLength(committed.length + 50));
+        await world.map.fire('mouseout', {});
+        expect(world.element('road-length').textContent).toBe(formatLength(committed.length));
+        expect(world.element('road-area').textContent).toBe(formatArea(committed.area));
+    });
+});
+
 describe('land and parcels', () => {
     it('buildRoadUnionPolygonWithWidths needs a frame, skips stubs and gives each segment its own width', () => {
         const world = open();
