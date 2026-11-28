@@ -1,6 +1,6 @@
 /* Shared map/model comparison chrome. Source geometry keeps a distinct, restrained visual role. */
-.planning-views, .planning-inspector { box-sizing: border-box; }
-.planning-views {
+.planning-views, .planning-compare-sheet, .planning-inspector { box-sizing: border-box; }
+.planning-views, .planning-compare-sheet {
     width: var(--cb-planning-control-width);
 }
 #planning-views-button { flex: 0 0 var(--map-shell-button-size); padding: 0; }
@@ -35,7 +35,6 @@ body:is([data-planning-proposed="solid"], [data-planning-proposed="ghost"]) .pla
     font-size: var(--cb-text-xs);
     font-weight: var(--cb-weight-semibold);
 }
-.planning-tabs { flex: 0 0 auto; }
 .planning-layer-controls { --planning-action-size: var(--cb-control-height); display: grid; gap: var(--cb-space-2); }
 #planning-views-display > .accordion-section { padding-block: var(--cb-space-2); }
 #planning-views-display > .accordion-section > summary { margin-block-end: 0; }

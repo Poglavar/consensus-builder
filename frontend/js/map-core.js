@@ -171,12 +171,20 @@ if (BasemapManager) {
 window.MapCredits.install(map);
 
 // Add scale control. Bottom-RIGHT, above the shell's bottom button row (css/map.css places it); the
-// lower left belongs to the 2D/3D mode strip. It hides while a docked panel covers that corner.
-L.control.scale({
+// lower left belongs to the 2D/3D mode strip. Clicking the scale pill opens the Measure sheet.
+const scaleControl = L.control.scale({
     metric: true,
     imperial: false,
     position: 'bottomright'
 }).addTo(map);
+const scaleContainer = scaleControl.getContainer();
+const measurementButton = document.getElementById('measurement-button');
+if (scaleContainer && measurementButton) {
+    if (scaleControl._mScale) measurementButton.appendChild(scaleControl._mScale);
+    scaleContainer.appendChild(measurementButton);
+    L.DomEvent.disableClickPropagation(scaleContainer);
+    L.DomEvent.disableScrollPropagation(scaleContainer);
+}
 
 // The zoom range 2D shows parcels in (and buildings, from 17), for code outside this script.
 window.parcelZoomRange = () => ({ min: parcelFetchZoomMin, max: parcelFetchZoomMax });

@@ -107,9 +107,11 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
     await expect(row).toHaveCount(1);
     await expect(row).toBeHidden();
   }
-  await openPlanningSection(page, 'building-appearance');
+  await openPlanningRole(page, 'existing');
   await expect(page.locator('.three-mode-radius-row')).toBeHidden();
+  await openPlanningRole(page, 'proposed');
   await expect(page.getByText('Non-buildable plots', { exact: true })).toBeVisible();
+  await openPlanningSection(page, 'building-appearance');
   const facade = page.locator('#three-mode-facades');
   await facade.check();
   await selectNativeOption(page.locator('#three-mode-facade-style'), 'brick');
@@ -135,8 +137,9 @@ test('Google 3D shares proposed-building layer controls and retains choices in m
   await expect(page.locator('body')).not.toHaveClass(/realistic-mode-active/);
   await openLayerSection(page, 'parcels');
   await expect(page.locator('#photo-parcels-visible')).toBeHidden();
-  await openPlanningSection(page, 'building-appearance');
+  await openPlanningRole(page, 'existing');
   await expect(page.locator('.three-mode-radius-row')).toBeVisible();
+  await openPlanningSection(page, 'building-appearance');
   await expect(facade).toBeChecked();
   await expect(page.locator('#three-mode-facade-style')).toHaveValue('brick');
   await openPlanningSection(page, 'floor-plans');

@@ -21,7 +21,7 @@ for (const viewport of [{ width: 320, height: 640 }, { width: 390, height: 844 }
   test(`primary mobile sheets resize, scroll and dismiss consistently at ${viewport.width}px`, async ({ mockApi: page }) => {
     await page.setViewportSize(viewport);
     await openCity(page);
-    for (const [button, id] of [['layers-button', 'layers-sheet'], ['planning-views-button', 'planning-views'], ['measurement-button', 'measurement-sheet'], ['proposals-button', 'proposals-sheet'], ['bets-button', 'bets-sheet'], ['activity-button', 'activity-sheet'], ['settings-button', 'settings-sheet']]) {
+    for (const [button, id] of [['layers-button', 'layers-sheet'], ['planning-views-button', 'planning-views'], ['compare-button', 'compare-sheet'], ['measurement-button', 'measurement-sheet'], ['proposals-button', 'proposals-sheet'], ['bets-button', 'bets-sheet'], ['activity-button', 'activity-sheet'], ['settings-button', 'settings-sheet']]) {
       await page.locator(`#${button}`).click();
       const sheet = page.locator(`#${id}`);
       await expect(sheet).toBeVisible();

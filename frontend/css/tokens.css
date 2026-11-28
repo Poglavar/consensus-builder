@@ -55,8 +55,6 @@
     --cb-photo-parcel-boundary: #fff3a6;
     --cb-photo-parcel-halo: #282418;
     --cb-map-road-track-line: #000000; /* saved Road/track layer: thick black reference lines over light map tiles */
-    --cb-map-scale-ink: #000000;
-    --cb-map-scale-halo: #ffffff;
     /* Map-object interaction keeps the model view's yellow in both themes and renderers. */
     --cb-map-highlight: #ffdd00;
     --cb-map-highlight-halo: #292000;

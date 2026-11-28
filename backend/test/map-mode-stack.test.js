@@ -14,19 +14,24 @@ const indexHtml = readFileSync(new URL('../../frontend/index.html', import.meta.
 
 // Top → bottom. The slot each button is expected to own is the contract, not an observation:
 // moving a button between slots means editing this list on purpose.
+// Slot 5 is shared only by #sun-button (3D model) and #mode-ai-toggle (photo), which never show together.
 const STACK = [
-    { id: 'measurement-button', slot: 1 },
+    { id: 'compare-button', slot: 1 },
     { id: 'mode-2d-toggle', slot: 2 },
     { id: 'mode-3d-toggle', slot: 3 },
     { id: 'mode-realistic-toggle', slot: 4 },
     { id: 'mode-ai-toggle', slot: 5 },
     { id: 'mode-walk-toggle', slot: 6 }
 ];
+const SHARED_SLOT_BUTTONS = [
+    { id: 'sun-button', slot: 5 },
+    { id: 'mode-ai-toggle', slot: 5 }
+];
 
 // Every `selector { body }` pair that declares a top offset for the given button id. Slots are top
 // offsets counted up from the bottom row.
 function topDeclarationsFor(id) {
-    const selectorNeedle = id === 'measurement-button' ? '.map-utility-button' : `#${id}`;
+    const selectorNeedle = `#${id}`;
     const found = [];
     for (const [file, css] of Object.entries(SOURCES)) {
         for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
@@ -93,21 +98,22 @@ describe('left-edge map mode strip', () => {
         for (const { id } of STACK) expect(indexHtml).toContain(`id="${id}"`);
     });
 
-    it('lets buttons share the utility slot only when they never show in the same view', () => {
-        // Measure (2D) and Sun and shadows (model view) both take .map-utility-button's slot.
-        const buttons = [...indexHtml.matchAll(/<button[^>]*class="[^"]*\bmap-utility-button\b[^"]*"[^>]*>/g)].map(([tag]) => ({
-            id: tag.match(/id="([^"]+)"/)?.[1],
-            modes: (tag.match(/data-map-modes="([^"]+)"/)?.[1] || '').split(/\s+/).filter(Boolean)
-        }));
-        expect(buttons.map(b => b.id)).toEqual(expect.arrayContaining(['measurement-button', 'sun-button']));
+    it('lets Sun (3D model) and AI (photo) share slot 5 only because they never show in the same view, and keeps Measure on the scale bar', () => {
         const seen = new Map();
-        for (const { id, modes } of buttons) {
+        for (const { id, slot } of SHARED_SLOT_BUTTONS) {
+            const declarations = topDeclarationsFor(id);
+            expect(declarations.length, `${id} should declare its top exactly once`).toBe(1);
+            expect(declarations[0].value, `${id} must sit in slot ${slot}`).toBe(`var(--map-mode-slot-${slot})`);
+            const tag = indexHtml.match(new RegExp(`<button[^>]*id="${id}"[^>]*>`))?.[0];
+            expect(tag, `${id} button markup`).toBeTruthy();
+            const modes = (tag.match(/data-map-modes="([^"]+)"/)?.[1] || '').split(/\s+/).filter(Boolean);
             expect(modes.length, `${id} must name the views it shows in`).toBeGreaterThan(0);
             for (const mode of modes) {
                 expect(seen.get(mode), `${id} and ${seen.get(mode)} would both show in ${mode}`).toBeUndefined();
                 seen.set(mode, id);
             }
         }
+        expect(topDeclarationsFor('measurement-button')).toEqual([]);
     });
 
     it('keeps the original cadastre control in the 2D Layers sheet', () => {

@@ -266,13 +266,15 @@ palette is the legend beside each tick.
   both panels open directly below the toolbar, beside the left view strip (never over it, so the
   view can change while a panel is open). On phones,
   both open as bottom sheets.
-- The left view strip chooses 2D map, 3D models or 3D aerial imagery. Measure is a 2D utility beside
-  that strip, not a destination in the bottom dock.
-- In **Buildings and zoning → Display**, the **Permitted** card sits at the top with the source
-  selector, **Zoning map** toggle, **Massing** row (with the reroll dice beside its appearance
-  selector), unified colour legend and status/Retry, followed by **Built** (building sources, height
-  survey and 3D context radius) and **Proposed** (reroll dice beside its appearance selector and 3D
-  non-buildable plots). Below the three roles sit **Highlight by use**, **Facades** and **Floor plans**.
+- The left view strip chooses 2D map, 3D models or 3D aerial imagery, with **Compare** (2D and 3D
+  model view) at the top of the strip and **Sun and shadows** (3D model view) below. Clicking the
+  bottom-right 2D map scale bar opens **Measure** (distance measurement and pinpoint), keeping it
+  out of both the left strip and the bottom dock.
+- **Buildings and zoning** opens with the **Permitted** card at the top (source selector, **Zoning
+  map** toggle, **Massing** row with the reroll dice beside its appearance selector, unified colour
+  legend and status/Retry), followed by **Built** (building sources, height survey and 3D context
+  radius) and **Proposed** (reroll dice beside its appearance selector and 3D non-buildable plots).
+  Below the three roles sit **Highlight by use**, **Facades** and **Floor plans**.
 - **Layers** groups the surrounding map and scene by subject (Base map, Parcels, Parcel blocks,
   Parks and squares, Roads, Schelling plan, Scenery and sound), with a quiet link to **Buildings and
   zoning** at its foot. In 3D views, the 2D-only map layers fold into one **Open in 2D** row. Photo
@@ -324,11 +326,13 @@ The names to use for the shell's elements in follow-up discussion.
 | Name | What and where |
 |---|---|
 | **search box** | top-left omnibox (`#map-search-slot`): cities, parcels, places and commands |
-| **Buildings and zoning** button and sheet | beside the search box (`#planning-views-button`, `#planning-views`); **Display** owns Permitted (source, Zoning map, Massing, legend, status/Retry), Built (sources, heights, 3D radius), Proposed (3D non-buildable plots), Highlight by use, Facades and Floor plans (X-ray) |
+| **Buildings and zoning** button and sheet | beside the search box (`#planning-views-button`, `#planning-views`); owns Permitted (source, Zoning map, Massing, legend, status/Retry), Built (sources, heights, 3D radius), Proposed (3D non-buildable plots), Highlight by use, Facades and Floor plans (X-ray) |
+| **Compare** button and sheet | top of the left view strip (`#compare-button`, `#compare-sheet`); side-by-side comparison divider in 2D and 3D model view |
 | **user bubble** | top-right `#username-display`: profile name or Guest |
 | **Layers** button and sheet | beside **Buildings and zoning** in the left toolbar. Opens controls for the surrounding map and scene, with a quiet footer link to Buildings and zoning. |
 | **Settings** button and sheet | top-right; Appearance, Data & assumptions, Help & about, and Advanced (Local (browser) data, Simulation, Diagnostics, Reset browser data) |
-| **view strip** | left edge: 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), with the Measure (2D) and Sun and shadows (3D) utilities beside it |
+| **view strip** | left edge: Compare (2D and 3D model view), 2D map, 3D models, 3D aerial imagery (`map-mode-tile`), AI render, Sun and shadows (3D model view), and Walk-through |
+| **scale / Measure** button and sheet | bottom-right 2D map scale bar (`#measurement-button` wrapping Leaflet's scale line, opening `#measurement-sheet` above it) |
 | **bottom dock** | **Lists**, **Activity** and **Bets** each open a dock sheet. |
 | **running dot** | the pulsing dot on the Activity button while the simulation runs |
 | **status line**, **notice**, **banner card** | the three message families (see Messages) |

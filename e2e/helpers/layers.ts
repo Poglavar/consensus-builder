@@ -2,8 +2,7 @@ import { expect, type Page } from '@playwright/test';
 
 export async function openPlanningDisplay(page: Page): Promise<void> {
   if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
-  const display = page.getByRole('tab', { name: 'Display', exact: true });
-  if (await display.getAttribute('aria-selected') !== 'true') await display.click();
+  await expect(page.locator('#planning-views')).toBeVisible();
 }
 
 export async function openPlanningSection(page: Page, section: 'floor-plans' | 'building-appearance' | 'use-highlight'): Promise<void> {

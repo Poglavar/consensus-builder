@@ -142,15 +142,17 @@ body.three-mode-active .map-view-pill--2d {
     border-radius: var(--cb-radius-pill);
 }
 
-.map-utility-button {
+.map-shell-button.map-utility-button {
     position: absolute;
     left: var(--map-mode-stack-left);
-    top: var(--map-mode-slot-1);
     z-index: var(--cb-z-map-chrome);
     width: var(--cb-space-8);
     padding: var(--cb-space-2);
     border-radius: var(--cb-radius-sm);
 }
+
+#compare-button { top: var(--map-mode-slot-1); }
+#sun-button { top: var(--map-mode-slot-5); }
 
 .layer-actions > summary {
     padding: var(--cb-space-3) 0;

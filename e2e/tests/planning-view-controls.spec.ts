@@ -55,7 +55,6 @@ test('layer shortcuts keep display settings, map location and keyboard focus acr
   const profile = await page.locator('#username-display').boundingBox();
   expect(bounds[1]!.x + bounds[1]!.width).toBeLessThanOrEqual(profile!.x);
   await planningButton.press('Enter');
-  await page.locator('#planning-tab-compare').press('Enter');
   await layersButton.press('Enter');
   await page.locator('#layers-open-buildings').press('Enter');
   await expect(page.locator('#planning-existing-scope')).toBeFocused();
@@ -140,8 +139,10 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   const panel = page.locator('#planning-views');
   await page.locator('#planning-views-button').click();
   // Area sources load when their zoning map layer is enabled.
+  const beforeCheck = requests.length;
   await panel.locator('#planning-zoning-areas').check();
   expect(new URL(page.url()).searchParams.get('zoningAreas')).toBe('ghost');
+  await expect.poll(() => requests.length).toBeGreaterThan(beforeCheck);
   const retry = panel.locator('#planning-view-retry');
   await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
   await expect(retry).toBeVisible();
@@ -610,4 +611,74 @@ test('Astana fits the whole plan and shows dated parcel massing on a narrow scre
   await evidence.locator('summary').press('Enter');
   await expect(evidence).toContainText('№ 33 от 25.01.2024');
   await expect(evidence).toContainText(source.edition);
+});
+
+test('Buildings and zoning unifies Permitted controls, always-visible reroll dice, legend disclosure, and 3D role controls @features', async ({ mockApi: page }) => {
+  await mockBuildingScene(page);
+  const source = { ...sources[0], parcelStudy: 'direct-dimensions.v1' };
+  const building = massing(source);
+  const area = {
+    ...building,
+    id: 'area-m1',
+    title: 'M1 Mixed zone',
+    areas: [{ id: 'a1', geometry: PARCEL_GEOMETRY, label: 'M1', useGroup: 'mixed' }],
+    volumes: [],
+    assessment: { meaning: 'zoning-area', status: 'unresolved' },
+    metrics: { useGroup: 'mixed', maxStoreys: 5 },
+  };
+  await page.route('**/planning/**', route => {
+    if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
+    const path = new URL(route.request().url()).pathname;
+    if (path.endsWith('/sources')) return route.fulfill({ json: { city: 'zagreb', sources: [source] } });
+    return route.fulfill({ json: payload(path.endsWith('/envelopes') ? [building] : [area], [source]) });
+  });
+
+  await openCity(page);
+  await page.locator('#planning-views-button').click();
+  const sheet = page.locator('#planning-views');
+  await expect(sheet).toBeVisible();
+
+  const permittedCard = sheet.locator('.planning-layer-row[data-role="permitted"]');
+  const zoningCheck = permittedCard.locator('#planning-zoning-areas');
+  const massingSelect = permittedCard.locator('#planning-permitted-appearance');
+  const permittedDice = permittedCard.locator('#planning-reroll-permitted');
+
+  // Reroll dice sits right on the Massing row even when Massing is Off, disabled until rollable.
+  await expect(massingSelect).toBeEnabled();
+  await massingSelect.selectOption('off');
+  await expect(permittedDice).toBeVisible();
+  await expect(permittedDice).toBeDisabled();
+
+  // Enabling Massing enables reroll on parcel-study sources, and clicking reroll advances permittedVariation.
+  await massingSelect.selectOption('solid');
+  await expect(permittedDice).toBeEnabled();
+  const variationBefore = await page.evaluate(() => (window as any).PlanningViews.getState().permittedVariation);
+  await permittedDice.click();
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getState().permittedVariation)).not.toBe(variationBefore);
+
+  // Zoning map toggles independently and reveals the collapsible colour legend on the Permitted card.
+  await zoningCheck.check();
+  const legendDisclosure = permittedCard.locator('details.planning-legend-disclosure');
+  await expect(legendDisclosure).toBeVisible();
+  await legendDisclosure.locator('> summary').click();
+  await expect(legendDisclosure).toHaveAttribute('open', '');
+  await expect(legendDisclosure.locator('.planning-zone-legend li').first()).toBeVisible();
+  await zoningCheck.uncheck();
+  await expect(massingSelect).toHaveValue('solid');
+
+  // In 3D model view, Built hosts context radius and Proposed hosts Non-buildable plots.
+  await page.locator('#mode-3d-toggle').click();
+  await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+  await page.locator('#planning-views-button').click();
+  const builtCard = sheet.locator('.planning-layer-row[data-role="existing"]');
+  await builtCard.locator('details.planning-role-disclosure > summary').click();
+  await expect(builtCard.locator('#model-built-controls input[type="range"]')).toBeVisible();
+
+  const proposedCard = sheet.locator('.planning-layer-row[data-role="proposed"]');
+  await proposedCard.locator('details.planning-role-disclosure > summary').click();
+  const nonBuildable = proposedCard.locator('#model-proposed-controls input[type="checkbox"]').first();
+  await expect(nonBuildable).toBeVisible();
+  const initialChecked = await nonBuildable.isChecked();
+  await nonBuildable.click();
+  expect(await nonBuildable.isChecked()).toBe(!initialChecked);
 });

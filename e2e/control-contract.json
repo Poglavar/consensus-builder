@@ -915,11 +915,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-02ccb6e5c2bf9c-1",
+      "id": "control-fb4d6a1046dc4c-1",
       "source": "index.html",
-      "markup": "<button type=\"button\" id=\"measurement-button\" class=\"map-shell-button map-utility-button\" data-map-modes=\"2d\" data-sheet-target=\"measurement-sheet\" aria-controls=\"measurement-sheet\" aria-expanded=\"false\" title=\"Measure\" aria-label=\"Measure\" data-i18n-key=\"sidebar.measurement.measureButton\" data-i18n-attr=\"title,aria-label\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" id=\"compare-button\" class=\"map-shell-button map-utility-button\" data-map-modes=\"2d 3d\" data-sheet-target=\"compare-sheet\" aria-controls=\"compare-sheet\" aria-expanded=\"false\" title=\"Compare\" aria-label=\"Compare\" data-i18n-key=\"planningViews.tabs.compare\" data-i18n-attr=\"title,aria-label\">"
     },
     {
       "id": "control-e3e58e81182c5d-1",
@@ -948,9 +946,9 @@
       "controlType": "button"
     },
     {
-      "id": "control-f5ba64a13adc72-1",
+      "id": "control-fc2b5098292d23-1",
       "source": "index.html",
-      "markup": "<button id=\"mode-ai-toggle\" class=\"map-shell-button map-mode-ai-btn\" title=\"AI photorealistic render\" aria-label=\"AI photorealistic render\" data-i18n-key=\"threeMode.toggle.ai\" data-i18n-attr=\"title,aria-label\" hidden>",
+      "markup": "<button id=\"mode-ai-toggle\" class=\"map-shell-button map-mode-ai-btn\" data-map-modes=\"photo\" title=\"AI photorealistic render\" aria-label=\"AI photorealistic render\" data-i18n-key=\"threeMode.toggle.ai\" data-i18n-attr=\"title,aria-label\" hidden>",
       "interaction": "click",
       "controlType": "button"
     },
@@ -960,16 +958,6 @@
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
-    },
-    {
-      "id": "control-5ed129e08af24e-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"planning-tab-display\" class=\"cb-tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"planning-views-display\" data-planning-tab=\"display\" data-i18n-key=\"planningViews.tabs.display\">"
-    },
-    {
-      "id": "control-3ba1ddc87f7672-1",
-      "source": "index.html",
-      "markup": "<button type=\"button\" id=\"planning-tab-compare\" class=\"cb-tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"planning-views-compare\" data-planning-tab=\"compare\" data-i18n-key=\"planningViews.tabs.compare\">"
     },
     {
       "id": "control-23179e76d14a52-1",
@@ -1052,6 +1040,13 @@
       "markup": "<button type=\"button\" id=\"planning-open-model\" class=\"cb-link planning-open-model\" hidden>"
     },
     {
+      "id": "control-dc7af30c67cb8d-2",
+      "source": "index.html",
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
       "id": "control-282e39c9840c65-1",
       "source": "index.html",
       "markup": "<select id=\"planning-compare-left\" class=\"planning-layer-select\">"
@@ -1122,14 +1117,14 @@
       "markup": "<button type=\"button\" id=\"market-button\" class=\"map-shell-button map-shell-button--labelled\" data-sheet-target=\"market-sheet\" aria-controls=\"market-sheet\" aria-expanded=\"false\" title=\"Market\" data-i18n-key=\"mapShell.market\" data-i18n-attr=\"title\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-2",
+      "id": "control-dc7af30c67cb8d-3",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-3",
+      "id": "control-dc7af30c67cb8d-4",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1586,7 +1581,14 @@
       "markup": "<button type=\"button\" id=\"layers-open-buildings\" class=\"cb-link layers-buildings-link\" data-sheet-target=\"planning-views\" data-reveal-control=\"planning-existing-scope\" aria-controls=\"planning-views\" aria-expanded=\"false\" hidden>"
     },
     {
-      "id": "control-dc7af30c67cb8d-4",
+      "id": "control-6571176dec1847-1",
+      "source": "index.html",
+      "markup": "<button type=\"button\" id=\"measurement-button\" class=\"map-shell-button\" data-map-modes=\"2d\" data-sheet-target=\"measurement-sheet\" aria-controls=\"measurement-sheet\" aria-expanded=\"false\" title=\"Measure\" aria-label=\"Measure\" data-i18n-key=\"sidebar.measurement.measureButton\" data-i18n-attr=\"title,aria-label\">",
+      "interaction": "click",
+      "controlType": "button"
+    },
+    {
+      "id": "control-dc7af30c67cb8d-5",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1614,7 +1616,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-5",
+      "id": "control-dc7af30c67cb8d-6",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1651,7 +1653,7 @@
       "markup": "<button type=\"button\" id=\"sun-now\" class=\"btn btn-sm\" data-i18n-key=\"threeMode.sun.now\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-6",
+      "id": "control-dc7af30c67cb8d-7",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
       "interaction": "click",
@@ -1695,14 +1697,12 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-7",
+      "id": "control-dc7af30c67cb8d-8",
       "source": "index.html",
-      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">",
-      "interaction": "click",
-      "controlType": "button"
+      "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-8",
+      "id": "control-dc7af30c67cb8d-9",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
@@ -1717,7 +1717,7 @@
       "markup": "<button type=\"button\" id=\"activity-panel-expand\" class=\"btn btn-icon\" aria-label=\"Expand activity panel\" title=\"Expand activity panel\" aria-controls=\"activity-sheet\" aria-expanded=\"false\" data-i18n-key=\"activityPanel.expand\" data-i18n-attr=\"aria-label,title\">"
     },
     {
-      "id": "control-dc7af30c67cb8d-9",
+      "id": "control-dc7af30c67cb8d-10",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },
@@ -1751,7 +1751,7 @@
       "controlType": "button"
     },
     {
-      "id": "control-dc7af30c67cb8d-10",
+      "id": "control-dc7af30c67cb8d-11",
       "source": "index.html",
       "markup": "<button type=\"button\" class=\"map-sheet-close close-circle-btn close-circle-btn--lg\" data-sheet-close aria-label=\"Close\" title=\"Close\" data-i18n-key=\"common.close\" data-i18n-attr=\"aria-label,title\">"
     },

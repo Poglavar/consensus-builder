@@ -26,11 +26,11 @@ body {
        takes the first slot: it is the first rung of the frame ladder (rethink-proposals.md §11,
        official / effective / plan), so the ground truth heads the views built on it.
 
-         slot 1  #cadastre-view-toggle    cadastre view   always
+         slot 1  #compare-button          Compare         2D and model view [map-shell.css]
          slot 2  #mode-2d-toggle          2D              always
          slot 3  #mode-3d-toggle          model (3D)      always
-         slot 4  #mode-realistic-toggle   aerial 3D      always            [photoreal-mode.css]
-         slot 5  #mode-ai-toggle          AI wand         3D only, inert in model view [ai-scene.css]
+         slot 4  #mode-realistic-toggle   aerial 3D       always            [photoreal-mode.css]
+         slot 5  #sun-button / #mode-ai-toggle  Sun (model) or AI wand (photo) [map-shell.css / ai-scene.css]
          slot 6  #mode-walk-toggle        walk-through    model view, walk-configured cities
 
        Each slot is a TOP offset counted up from the bottom row the shell keeps clear
@@ -94,23 +94,38 @@ body {
 #mode-2d-toggle.map-mode-toggle { top: var(--map-mode-slot-2); }
 #mode-3d-toggle.map-mode-toggle { top: var(--map-mode-slot-3); }
 
-/* The scale bar sits in the lower right, in the row right above the dock, the row the credits take
-   from the lower left (both Leaflet corners sit at --map-visible-bottom; css/map-shell.css). The
-   status toast is centred in that row on desktop and one row up on a phone, where it spans the
-   width. No box: a dark bar and its label with a halo, straight on the map. */
-/* Leaflet gives the scale bar a 5px margin where every other control gets 10px; the credits keep
-   Leaflet's 10px, so the two share one bottom edge. */
+/* The scale bar sits in the lower right inside the clickable Measure pill (#measurement-button,
+   mounted by js/map-core.js), sharing the bottom row with the credits on the left. */
 .leaflet-bottom .leaflet-control-scale {
-    margin-bottom: 10px;
+    margin-bottom: var(--map-shell-edge);
 }
 
-.leaflet-control-scale-line {
+#map-container > #measurement-button {
+    position: absolute;
+    right: var(--map-shell-edge);
+    bottom: var(--map-shell-edge);
+    z-index: var(--cb-z-map-chrome);
+}
+
+.leaflet-control-scale-line,
+#measurement-button .leaflet-control-scale-line {
     background: transparent;
-    color: var(--cb-map-scale-ink);
-    border-color: currentColor;
-    text-shadow: -1px 0 var(--cb-map-scale-halo), 1px 0 var(--cb-map-scale-halo),
-        0 -1px var(--cb-map-scale-halo), 0 1px var(--cb-map-scale-halo);
-    box-shadow: -1px 1px var(--cb-map-scale-halo), 1px 1px var(--cb-map-scale-halo);
+    color: inherit;
+    border: 2px solid currentColor;
+    border-top: 0;
+    margin-top: 0;
+    padding: 0 var(--cb-space-1);
+    font-size: var(--cb-text-xs);
+    font-weight: var(--cb-weight-semibold);
+    line-height: 1.1;
+    text-shadow: none;
+    box-shadow: none;
+}
+
+@media (max-width: 767.98px) {
+    .leaflet-bottom .leaflet-control-scale {
+        margin-bottom: var(--cb-space-1);
+    }
 }
 
 /* The scale bar measures the flat 2D map. Over the perspective model/photo views it is simply

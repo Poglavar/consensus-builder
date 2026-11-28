@@ -271,16 +271,16 @@ describe('3D and photo view', () => {
         expect(ruleBody(mapShellCss, '\\.map-shell-cluster--bottom-right \\.map-shell-button--labelled')).toMatch(/border-radius:\s*var\(--cb-radius-pill\)/);
     });
 
-    it('keeps the scale ink and halo fixed across the dark theme', () => {
-        expect(tokensCss).toMatch(/--cb-map-scale-ink:\s*#000000;/);
-        expect(tokensCss).toMatch(/--cb-map-scale-halo:\s*#ffffff;/);
-        const darkTheme = tokensCss.slice(tokensCss.indexOf(':root[data-theme="dark"]'));
-        expect(darkTheme).not.toMatch(/--cb-map-scale-(?:ink|halo)\s*:/);
+    it('renders the scale line inside the themed Measure pill without fixed ink halos', () => {
         const scale = ruleBody(mapCss, '\\.leaflet-control-scale-line');
-        expect(scale).toMatch(/color:\s*var\(--cb-map-scale-ink\)/);
-        expect(scale).toMatch(/border-color:\s*currentColor/);
-        expect(scale).toMatch(/text-shadow:[\s\S]*var\(--cb-map-scale-halo\)/);
-        expect(scale).toMatch(/box-shadow:[\s\S]*var\(--cb-map-scale-halo\)/);
+        expect(scale).toMatch(/background:\s*transparent/);
+        expect(scale).toMatch(/color:\s*inherit/);
+        expect(scale).toMatch(/border:\s*2px solid currentColor/);
+        expect(scale).toMatch(/border-top:\s*0/);
+        expect(scale).toMatch(/text-shadow:\s*none/);
+        expect(scale).toMatch(/box-shadow:\s*none/);
+        expect(read('js/map-core.js')).toMatch(/measurementButton\.appendChild\(scaleControl\._mScale\)/);
+        expect(read('js/map-core.js')).toMatch(/scaleContainer\.appendChild\(measurementButton\)/);
     });
 
     it('stacks persistent banners in one card under the top row and keeps notices below it', () => {

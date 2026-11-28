@@ -30,7 +30,7 @@ test('Highlight by use colours a design by its storeys and the view pill turns i
 
   await page.locator('#planning-views-button').click();
   const sheet = page.locator('#planning-views');
-  const display = sheet.locator('[data-planning-tab-panel="display"]');
+  const display = sheet.locator('#planning-views-display');
   await expect(display).toBeVisible();
   const useDisclosure = display.locator('#planning-use-highlight');
   if (!(await useDisclosure.evaluate((element: HTMLDetailsElement) => element.open))) await useDisclosure.locator('> summary').click();

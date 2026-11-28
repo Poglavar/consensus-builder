@@ -50,7 +50,7 @@ describe('Data & maintenance section', () => {
     it('holds every local-cache action, and no other sheet does', () => {
         for (const { marker } of MAINTENANCE) {
             expect(settings, marker).toContain(marker);
-            for (const other of ['layers-sheet', 'measurement-sheet', 'proposals-sheet', 'bets-sheet', 'activity-sheet']) {
+            for (const other of ['layers-sheet', 'compare-sheet', 'measurement-sheet', 'proposals-sheet', 'bets-sheet', 'activity-sheet']) {
                 expect(sheetHtml(other), `${marker} in ${other}`).not.toContain(marker);
             }
         }

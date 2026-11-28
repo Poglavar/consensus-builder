@@ -682,7 +682,6 @@
     }
     function openMassingForm() {
         if (!root.MapShell.openSheet(panel, { focus: false })) return;
-        panel.querySelector('[data-planning-tab="display"]').click();
         const form = panel.querySelector('[data-planning-setting="permittedForm"]');
         form.closest('details').open = true;
         form.focus();

@@ -86,14 +86,12 @@ const NOT_COMMANDS = {
     'agent-city-forward': 'Agent city view control, handled by agent-city.js',
     'agent-city-slider': 'Agent city view control, handled by agent-city.js',
     'planning-view-retry': 'retry the current source request after an error',
-    'planning-tab-display': 'Buildings and massing sheet tab, handled by three-compare.js',
-    'planning-tab-compare': 'Buildings and massing sheet tab, handled by three-compare.js',
     'planning-compare-enable': 'comparison view setting, handled by three-compare.js',
     'planning-compare-left': 'comparison view setting, handled by three-compare.js',
     'planning-compare-right': 'comparison view setting, handled by three-compare.js',
     'planning-compare-swap': 'comparison view setting, handled by three-compare.js',
-    'planning-compare-open-model': 'Compare tab link to the model view, handled by three-compare.js',
-    'planning-compare-copy-link': 'Compare tab Copy link for the two chosen sides, handled by three-compare.js',
+    'planning-compare-open-model': 'Compare sheet link to the model view, handled by three-compare.js',
+    'planning-compare-copy-link': 'Compare sheet Copy link for the two chosen sides, handled by three-compare.js',
     'planning-open-model': 'same model navigation as mode-3d-toggle',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
@@ -526,7 +524,7 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => (attr(tag, 'class') || '').split(/\s+/).includes('map-sheet')).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'chat-sheet', 'layers-sheet', 'market-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'chat-sheet', 'compare-sheet', 'layers-sheet', 'market-sheet', 'measurement-sheet', 'planning-views', 'proposals-sheet', 'settings-sheet', 'sun-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
         expect(new Set(triggers.map(tag => attr(tag, 'data-sheet-target')))).toEqual(sheets);
         for (const tag of triggers) {
@@ -674,7 +672,7 @@ describe('editing a design locks the controls that start another task', () => {
     it('locks the shell controls agreed for editing and leaves Layers, Buildings and massing and Measure', () => {
         expect([...MapShell.EDIT_LOCKED_CONTROLS].sort()).toEqual(
             ['activity-button', 'bets-button', 'market-button', 'proposals-button', 'settings-button', 'shareAppliedProposalsButton', 'username-display']);
-        for (const id of ['layers-button', 'planning-views-button', 'measurement-button']) {
+        for (const id of ['layers-button', 'planning-views-button', 'compare-button', 'measurement-button']) {
             expect(MapShell.EDIT_LOCKED_CONTROLS).not.toContain(id);
         }
         for (const id of MapShell.EDIT_LOCKED_CONTROLS) expect(indexHtml).toContain(`id="${id}"`);

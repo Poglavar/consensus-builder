@@ -692,30 +692,20 @@
     }
 
     // Opens the comparison between two sides (select values, e.g. `plan:<cid>` or `built`): the
-    // sheet's Compare tab with the sides chosen and the divider on. Compare plans uses it.
+    // Compare sheet with the sides chosen and the divider on. Compare plans uses it.
     function show({ left, right } = {}) {
         publishedWanted = true;
         state.options = collectOptions();
         if (pure.parseSide(left, state.options)) state.left = left;
         if (pure.parseSide(right, state.options)) state.right = right;
         state.enabled = true;
-        global.MapShell?.openSheet?.('planning-views');
-        const tab = doc.querySelector('#planning-views [data-planning-tab="compare"]');
-        if (tab) tab.click(); else refresh();
+        global.MapShell?.openSheet?.('compare-sheet');
+        refresh();
     }
 
     function wire() {
-        const sheet = el('planning-views');
+        const sheet = el('compare-sheet');
         if (!sheet) return;
-        // The sheet's tabs: Display (the layer controls) and Compare.
-        sheet.addEventListener('click', event => {
-            const tab = event.target.closest('[data-planning-tab]');
-            if (!tab || !sheet.contains(tab)) return;
-            for (const button of sheet.querySelectorAll('[data-planning-tab]')) button.setAttribute('aria-selected', String(button === tab));
-            window.CbTabs?.sync(sheet.querySelector('.planning-tabs'));
-            for (const panel of sheet.querySelectorAll('[data-planning-tab-panel]')) panel.hidden = panel.dataset.planningTabPanel !== tab.dataset.planningTab;
-            if (tab.dataset.planningTab === 'compare') { publishedWanted = true; refresh(); }
-        });
         el('planning-compare-enable')?.addEventListener('click', () => setEnabled(!state.enabled));
         el('planning-compare-copy-link')?.addEventListener('click', event => global.BusyControl.track(event.currentTarget, copyLink).catch(error => {
             // A guest is asked for a profile name first (GuestPolicy 'publish'): nothing was published.
@@ -733,7 +723,7 @@
         });
         el('planning-compare-open-model')?.addEventListener('click', () => global.requestMapMode?.('model'));
         doc.addEventListener('mapshell:sheetopened', event => {
-            if (event.detail?.id === 'planning-views') { publishedWanted = true; refresh(); }
+            if (event.detail?.id === 'compare-sheet') { publishedWanted = true; refresh(); }
         });
         // A plan read for a side has arrived or failed: relabel the divider and redraw.
         global.addEventListener('compareunappliedchange', syncDivider);

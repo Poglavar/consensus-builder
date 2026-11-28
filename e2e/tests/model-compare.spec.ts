@@ -1,4 +1,4 @@
-// The Compare tab of Buildings and massing (js/three-compare.js): in the model view the canvas splits
+// The Compare sheet on the left view strip (js/three-compare.js): in the model view the canvas splits
 // at a divider, each half drawing one chosen state of the scene (Built today, a design, ...); on the
 // 2D map the halves draw their buildings as footprints (js/compare-on-map.js). Swap trades the sides;
 // Stop comparing, or the X on the divider, ends the split. Any saved design or plan is a side, applied
@@ -16,12 +16,9 @@ import { Page } from '@playwright/test';
 const paneDisplay = (page: Page, name: string) => page.evaluate(pane => getComputedStyle((window as any).map.getPane(pane)).display, name);
 
 async function openCompareTab(page: Page) {
-  if (!(await page.locator('#planning-views').isVisible())) await page.locator('#planning-views-button').click();
-  await expect(page.locator('#planning-views')).toBeVisible();
-  await page.locator('#planning-tab-compare').click();
-  await expect(page.locator('#planning-tab-compare')).toHaveAttribute('aria-selected', 'true');
+  if (!(await page.locator('#compare-sheet').isVisible())) await page.locator('#compare-button').click();
+  await expect(page.locator('#compare-sheet')).toBeVisible();
   await expect(page.locator('#planning-views-compare')).toBeVisible();
-  await expect(page.locator('#planning-views-display')).toBeHidden();
 }
 
 // Records the next scissored draws: where each half was cut, and whether the design's own meshes were
@@ -86,11 +83,11 @@ test('Compare draws permitted massing and a design side by side on the map and i
   await expect(page.locator('.planning-compare-note .sheet-note')).toHaveText(/^On the map, each side draws its own buildings/);
   await expect(page.locator('#planning-compare-open-model')).toBeVisible();
   await expect(enable).toHaveText('Compare');
-  await page.locator('#planning-tab-display').click();
-  await expect(page.locator('#planning-tab-display')).toHaveAttribute('aria-selected', 'true');
-  await expect(page.locator('#planning-views-display')).toBeVisible();
-  await expect(page.locator('#planning-views-compare')).toBeHidden();
-  await page.locator('#planning-tab-compare').click();
+  await page.locator('#planning-views-button').click();
+  await expect(page.locator('#planning-views')).toBeVisible();
+  await expect(page.locator('#compare-sheet')).toBeHidden();
+  await page.locator('#compare-button').click();
+  await expect(page.locator('#compare-sheet')).toBeVisible();
   await expect(page.locator('#planning-views-compare')).toBeVisible();
   await selectNativeOption(left, 'permitted');
   await expect(left).toHaveValue('permitted');
@@ -120,7 +117,7 @@ test('Compare draws permitted massing and a design side by side on the map and i
   await expect(page.locator('.leaflet-compareRight-pane path.map-compare-shape--proposed')).toHaveCount(0);
   await page.locator('#planning-compare-swap').click();
   // The X at the top of the divider ends the comparison, with the sheet closed too.
-  await page.locator('#planning-views [data-sheet-close]').click();
+  await page.locator('#compare-sheet [data-sheet-close]').click();
   await page.locator('#map .map-compare__close').click();
   await expect(page.locator('#map .map-compare__handle')).toHaveCount(0);
   await openCompareTab(page);
@@ -238,7 +235,7 @@ test('a saved plan that is not applied is a side: it is read without applying an
   await expect.poll(() => page.locator('.leaflet-compareRight-pane path.map-compare-shape--unapplied').count()).toBeGreaterThan(0);
   await expect(page.locator('.leaflet-compareLeft-pane path.map-compare-shape--unapplied')).toHaveCount(0);
   expect(await page.evaluate(id => (window as any).proposalStorage.getProposal(id).applied === true, designId)).toBe(false);
-  await page.locator('#planning-views [data-sheet-close]').click();
+  await page.locator('#compare-sheet [data-sheet-close]').click();
 
   // The model view builds the member's meshes under the plan's CID and draws them in the right pass only.
   await page.locator('#mode-3d-toggle').click();
@@ -525,7 +522,7 @@ test('the stats button on the divider opens the two sides\' figures, and Side by
   await selectNativeOption(page.locator('#planning-compare-left'), `plan:${cid}`);
   await selectNativeOption(page.locator('#planning-compare-right'), `design:${designId}`);
   await expect(page.locator('#map .map-compare__label--before')).toHaveText('Plan: Figures plan', { timeout: 45_000 });
-  await page.locator('#planning-views [data-sheet-close]').click();
+  await page.locator('#compare-sheet [data-sheet-close]').click();
   await expect(stats).toBeVisible();
   await stats.click();
   const dialog = page.locator('.plan-compare-dialog');

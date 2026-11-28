@@ -6,6 +6,7 @@ import { selectors } from '../helpers/selectors';
 
 const SHEETS = [
   { name: 'Buildings and zoning', button: '#planning-views-button', sheet: '#planning-views' },
+  { name: 'Compare', button: '#compare-button', sheet: '#compare-sheet' },
   { name: 'Layers', button: selectors.layersButton, sheet: selectors.layersSheet },
   { name: 'Settings', button: selectors.settingsButton, sheet: selectors.settingsSheet },
   { name: 'Proposals', button: selectors.proposalsButton, sheet: selectors.proposalsSheet },
@@ -75,6 +76,80 @@ test.describe('Map shell sheets @features', () => {
       await expect(page.locator(selectors.openSheet)).toHaveCount(0);
     });
   }
+
+  test('the bottom-right scale bar hosts the Measure button, updates on zoom, and 3D Layers folds 2D sections into Open in 2D', async ({ mockApi: page }) => {
+    const scaleButton = page.locator('.leaflet-bottom.leaflet-right .leaflet-control-scale #measurement-button');
+    const scaleLine = scaleButton.locator('.leaflet-control-scale-line');
+    await expect(scaleButton).toBeVisible();
+    await expect(scaleLine).toContainText(/\d+\s*(?:m|km)/);
+    // The scale bracket stays upright (open at top, closed at bottom) even after the ruler icon.
+    const borders = await scaleLine.evaluate(el => {
+      const style = getComputedStyle(el);
+      return { top: style.borderTopWidth, bottom: style.borderBottomWidth };
+    });
+    expect(borders).toEqual({ top: '0px', bottom: '2px' });
+
+    const beforeZoom = (await scaleLine.innerText()).trim();
+    await page.evaluate(() => (window as any).map.setZoom((window as any).map.getZoom() + 2, { animate: false }));
+    await expect.poll(async () => (await scaleLine.innerText()).trim()).not.toBe(beforeZoom);
+
+    // Clicking the live scale pill opens Measure directly above it.
+    await scaleButton.click();
+    const sheet = page.locator(selectors.measurementSheet);
+    await expect(sheet).toBeVisible();
+    const [btnBox, sheetBox] = await Promise.all([scaleButton.boundingBox(), sheet.boundingBox()]);
+    expect(sheetBox!.y + sheetBox!.height).toBeLessThanOrEqual(btnBox!.y + 2);
+
+    // Entering 3D model view hides the 2D scale pill, places Compare and Sun on the left strip with no gap,
+    // and folds 2D-only map layers into a single Open in 2D row that returns to 2D Layers when clicked.
+    await page.locator('#mode-3d-toggle').click();
+    await expect(page.locator('#three-container canvas')).toBeVisible({ timeout: 20_000 });
+    await expect(scaleButton).toBeHidden();
+    const [compareBox, twoDBox, threeDBox, photoBox, sunBox] = await Promise.all(
+      ['#compare-button', '#mode-2d-toggle', '#mode-3d-toggle', '#mode-realistic-toggle', '#sun-button']
+        .map(sel => page.locator(sel).boundingBox())
+    );
+    expect([compareBox, twoDBox, threeDBox, photoBox, sunBox].every(Boolean)).toBe(true);
+    const stripBoxes = [compareBox!, twoDBox!, threeDBox!, photoBox!, sunBox!];
+    const tops = stripBoxes.map(b => b.y);
+    for (let i = 1; i < tops.length; i++) expect(Math.round(tops[i] - tops[i - 1])).toBe(48);
+    for (const box of stripBoxes) expect(Math.round(box.x)).toBe(Math.round(compareBox!.x));
+
+    await page.locator(selectors.layersButton).click();
+    const layers = page.locator(selectors.layersSheet);
+    await expect(layers).toBeVisible();
+    for (const section of ['base-map', 'blocks', 'parks-squares', 'roads', 'schelling-plan']) {
+      await expect(layers.locator(`[data-section="${section}"]`)).toBeHidden();
+    }
+    const open2d = layers.locator('#layers-open-2d');
+    await expect(open2d).toBeVisible();
+    await open2d.click();
+    await expect(layers).toBeVisible();
+    await expect(layers.locator('[data-section="base-map"]')).toBeVisible();
+    await expect(open2d).toBeHidden();
+    await expect(scaleButton).toBeVisible();
+    await scaleButton.click();
+    await expect(sheet).toBeVisible();
+  });
+
+  test('Compare and Buildings and zoning open as separate left sheets beside the view strip', async ({ mockApi: page }) => {
+    const compareBtn = page.locator('#compare-button');
+    const compareSheet = page.locator('#compare-sheet');
+    const buildingsBtn = page.locator('#planning-views-button');
+    const buildingsSheet = page.locator('#planning-views');
+
+    await compareBtn.click();
+    await expect(compareSheet).toBeVisible();
+    await expect(buildingsSheet).toBeHidden();
+    const [stripBox, compareBox] = await Promise.all([compareBtn.boundingBox(), compareSheet.boundingBox()]);
+    expect(compareBox!.x).toBeGreaterThanOrEqual(stripBox!.x + stripBox!.width);
+
+    await buildingsBtn.click();
+    await expect(buildingsSheet).toBeVisible();
+    await expect(compareSheet).toBeHidden();
+    await expect(compareBtn).toHaveAttribute('aria-expanded', 'false');
+    await expect(buildingsSheet.locator('[role="tab"]')).toHaveCount(0);
+  });
 
   test('Layers and Buildings and massing dock beside the view strip on desktop and the bottom edge on phones', async ({ mockApi: page }) => {
     const height = 844;
