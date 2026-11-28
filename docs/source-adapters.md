@@ -46,9 +46,11 @@ The Permitted layer composes cadastral parcels, government-plan lots and applied
 
 1. Find a source with the same transport and identity rules in the [source catalog](../frontend/data/source-catalog.json).
    If its adapter already supports the candidate, reuse it and start with qualification below.
-2. For a new adapter, implement the parcel operations it supports and register its factory in
-   [the server registry](../backend/parcels/sources.js). A provider read directly by the map also
-   needs a browser-safe factory in [the browser registry](../backend/parcels/browser-source-runtime.js).
+2. Register a new external parcel adapter under the same ID in the server and browser worker.
+   Use the same factory wherever possible. Some readers need different storage or transport.
+   For example, the England and Wales Land Registry reader uses a disk-backed store on the server
+   and IndexedDB when available in the browser. See the [server registrations](../backend/parcels/sources.js)
+   and [browser registrations](../backend/parcels/browser-source-runtime.js).
    Rebuild that worker with `npm run build:parcels:browser` from `backend/`. Describe the adapter's
    operations, arguments and outputs in [the source contracts](../frontend/js/source-contracts.js).
 3. Use [the qualification runner](../scripts/run-parcel-qualification.py) with the candidate and
@@ -60,8 +62,9 @@ The Permitted layer composes cadastral parcels, government-plan lots and applied
    database-owned data. Include its stable ID, coverage, attribution and limits. For a city default,
    update [the city definitions](../frontend/data/city-configs.js) and regenerate the city files with
    [the existing build script](../scripts/build-city-files.mjs).
-5. Check bounds reads and ID lookups in the reader's own tests. Verify registration with
-   [source contracts](../backend/test/source-contracts.test.js), [browser reads](../backend/test/browser-source-readers.test.js)
+5. Check bounds reads and ID lookups in the reader's own tests. From `backend/`, run
+   `npx vitest run test/source-domain-registries.test.js` to see which adapter IDs either runtime is missing.
+   Check [source contracts](../backend/test/source-contracts.test.js), [browser reads](../backend/test/browser-source-readers.test.js)
    or [database dispatch](../backend/test/database-source-dispatch.test.js), as applicable.
    The [source-system route](../backend/routes/source-system.js) supplies the metadata used by `ugt_list_sources`.
 

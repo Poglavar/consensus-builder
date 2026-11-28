@@ -2,6 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
 import { parcelSourceCatalog, parcelSourceRegistry, createParcelSource } from '../parcels/sources.js';
+import { browserParcelSourceRegistry } from '../parcels/browser-source-runtime.js';
 import { buildingSourceRegistry, createBuildingProviders } from '../buildings/index.js';
 import { planningSourceRegistry, createPlanningSources } from '../planning/sources.js';
 import { createOwnershipRegistry } from '../ownership/registry.js';
@@ -15,6 +16,16 @@ const arcgis = { id: 'fixture-parcels', adapter: 'arcgis', endpoint: 'https://ex
     idField: 'OBJECTID', objectIdField: 'OBJECTID', idPrefix: 'FIXTURE-', outFields: ['OBJECTID'] };
 
 describe('domain source registries', () => {
+    it('registers the same parcel adapter IDs in the browser worker and on the server', () => {
+        const browserIds = browserParcelSourceRegistry.adapters().map(({ id }) => id);
+        const serverIds = parcelSourceRegistry.adapters().map(({ id }) => id);
+
+        expect({
+            missingFromBrowser: serverIds.filter(id => !browserIds.includes(id)).sort(),
+            missingFromServer: browserIds.filter(id => !serverIds.includes(id)).sort()
+        }).toEqual({ missingFromBrowser: [], missingFromServer: [] });
+    });
+
     it('registers all parcel descriptors and dispatches native ID reads through the adapter', async () => {
         expect(parcelSourceRegistry.sources()).toHaveLength(parcelSourceCatalog.sources.length);
         for (const descriptor of parcelSourceCatalog.sources) {
