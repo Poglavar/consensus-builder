@@ -166,7 +166,7 @@
                 const boundary = feature(record.site);
                 if (!movedMassing.geometry || !shape.footprintWithinBoundary(movedMassing, boundary, turf)) fail('building-outside-site', 'The edit moves the Block outside its site. Reduce the move or author a larger site explicitly.');
                 const movedBuildings = selected.map(building => ({ ...building, geometry: shape.moveGeometry(building.geometry, from, to) }));
-                if (movedBuildings.some(building => !building.geometry || !shape.footprintWithinBoundary(building, boundary, turf))) {
+                if (movedBuildings.some(building => !building.geometry || !shape.footprintWithinBoundary(building, boundary, turf, Number(record.toleranceM) || 0))) {
                     fail('building-outside-site', 'The edit moves the Block outside its site. Reduce the move or author a larger site explicitly.');
                 }
                 movedBuildings.forEach((building, i) => { selected[i].geometry = building.geometry; });
@@ -179,7 +179,7 @@
                         const at = frame.toMetric([from.lng, from.lat]), to = frame.toLngLat([at[0] + change.eastM, at[1] + change.northM]);
                         building.geometry = shape.moveGeometry(building.geometry, from, { lng: to[0], lat: to[1] });
                     }
-                    if (!building.geometry || (!footprintOnly && !shape.footprintWithinBoundary(building, feature(record.site), turf))) fail('building-outside-site', 'The edit moves the building outside its site. Reduce the move/rotation or author a larger site explicitly.');
+                    if (!building.geometry || (!footprintOnly && !shape.footprintWithinBoundary(building, feature(record.site), turf, Number(record.toleranceM) || 0))) fail('building-outside-site', 'The edit moves the building outside its site. Reduce the move/rotation or author a larger site explicitly.');
                     // The feature geometry is authoritative; editor placement metadata is no longer a generator recipe.
                     for (const key of ['_corners', '_sideMidpoints', 'rotation', 'offsetX', 'offsetY']) delete building.properties?.[key];
                 }
@@ -447,7 +447,7 @@
                     }
                     if (p.ruleProvenance) p.ruleProvenance.definition = structuredClone(p.urbanRule);
                 }
-                if (record.site && !load('SingleBuildingGeometry', './single-building-geometry.js').footprintWithinBoundary(items[i], feature(record.site), turf)) fail('building-outside-site', 'The edited footprint leaves its site. Update the authored site explicitly if that is intended.');
+                if (record.site && !load('SingleBuildingGeometry', './single-building-geometry.js').footprintWithinBoundary(items[i], feature(record.site), turf, Number(record.toleranceM) || 0)) fail('building-outside-site', 'The edited footprint leaves its site. Update the authored site explicitly if that is intended.');
             }
             for (const key of ['height','floors','use']) if (items.length) {
                 if (items[0].properties?.[key] != null && items.every(b => b.properties?.[key] === items[0].properties[key])) parameters[key] = items[0].properties[key];

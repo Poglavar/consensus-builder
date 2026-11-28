@@ -111,11 +111,13 @@
             || (typeof require === 'function' ? require('./geometry-tolerances.js') : null);
     }
 
-    function footprintWithinBoundary(footprint, boundary, turfApi) {
+    // toleranceM: the design record's own measurement allowance (its toleranceM), which the publish
+    // and apply checks of the same question honour; 0 for a boundary that is not a record's site.
+    function footprintWithinBoundary(footprint, boundary, turfApi, toleranceM = 0) {
         if (!footprint?.geometry || !boundary?.geometry || !turfApi) return false;
         try {
             const outside = arrangementApi().clipWith(turfApi, 'difference', footprint, boundary, { site: 'single-building-geometry.footprintWithinBoundary' });
-            return !groundApi().isGround(turfApi, outside);
+            return !groundApi().isGround(turfApi, outside, toleranceM);
         } catch (error) {
             // The difference could not be computed, so whether the footprint stays inside is
             // unknown: answer "not inside" (the placement is refused) and report it. The old

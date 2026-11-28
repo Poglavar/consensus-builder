@@ -147,6 +147,12 @@ describe('freeform polygon editing', () => {
 
         expect(footprintWithinBoundary(outsideByFourMillimetres, host, turf)).toBe(false);
         expect(footprintWithinBoundary(outsideByDebris, host, turf)).toBe(true);
+        // A record's measurement allowance (its toleranceM) widens the rule, as publish and apply do:
+        // a 0.3 m sliver is ground at none and within a 0.5 m allowance, but not within 0.25 m.
+        const outsideBySliver = rectangle(-0.3, 2, 5, 7);
+        expect(footprintWithinBoundary(outsideBySliver, host, turf)).toBe(false);
+        expect(footprintWithinBoundary(outsideBySliver, host, turf, 0.25)).toBe(false);
+        expect(footprintWithinBoundary(outsideBySliver, host, turf, 0.5)).toBe(true);
     });
 });
 

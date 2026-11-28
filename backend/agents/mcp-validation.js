@@ -31,7 +31,7 @@ export function createMcpValidationTools({ plans }) {
                     if (!building?.geometry || !['Polygon', 'MultiPolygon'].includes(building.geometry.type)) {
                         issue('invalid-building', buildingRef, 'A building needs polygon geometry.'); continue;
                     }
-                    if (design.site && !constructorRuntime.singleBuilding.footprintWithinBoundary(building, turf.feature(design.site), turf)) {
+                    if (design.site && !constructorRuntime.singleBuilding.footprintWithinBoundary(building, turf.feature(design.site), turf, Number(design.toleranceM) || 0)) {
                         issue('building-outside-site', buildingRef, 'The authored building extends outside its authored site.');
                     }
                     const massing = design.geometry.ruleMassing;
