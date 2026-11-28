@@ -278,7 +278,7 @@ test('Buildings and massing opens the model from photo view and returns through 
   await expect.poll(tiles.requests, { timeout: 20_000 }).toBeGreaterThan(0);
   await expect(page.locator('body')).toHaveClass(/realistic-mode-active/);
 
-  await page.getByRole('button', { name: 'Buildings and massing', exact: true }).click();
+  await page.getByRole('button', { name: 'Buildings and zoning', exact: true }).click();
   const openModel = page.locator('#planning-open-model');
   await expect(openModel).toBeVisible();
   await expect(openModel).toHaveText('Open 3D model view');

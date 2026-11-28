@@ -5,7 +5,7 @@ import { selectors } from '../helpers/selectors';
 // The toolbar and dock buttons share the sheet controller in frontend/js/ui/map-shell.js.
 
 const SHEETS = [
-  { name: 'Buildings and massing', button: '#planning-views-button', sheet: '#planning-views' },
+  { name: 'Buildings and zoning', button: '#planning-views-button', sheet: '#planning-views' },
   { name: 'Layers', button: selectors.layersButton, sheet: selectors.layersSheet },
   { name: 'Settings', button: selectors.settingsButton, sheet: selectors.settingsSheet },
   { name: 'Proposals', button: selectors.proposalsButton, sheet: selectors.proposalsSheet },
@@ -26,12 +26,12 @@ test.describe('Map shell sheets @features', () => {
     const sheet = page.locator(selectors.layersSheet);
     const sections = sheet.locator('.map-sheet-body > .accordion-section');
     expect(await sections.evaluateAll(nodes => nodes.map(node => (node as HTMLElement).dataset.section))).toEqual([
-      'base-map', 'parcels', 'blocks', 'buildings', 'zoning-land-use', 'parks-squares', 'roads', 'schelling-plan', 'scenery'
+      'base-map', 'parcels', 'blocks', 'parks-squares', 'roads', 'schelling-plan', 'scenery'
     ]);
-    // The Buildings and massing opener is a button whose heading is an inner span (47e68d241).
-    await expect(sections.locator(':scope > .sheet-section-title, :scope > button > .sheet-section-title')).toHaveText([
-      'Base map', 'Parcels', 'Parcel blocks', 'Buildings and massing', 'Zoning and land use', 'Parks and squares', 'Roads', 'Schelling plan', 'Scenery and sound'
+    await expect(sections.locator(':scope > .sheet-section-title')).toHaveText([
+      'Base map', 'Parcels', 'Parcel blocks', 'Parks and squares', 'Roads', 'Schelling plan', 'Scenery and sound'
     ]);
+    await expect(sheet.locator('#layers-open-buildings')).toHaveText('Buildings and zoning');
     await expect(sheet.locator('details.accordion-section[open]')).toHaveCount(0);
     await expect(sheet.locator('[data-section="schelling-plan"] > summary .fa-bullseye')).toHaveCount(1);
     await page.screenshot({ path: testInfo.outputPath('layers-collapsed.png') });
@@ -88,7 +88,7 @@ test.describe('Map shell sheets @features', () => {
       await expect(layers).toBeVisible();
       await afterFrames(page);
       const layerBox = (await layers.boundingBox())!;
-      await layers.getByRole('button', { name: 'Buildings and massing', exact: true }).press('Enter');
+      await layers.getByRole('button', { name: 'Buildings and zoning', exact: true }).press('Enter');
       await expect(layers).toBeHidden();
       await expect(buildings).toBeVisible();
       await afterFrames(page);
@@ -122,8 +122,8 @@ test.describe('Map shell sheets @features', () => {
     }
   });
 
-  test('Buildings and massing stays beside the city on narrow screens and starts collapsed after reload', async ({ mockApi: page }) => {
-    const trigger = page.getByRole('button', { name: 'Buildings and massing', exact: true });
+  test('Buildings and zoning stays beside the city on narrow screens and starts collapsed after reload', async ({ mockApi: page }) => {
+    const trigger = page.getByRole('button', { name: 'Buildings and zoning', exact: true });
     const panel = page.locator('#planning-views');
     await expect(trigger).toBeVisible();
     for (const width of [1280, 390, 320]) {

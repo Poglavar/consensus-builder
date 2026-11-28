@@ -488,20 +488,6 @@
         doc.querySelectorAll('.map-sheet').forEach(sheet => {
             if (!sheet.hasAttribute('tabindex')) sheet.setAttribute('tabindex', '-1');
         });
-        // Keep the layer catalogue in the same order in every view. A map-only group
-        // offers one way to its map controls from either 3D view.
-        doc.querySelectorAll('#layers-sheet [data-layer-mode="2d"]').forEach(section => {
-            const content = section.querySelector('.sheet-section-body');
-            content.dataset.mapModes = '2d';
-            const action = doc.createElement('button');
-            action.type = 'button';
-            action.className = 'cb-link sheet-mode-action';
-            action.dataset.openMode = '2d';
-            action.dataset.mapModes = '3d photo';
-            action.dataset.i18nKey = 'mapShell.layerActions.open2d';
-            action.textContent = t(action.dataset.i18nKey, 'Open in 2D');
-            content.after(action);
-        });
         doc.querySelectorAll('[data-open-mode]').forEach(button => {
             button.addEventListener('click', () => {
                 if (win.BusyControl.isBusy(button)) return;
@@ -509,6 +495,7 @@
                 win.BusyControl.track(button, async () => {
                     if (!await win.requestMapMode(button.dataset.openMode)) return;
                     if (button.dataset.revealControl) revealControl(button.dataset.revealControl);
+                    else if (button.dataset.revealSheet) openSheet(button.dataset.revealSheet);
                     else if (section) revealSection(section)?.querySelector('summary')?.focus();
                 });
             });

@@ -6472,7 +6472,8 @@
             "floorsIn3d": "Explorer les étages en 3D",
             "floorPlans": "Plans des étages",
             "buildingAppearance": "Apparence du bâtiment",
-            "scenery": "Décor et son"
+            "scenery": "Décor et son",
+            "mapOnlyLayers": "Fond de carte, îlots, parcs, rues et plan Schelling"
         },
         "settings": "Paramètres",
         "maintenance": {
@@ -9473,6 +9474,8 @@
             "permitted": "Tirez au sort un autre type de logement autorisé. Ne modifie aucune donnée enregistrée."
         },
         "zoningAreas": "Zones du zonage source",
+        "zoningMap": "Carte de zonage",
+        "massing": "Volumétrie",
         "fitPlan": "Afficher tout le plan",
         "envelopeTitle": "Enveloppe autorisée",
         "permittedForm": "Représentation autorisée",
@@ -9593,7 +9596,7 @@
             "UNREVIEWED_CAPACITY_LOSS": "Le remplacement réduirait l’estimation précédente et est en attente d’examen.",
             "UNREVIEWED_CAPACITY_COHORT_CHANGE": "La modification du périmètre du calcul est en attente d’examen."
         },
-        "title": "Bâtiments et volumétrie",
+        "title": "Bâtiments et zonage",
         "detailsLabel": "Détails de la source d’urbanisme",
         "permitted": "Autorisé",
         "loading": "Chargement de la volumétrie autorisée…",

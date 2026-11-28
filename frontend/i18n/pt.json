@@ -6472,7 +6472,8 @@
             "floorsIn3d": "Explorar pisos em 3D",
             "floorPlans": "Plantas",
             "buildingAppearance": "Aspeto do edifício",
-            "scenery": "Cenário e som"
+            "scenery": "Cenário e som",
+            "mapOnlyLayers": "Mapa base, quarteirões, parques, ruas e plano Schelling"
         },
         "settings": "Definições",
         "maintenance": {
@@ -9473,6 +9474,8 @@
             "permitted": "Sortear outro tipo de habitação permitido. Não altera os registos."
         },
         "zoningAreas": "Áreas de zonamento de origem",
+        "zoningMap": "Mapa de zonamento",
+        "massing": "Volumetria",
         "fitPlan": "Ver o plano completo",
         "envelopeTitle": "Envolvente edificável permitida",
         "permittedForm": "Representação permitida",
@@ -9593,7 +9596,7 @@
             "UNREVIEWED_CAPACITY_LOSS": "A substituição reduziria a estimativa anterior e aguarda revisão.",
             "UNREVIEWED_CAPACITY_COHORT_CHANGE": "A alteração da cobertura do cálculo aguarda revisão."
         },
-        "title": "Edifícios e volumetria",
+        "title": "Edifícios e zonamento",
         "detailsLabel": "Detalhes da fonte de planeamento",
         "permitted": "Permitido",
         "loading": "A carregar a volumetria permitida…",

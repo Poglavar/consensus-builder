@@ -72,10 +72,9 @@ test('layer shortcuts keep display settings, map location and keyboard focus acr
   await built.selectOption('ghost');
   await expect.poll(visibleFootprints).toBe(true);
 
-  await openLayerSection(page, 'zoning-land-use');
   const zoning = page.locator('#planning-zoning-areas');
-  await zoning.selectOption('ghost');
-  await layersButton.press('Enter');
+  await zoning.check();
+  await planningButton.press('Enter');
   const shape = page.getByRole('button', { name: 'Inspect permitted massing on Planning edition A massing', exact: true });
   await shape.press('Enter');
   const selected = () => page.evaluate(() => (window as any).PlanningViews.getState().selectedId);
@@ -90,14 +89,13 @@ test('layer shortcuts keep display settings, map location and keyboard focus acr
   await expect.poll(selected).toBe(building.id);
   await openPlanningSection(page, 'use-highlight');
   await expect(shops).toBeChecked();
-  await openLayerSection(page, 'zoning-land-use');
-  await expect(zoning).toHaveValue('ghost');
+  await expect(zoning).toBeChecked();
   const zoneVisible = () => page.evaluate(id => {
     const group = (window as any).getThreeModeInternals().scene.getObjectByName('PermittedMassing');
     return group.visible && group.children.some((mesh: any) => mesh.visible && mesh.userData.planningRepresentationId === id);
   }, zone.id);
   await expect.poll(zoneVisible).toBe(true);
-  await zoning.selectOption('off');
+  await zoning.uncheck();
   await expect.poll(zoneVisible).toBe(false);
   await expect.poll(selected).toBe(building.id);
   await openLayerSection(page, 'parcels');
@@ -118,9 +116,8 @@ test('layer shortcuts keep display settings, map location and keyboard focus acr
   await expect.poll(selected).toBe(building.id);
   expect(await page.evaluate(point => (window as any).map.distance((window as any).map.getCenter(), point), center)).toBeLessThan(20);
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await openLayerSection(page, 'zoning-land-use');
-  await expect(zoning).toHaveValue('off');
   await openLayerSection(page, 'buildings');
+  await expect(zoning).not.toBeChecked();
   await expect(built).toHaveValue('ghost');
 });
 
@@ -141,12 +138,12 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   });
   await openCity(page);
   const panel = page.locator('#planning-views');
-  const zoning = page.locator('#layers-zoning-controls');
-  await openLayerSection(page, 'zoning-land-use');
-  // Area sources load when their source-area layer is enabled.
-  await selectNativeOption(zoning.locator('[data-planning-setting="zoningAreas"]'), 'ghost');
+  await page.locator('#planning-views-button').click();
+  // Area sources load when their zoning map layer is enabled.
+  await panel.locator('#planning-zoning-areas').check();
   expect(new URL(page.url()).searchParams.get('zoningAreas')).toBe('ghost');
-  const retry = zoning.locator('#planning-view-retry');
+  const retry = panel.locator('#planning-view-retry');
+  await expect(panel.locator('.planning-view-status')).toHaveAttribute('aria-busy', 'false');
   await expect(retry).toBeVisible();
   const failedRequests = requests.length;
   fail = false;
@@ -154,8 +151,6 @@ for (const blocksEnabled of [false, true]) test(`planning source, scenario, disp
   await expect(retry).toBeHidden();
   expect(requests.length).toBeGreaterThan(failedRequests);
   await expect.poll(() => page.evaluate(() => (window as any).PlanningViews.getItems().length)).toBe(1);
-  await page.locator('#layers-button').click();
-  await page.locator('#planning-views-button').click();
   for (const summary of await panel.locator('.planning-role-disclosure > summary').all()) await summary.press('Enter');
   for (const [key, value] of Object.entries({
     existing: 'off', existingScope: 'removed', permitted: 'solid', permittedMap: 'steps',
@@ -229,7 +224,7 @@ test('Buildings and massing shares its button and section loading states when op
   await expect(sheet).toBeVisible();
   await expect(permittedBar).toBeVisible();
   await expect(sheet.getByRole('progressbar', { name: 'Permitted', exact: true })).toBeVisible();
-  await expect(sheet.locator('[data-role="permitted"] details')).not.toHaveAttribute('open');
+  await expect(sheet.locator('[data-role="permitted"] details.planning-role-disclosure')).not.toHaveAttribute('open');
   expect(await permittedBar.evaluate(el => getComputedStyle(el, '::after').animationName)).toBe('planning-loading-slide');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   expect(await permittedBar.evaluate(el => getComputedStyle(el, '::after').animationName)).toBe('none');
@@ -313,7 +308,7 @@ test('Surviving gives an applied building its full site in the map and model', a
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#planning-views-button').press('Enter');
   const sheet = page.locator('#planning-views');
-  await sheet.locator('[data-role="permitted"] summary').press('Enter');
+  await sheet.locator('[data-role="permitted"] .planning-role-disclosure > summary').press('Enter');
   const scope = sheet.getByRole('combobox', { name: 'Permitted massing coverage' });
   await scope.focus();
   await selectNativeOption(scope, 'surviving');
@@ -371,7 +366,7 @@ test('Permitted keeps its Illustration dropdown enabled for a single-option sour
   await page.locator('#planning-views-button').click();
   const panel = page.locator('#planning-views');
   const permitted = panel.locator('.planning-layer-row[data-role="permitted"]');
-  await permitted.locator('summary').press('Enter');
+  await permitted.locator('.planning-role-disclosure > summary').press('Enter');
   const sourceSelect = panel.locator('.planning-source-select');
   const form = panel.locator('[data-planning-setting="permittedForm"]');
   await expect(form).toBeVisible();
@@ -406,15 +401,16 @@ test('Permitted links to the registered source and distinguishes its published r
   await page.locator('#planning-views-button').click();
   const panel = page.locator('#planning-views');
   const permitted = panel.locator('.planning-layer-row[data-role="permitted"]');
-  await permitted.locator('summary').press('Enter');
+  await permitted.locator('.planning-role-disclosure > summary').press('Enter');
   const sourceSelect = permitted.getByRole('combobox', { name: 'Source / edition', exact: true });
   await expect(sourceSelect).toBeEnabled();
   await expect(sourceSelect.locator('option')).toHaveCount(1);
   await sourceSelect.focus();
   await sourceSelect.press('ArrowDown');
   await expect(sourceSelect).toHaveValue(general.id);
-  await sourceSelect.press('Tab');
   const config = permitted.getByRole('link', { name: 'UGT source configuration' });
+  await expect(config).toBeVisible();
+  await config.focus();
   await expect(config).toBeFocused();
   const configUrl = new URL((await config.getAttribute('href'))!);
   expect(configUrl.pathname).toBe('/sources.html');
@@ -430,15 +426,18 @@ test('Permitted links to the registered source and distinguishes its published r
   available = [general, unavailable];
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('#planning-views-button').click();
-  await permitted.locator('summary').press('Enter');
+  await permitted.locator('.planning-role-disclosure > summary').press('Enter');
   await selectNativeOption(sourceSelect, unavailable.id);
   await expect(config).toHaveAttribute('href', new RegExp(unavailable.id));
   await expect(sourceUrl).toBeHidden();
   await expect(sourceUrl).not.toHaveAttribute('href');
 });
 
-test('Permitted and Proposed keep Both and dice together on the first expanded row @features', async ({ mockApi: page }) => {
-  const available = sources.map(source => ({ ...source, parcelStudy: 'direct-dimensions.v1' }));
+test('Permitted and Proposed keep dice beside appearance on the collapsed row and disable it when not rollable @features', async ({ mockApi: page }) => {
+  const available = [
+    { ...sources[0], parcelStudy: 'direct-dimensions.v1' },
+    { ...sources[1] }
+  ];
   await page.route('**/planning/**', async route => {
     if (!['xhr', 'fetch'].includes(route.request().resourceType())) return route.fallback();
     const url = new URL(route.request().url());
@@ -448,34 +447,32 @@ test('Permitted and Proposed keep Both and dice together on the first expanded r
   await openCity(page);
   await page.locator('#planning-views-button').click();
   const panel = page.locator('#planning-views');
-  for (const role of ['permitted', 'proposed']) {
-    await panel.locator(`.planning-layer-row[data-role="${role}"] summary`).press('Enter');
-  }
 
+  // Both dice buttons are visible immediately without expanding any row.
   for (const width of [1280, 390, 320]) {
     await page.setViewportSize({ width, height: 844 });
     for (const role of ['permitted', 'proposed']) {
-      const detail = panel.locator(`.planning-layer-row[data-role="${role}"] .planning-layer-detail`);
-      const firstRow = detail.locator(':scope > :first-child');
-      const form = firstRow.locator(`select[data-planning-setting="${role}Form"]`);
-      const reroll = firstRow.locator(`button[data-planning-reroll="${role}"]`);
-      await expect(form).toBeVisible();
+      const controls = panel.locator(`.planning-layer-row[data-role="${role}"] .planning-row-controls`);
+      const reroll = controls.locator(`button[data-planning-reroll="${role}"]`);
+      const appearance = controls.locator(`select[data-planning-setting="${role}"]`);
       await expect(reroll).toBeVisible();
-      await expect(form).toHaveValue('both');
-      const [field, die] = await Promise.all([form.boundingBox(), reroll.boundingBox()]);
-      if (!field || !die) throw new Error(`Missing ${role} form controls at ${width}px`);
-      expect(Math.abs(field.y - die.y)).toBeLessThan(1);
-      expect(field.x + field.width).toBeLessThanOrEqual(die.x);
-      expect(die.x + die.width).toBeLessThanOrEqual(width);
-      const below = await detail.locator(':scope > :not(:first-child):visible')
-        .evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().top));
-      expect(below.length).toBeGreaterThan(0);
-      expect(Math.min(...below)).toBeGreaterThanOrEqual(Math.max(field.y + field.height, die.y + die.height) - 1);
-      await form.focus();
-      await form.press('Tab');
-      await expect(reroll).toBeFocused();
+      await expect(reroll).toBeEnabled();
+      await expect(appearance).toBeVisible();
+      const [die, select] = await Promise.all([reroll.boundingBox(), appearance.boundingBox()]);
+      if (!die || !select) throw new Error(`Missing ${role} row controls at ${width}px`);
+      expect(Math.abs(die.y - select.y)).toBeLessThan(1);
+      expect(die.x + die.width).toBeLessThanOrEqual(select.x);
+      expect(select.x + select.width).toBeLessThanOrEqual(width);
+      await reroll.focus();
+      await reroll.press('Tab');
+      await expect(appearance).toBeFocused();
     }
   }
+  // Switching to a source without parcel-study rolling keeps the Permitted dice on the row, greyed out.
+  await selectNativeOption(panel.locator('.planning-source-select'), available[1].id);
+  await expect(panel.locator('#planning-reroll-permitted')).toBeVisible();
+  await expect(panel.locator('#planning-reroll-permitted')).toBeDisabled();
+  await expect(panel.locator('#planning-reroll')).toBeEnabled();
 });
 
 test('saved parcel evidence opens its pinned source without creating a proposal @features', async ({ mockApi: page }) => {
@@ -541,7 +538,7 @@ test('Alatau zoning overview uses static data below zoom 15 and one viewport rea
   await expect.poll(() => staticReads.length).toBe(1);
   await page.waitForFunction(() => (window as any).PlanningViews.getItems().length === 6659);
   expect(representations).toHaveLength(0);
-  await openLayerSection(page, 'zoning-land-use');
+  await page.locator('#planning-views-button').click();
   const fit = page.getByRole('button', { name: 'Fit plan', exact: true });
   await expect(fit).toBeVisible();
   await fit.press('Enter');
@@ -593,14 +590,14 @@ test('Astana fits the whole plan and shows dated parcel massing on a narrow scre
   const { bbox } = await (await overview).json();
   await page.waitForFunction(() => (window as any).PlanningViews?.getItems().length === 12914);
   expect(zoningRequests).toHaveLength(0);
-  await openLayerSection(page, 'zoning-land-use');
+  await page.locator('#planning-views-button').click();
   const fit = page.getByRole('button', { name: 'Fit plan', exact: true });
   await expect(fit).toBeVisible();
   await fit.press('Enter');
   await expect.poll(() => page.evaluate(([w, s, e, n]) => {
     return (window as any).map.getBounds().contains([[s, w], [n, e]]);
   }, bbox)).toBe(true);
-  await expect(page.getByRole('button', { name: 'Layers', exact: true })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Buildings and zoning', exact: true })).toBeFocused();
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => (window as any).PlanningViews?.getItems().length === 12914);
   expect(new URL(page.url()).searchParams.get('zoningAreas')).toBe('ghost');

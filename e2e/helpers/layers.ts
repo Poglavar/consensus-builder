@@ -16,7 +16,7 @@ export async function openPlanningSection(page: Page, section: 'floor-plans' | '
 // Each Permitted/Built/Proposed row keeps its form, scope and source controls in a collapsed disclosure (7a9f5746e).
 export async function openPlanningRole(page: Page, role: 'permitted' | 'existing' | 'proposed'): Promise<void> {
   await openPlanningDisplay(page);
-  const disclosure = page.locator(`#planning-views .planning-layer-row[data-role="${role}"] > details.planning-role-disclosure`);
+  const disclosure = page.locator(`#planning-views .planning-layer-row[data-role="${role}"] details.planning-role-disclosure`);
   if (!(await disclosure.evaluate((element: HTMLDetailsElement) => element.open))) await disclosure.locator('> summary').click();
   await expect(disclosure).toHaveAttribute('open', '');
 }

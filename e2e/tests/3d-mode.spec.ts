@@ -538,8 +538,8 @@ test.describe('3D rendering and controls @features', () => {
     await openCity(page);
     await enter3D(page);
     const initialCells = await settled();
-    await openPlanningSection(page, 'building-appearance');
-    const slider = page.locator('#planning-building-appearance .three-mode-radius-slider');
+    await openPlanningRole(page, 'existing');
+    const slider = page.locator('#model-built-controls .three-mode-radius-slider');
     await expect(page.locator('#settings-sheet .three-mode-radius-slider')).toHaveCount(0);
 
     // Hovering previews the full circle at its actual ground-plane radius without fetching.
@@ -566,7 +566,7 @@ test.describe('3D rendering and controls @features', () => {
     expect(keyboardValue).toBeGreaterThan(initialValue);
     await expect.poll(async () => (await modelRadiusPreview(page))?.radiusMeters).toBe(keyboardValue);
     await expect.poll(async () => (await modelRadiusPreview(page))?.ringRadius).toBeCloseTo(keyboardValue, -1);
-    await page.locator('#three-mode-facades').focus();
+    await page.locator('#building-source-settings-button').focus();
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await expect.poll(() => loads).toContain(String(keyboardValue));
     const keyboardCells = await settled();
@@ -592,7 +592,7 @@ test.describe('3D rendering and controls @features', () => {
     expect(new Set(requests.map(request => request.bbox.join())).size).toBe(requests.length);
     const saved = await slider.inputValue();
     await page.mouse.move(box.x + box.width + 30, box.y + box.height / 2);
-    await page.locator('#three-mode-facades').focus();
+    await page.locator('#building-source-settings-button').focus();
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible ?? false).toBe(false);
     await page.mouse.move(box.x + box.width * 0.45, box.y + box.height / 2);
     await expect.poll(async () => (await modelRadiusPreview(page))?.visible).toBe(true);
@@ -601,7 +601,7 @@ test.describe('3D rendering and controls @features', () => {
     await page.locator('#mode-2d-toggle').click();
     await expect.poll(async () => page.evaluate(() => !(window as any).isThreeModeActive?.())).toBe(true);
     await enter3D(page);
-    await openPlanningSection(page, 'building-appearance');
+    await openPlanningRole(page, 'existing');
     await expect(slider).toHaveValue(saved);
     await expect(page.locator('.three-mode-radius-value')).toContainText(saved);
     const reopenedBox = await slider.boundingBox();

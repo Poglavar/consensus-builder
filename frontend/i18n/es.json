@@ -7424,7 +7424,8 @@
             "floorsIn3d": "Explorar las plantas en 3D",
             "floorPlans": "Planos de planta",
             "buildingAppearance": "Apariencia del edificio",
-            "scenery": "Entorno y sonido"
+            "scenery": "Entorno y sonido",
+            "mapOnlyLayers": "Mapa base, manzanas, parques, calles y plan Schelling"
         },
         "designActions": "Acciones de diseño"
     },
@@ -9318,6 +9319,8 @@
             "permitted": "Generar otro edificio de ejemplo dentro de los límites permitidos. No modifica los registros."
         },
         "zoningAreas": "Áreas de la fuente urbanística",
+        "zoningMap": "Mapa de zonificación",
+        "massing": "Volúmenes",
         "fitPlan": "Ver el plan completo",
         "envelopeTitle": "Envolvente permitida",
         "permittedForm": "Representación de lo permitido",
@@ -9440,7 +9443,7 @@
             "UNREVIEWED_CAPACITY_LOSS": "El cálculo de reemplazo reduciría la estimación anterior y está pendiente de revisión.",
             "UNREVIEWED_CAPACITY_COHORT_CHANGE": "El cambio de cobertura del cálculo está pendiente de revisión."
         },
-        "title": "Edificios y volúmenes",
+        "title": "Edificios y zonificación",
         "detailsLabel": "Detalles de la fuente de planificación",
         "permitted": "Permitido",
         "loading": "Cargando volúmenes permitidos…",

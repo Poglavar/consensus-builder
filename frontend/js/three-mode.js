@@ -2376,15 +2376,17 @@
         const layersHost = document.getElementById('model-layer-controls');
         const appearanceHost = document.getElementById('model-building-appearance');
         const floorHost = document.getElementById('model-floor-controls');
-        if (!threeContainer || !layersHost || !appearanceHost || !floorHost) return;
+        const builtHost = document.getElementById('model-built-controls');
+        const proposedHost = document.getElementById('model-proposed-controls');
+        if (!threeContainer || !layersHost || !appearanceHost || !floorHost || !builtHost || !proposedHost) return;
         if (modelControlGroups.length) return;
-        modelControlGroups = [layersHost, appearanceHost, floorHost].map(host => {
+        modelControlGroups = [layersHost, appearanceHost, floorHost, builtHost, proposedHost].map(host => {
             const group = document.createElement('div');
             group.className = 'three-mode-ui-panel';
             host.appendChild(group);
             return group;
         });
-        const [sceneryControls, appearanceControls, floorControls] = modelControlGroups;
+        const [sceneryControls, appearanceControls, floorControls, builtControls, proposedControls] = modelControlGroups;
 
         // Radius row — controls how wide a band of built context is loaded/rendered.
         const radiusRow = document.createElement('div');
@@ -2439,7 +2441,7 @@
 
         radiusRow.appendChild(radiusHeader);
         radiusRow.appendChild(radiusSlider);
-        appearanceControls.appendChild(radiusRow);
+        builtControls.appendChild(radiusRow);
 
         // Building visibility and representation choices live in the shared planning controls.
 
@@ -2635,7 +2637,7 @@
         ineligibleLabel.appendChild(ineligibleBox);
         ineligibleLabel.appendChild(ineligibleText);
         ineligibleRow.appendChild(ineligibleLabel);
-        appearanceControls.appendChild(ineligibleRow);
+        proposedControls.appendChild(ineligibleRow);
 
         // Schematic people and vehicles: a frontend-only layer every city can show, so it is not
         // fetched from /decor/layers either. Same row shape as the plots toggle above.
@@ -2711,7 +2713,7 @@
         const sourceNoteHost = document.createElement('div');
         sourceNoteHost.setAttribute('data-map-modes', '3d');
         sourceNoteHost.appendChild(buildingsSourceNoteEl);
-        appearanceControls.appendChild(sourceNoteHost);
+        builtControls.appendChild(sourceNoteHost);
         updateBuildingsSourceNote();
         floorControls.appendChild(xrayRow);
 

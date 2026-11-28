@@ -63,13 +63,13 @@ test('a published layout shares its exact saved plan and a fresh device applies 
 
 test('2D massing puts Permitted first and disables it cleanly when there is no source',async({mockApi:page})=>{
   await page.route('**/planning/sources?**',route=>route.fulfill({json:{city:'zagreb',sources:[]}}));await openCity(page);await page.locator('#layers-button').click();
-  await expect(page.locator('#layers-sheet details[data-section="zoning-land-use"]')).toBeHidden();
+  await expect(page.locator('#layers-sheet [data-section="zoning-land-use"]')).toHaveCount(0);
   await page.locator('#layers-button').click();await page.locator('#planning-views-button').click();const panel=page.locator('#planning-views');
   await expect(panel.locator('.planning-map-context')).toHaveText('Compare building footprints and massing on the 2D map.');const rows=panel.locator('.planning-layer-row');
   await expect(rows.first().locator('[data-role-label]')).toHaveAttribute('data-role-label','permitted');await expect(rows.nth(1).locator('[data-role-label]')).toHaveAttribute('data-role-label','existing');
-  await expect(rows.first()).toHaveAttribute('aria-disabled','true');await expect(rows.first().locator('[data-planning-setting="permitted"]')).toBeDisabled();await expect(rows.nth(1).locator('[data-planning-setting="existing"]')).toBeEnabled();
+  await expect(rows.first()).toHaveAttribute('aria-disabled','true');await expect(rows.first().locator('[data-planning-setting="permitted"]')).toBeDisabled();await expect(rows.first().locator('.planning-zoning-field')).toBeHidden();await expect(rows.nth(1).locator('[data-planning-setting="existing"]')).toBeEnabled();
   for (const role of ['permitted','existing','proposed']) {
-    const details=panel.locator(`.planning-layer-row[data-role="${role}"] details`);
+    const details=panel.locator(`.planning-layer-row[data-role="${role}"] details.planning-role-disclosure`);
     await details.locator('summary').press('Enter');
     await expect(details).toHaveAttribute('open','');
     await expect(details.locator('[data-role-source]')).toBeVisible();

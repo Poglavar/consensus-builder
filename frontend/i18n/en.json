@@ -7397,7 +7397,8 @@
             "floorsIn3d": "Explore floors in 3D",
             "floorPlans": "Floor plans",
             "buildingAppearance": "Building appearance",
-            "scenery": "Scenery and sound"
+            "scenery": "Scenery and sound",
+            "mapOnlyLayers": "Base map, blocks, parks, roads and Schelling plan"
         },
         "designActions": "Design actions"
     },
@@ -9290,6 +9291,8 @@
             "permitted": "Roll another sample building within the permitted limits. Changes nothing in the records."
         },
         "zoningAreas": "Zoning source areas",
+        "zoningMap": "Zoning map",
+        "massing": "Massing",
         "fitPlan": "Fit plan",
         "envelopeTitle": "Permitted envelope",
         "permittedForm": "Permitted representation",
@@ -9368,7 +9371,7 @@
             "UNREVIEWED_CAPACITY_LOSS": "The replacement would reduce the previous estimate and is awaiting review.",
             "UNREVIEWED_CAPACITY_COHORT_CHANGE": "The changed calculation coverage is awaiting review."
         },
-        "title": "Buildings and massing",
+        "title": "Buildings and zoning",
         "detailsLabel": "Planning source details",
         "permitted": "Permitted",
         "loading": "Loading permitted massing…",

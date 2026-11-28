@@ -7437,7 +7437,8 @@
             "floorsIn3d": "Istraži spratove u 3D-u",
             "floorPlans": "Osnove spratova",
             "buildingAppearance": "Izgled zgrade",
-            "scenery": "Ambijent i zvuk"
+            "scenery": "Ambijent i zvuk",
+            "mapOnlyLayers": "Podloga, blokovi, parkovi, ulice i Šelingov plan"
         },
         "designActions": "Radnje za dizajni"
     },
@@ -9341,6 +9342,8 @@
             "permitted": "Prikaži drugi primer zgrade unutar dozvoljenih granica. Ne menja zapise."
         },
         "zoningAreas": "Područja izvornog plana",
+        "zoningMap": "Karta zona",
+        "massing": "Građevinske mase",
         "fitPlan": "Prikaži ceo plan",
         "envelopeTitle": "Dozvoljeni omotač",
         "permittedForm": "Prikaz dozvoljenog",
@@ -9466,7 +9469,7 @@
             "UNREVIEWED_CAPACITY_LOSS": "Zamenski proračun smanjio bi prethodnu procenu i čeka proveru.",
             "UNREVIEWED_CAPACITY_COHORT_CHANGE": "Promenjeni obuhvat proračuna čeka proveru."
         },
-        "title": "Zgrade i građevinske mase",
+        "title": "Zgrade i zoniranje",
         "detailsLabel": "Podaci o planskom izvoru",
         "permitted": "Dozvoljeno",
         "loading": "Učitavanje dozvoljenih građevinskih masa…",
