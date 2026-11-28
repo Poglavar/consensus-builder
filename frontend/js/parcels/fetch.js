@@ -34,11 +34,7 @@
     }
 
     function backendBase() {
-        try {
-            const value = typeof global.getBackendBase === 'function' ? global.getBackendBase() : null;
-            if (value) return String(value).replace(/\/$/, '');
-        } catch (_) { }
-        return 'https://api.urbangametheory.xyz';
+        return String(global.getBackendBase()).replace(/\/$/, '');
     }
 
     function currentCity() {

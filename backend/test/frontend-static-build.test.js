@@ -102,18 +102,21 @@ describe('production static frontend build', () => {
             writeFileSync(entry, readFileSync(entry, 'utf8').replace('<script>', `<head><script>var cssFiles = ['css/a.css', 'css/b.css'];</script></head><script>`));
             mkdirSync(path.join(source, 'css'));
             mkdirSync(path.join(source, 'i18n'));
-            writeFileSync(path.join(source, 'css/a.css'), 'a{background:url(../images/icon.png)}');
-            writeFileSync(path.join(source, 'css/b.css'), 'a{color:blue}');
-            writeFileSync(path.join(source, 'css/critic.css'), 'aside{display:grid}');
+            writeFileSync(path.join(source, 'css/a.css'), '/* banner comment */\na {\n    background: url(../images/icon.png);\n}');
+            writeFileSync(path.join(source, 'css/b.css'), 'a {\n    color: blue;\n}');
+            writeFileSync(path.join(source, 'css/critic.css'), '/* optional style */\naside {\n    display: grid;\n}');
             writeFileSync(path.join(source, 'i18n/en.json'), '{"hello":"Hello"}');
             buildStatic(source, output);
             const index = readFileSync(path.join(output, 'index.html'), 'utf8');
             const css = index.match(/css\/bundles\/app\.[a-f0-9]{16}\.css/)[0];
-            expect(readFileSync(path.join(output, css), 'utf8')).toMatch(/url\(\.\.\/\.\.\/images\/icon\.png\)[\s\S]+color:blue/);
-            for (const pattern of [/css\/critic\.[a-f0-9]{16}\.css/, /i18n\/en\.[a-f0-9]{16}\.json/]) {
-                const asset = index.match(pattern)[0];
-                expect(existsSync(path.join(output, asset))).toBe(true);
-            }
+            const cssOut = readFileSync(path.join(output, css), 'utf8');
+            expect(cssOut).toMatch(/url\(\.\.\/\.\.\/images\/icon\.png\)[\s\S]+color:(?:blue|#00f)/);
+            expect(cssOut).not.toContain('banner comment');
+            const criticCss = index.match(/css\/critic\.[a-f0-9]{16}\.css/)[0];
+            expect(existsSync(path.join(output, criticCss))).toBe(true);
+            expect(readFileSync(path.join(output, criticCss), 'utf8')).not.toContain('optional style');
+            const i18nAsset = index.match(/i18n\/en\.[a-f0-9]{16}\.json/)[0];
+            expect(existsSync(path.join(output, i18nAsset))).toBe(true);
         } finally {
             rmSync(source, { recursive: true, force: true });
             rmSync(output, { recursive: true, force: true });
@@ -272,6 +275,66 @@ describe('production static frontend build', () => {
         writeFileSync(indexPath, transform(readFileSync(indexPath, 'utf8')));
         expect(() => buildStatic(source, output)).toThrow();
         rmSync(temp, { recursive: true, force: true });
+    });
+
+    it('minifies ungrouped bare scripts and lazy loader files in place while keeping globals and exclusions', () => {
+        const temp = makeTempRoot('cb-static-inplace-');
+        const source = path.join(temp, 'source');
+        const output = path.join(temp, 'stage');
+        try {
+            mkdirSync(path.join(source, 'js'), { recursive: true });
+            mkdirSync(path.join(source, 'vendor'), { recursive: true });
+            mkdirSync(path.join(source, 'data/cities'), { recursive: true });
+            fixtureFrontend(source);
+            writeFileSync(path.join(source, 'js/global.js'),
+                `/* bare comment */\nfunction fixtureGlobal(longArg) {\n    const longLocal = longArg + 1;\n    return longLocal;\n}\nconst FIXTURE_TOP_CONST = 7;\nwindow.trace.push('global');\n`);
+            writeFileSync(path.join(source, 'js/build-info.js'), `/* keep build info */\nwindow.__BUILD_INFO = { token: 'dev' };\n`);
+            writeFileSync(path.join(source, 'js/optional-tools-loader.js'),
+                `(function () {\n    const groups = { lazyTool: ['js/lazy-tool.js?v=1', 'vendor/premin.js'] };\n    window.__lazyGroups = groups;\n})();\n`);
+            writeFileSync(path.join(source, 'js/map-mode-loader.js'),
+                `(function () {\n    const groups = { model: ['js/lazy-three.js'] };\n    window.__modeGroups = groups;\n})();\n`);
+            writeFileSync(path.join(source, 'js/lazy-tool.js'),
+                `/* lazy tool comment */\nfunction lazyToolEntry(longParam) {\n    const localTemp = longParam * 2;\n    return localTemp;\n}\n`);
+            writeFileSync(path.join(source, 'js/lazy-three.js'),
+                `/* lazy 3d comment */\n(function () {\n    const verboseSceneVar = '3d';\n    window.__lazyThree = verboseSceneVar;\n})();\n`);
+            writeFileSync(path.join(source, 'vendor/premin.js'), `/* vendor comment */\nwindow.__vendor = 1;\n`);
+            writeFileSync(path.join(source, 'data/cities/sample.js'), `/* city comment */\nwindow.__city = 1;\n`);
+            writeFileSync(path.join(source, 'index.html'), readFileSync(path.join(source, 'index.html'), 'utf8')
+                .replace("'js/global.js',", "'js/build-info.js',\n    'js/global.js',\n    'js/optional-tools-loader.js',\n    'js/map-mode-loader.js',"));
+
+            const built = buildStatic(source, output);
+            expect(built.minifiedInPlace).toEqual(expect.arrayContaining([
+                'js/global.js', 'js/current.js', 'js/lazy-tool.js', 'js/lazy-three.js'
+            ]));
+            expect(built.minifiedInPlace).not.toContain('js/build-info.js');
+            expect(built.minifiedInPlace).not.toContain('vendor/premin.js');
+
+            // Bare script is minified yet keeps top-level function and const names.
+            const globalOut = readFileSync(path.join(output, 'js/global.js'), 'utf8');
+            expect(globalOut).not.toContain('bare comment');
+            expect(globalOut).not.toContain('longLocal');
+            expect(globalOut).toContain('function fixtureGlobal(');
+            expect(globalOut).toContain('FIXTURE_TOP_CONST');
+            const sandbox = runScripts(output, ['js/global.js']);
+            expect(sandbox.fixtureGlobal(4)).toBe(5);
+            expect(sandbox.trace).toEqual(['global']);
+
+            // Loader-listed lazy files are minified in place.
+            const lazyToolOut = readFileSync(path.join(output, 'js/lazy-tool.js'), 'utf8');
+            expect(lazyToolOut).not.toContain('lazy tool comment');
+            expect(lazyToolOut).not.toContain('localTemp');
+            expect(lazyToolOut).toContain('function lazyToolEntry(');
+            const lazyThreeOut = readFileSync(path.join(output, 'js/lazy-three.js'), 'utf8');
+            expect(lazyThreeOut).not.toContain('lazy 3d comment');
+            expect(lazyThreeOut).not.toContain('verboseSceneVar');
+
+            // Exclusions stay verbatim.
+            expect(readFileSync(path.join(output, 'js/build-info.js'), 'utf8')).toContain('keep build info');
+            expect(readFileSync(path.join(output, 'vendor/premin.js'), 'utf8')).toContain('vendor comment');
+            expect(readFileSync(path.join(output, 'data/cities/sample.js'), 'utf8')).toContain('city comment');
+        } finally {
+            rmSync(temp, { recursive: true, force: true });
+        }
     });
 
     it('rejects bundle paths that escape the frontend source root', () => {

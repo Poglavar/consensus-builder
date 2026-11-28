@@ -103,8 +103,7 @@
 
     // Uploads the raw model bytes to the backend; returns the served modelUrl.
     async function uploadModel(file) {
-        const base = (typeof root.getBackendBase === 'function')
-            ? root.getBackendBase() : 'http://localhost:3000';
+        const base = root.getBackendBase();
         const dataUrl = await fileToDataUrl(file);
         const resp = await root.fetch(base.replace(/\/$/, '') + '/models', {
             method: 'POST',

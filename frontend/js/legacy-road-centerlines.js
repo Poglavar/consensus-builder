@@ -49,7 +49,7 @@
     }
 
     async function fetchCenterlines(bboxQuery) {
-        const base = (typeof getBackendBase === 'function' && getBackendBase()) || 'http://localhost:3000';
+        const base = getBackendBase();
         const url = `${base}/osm-road${bboxQuery ? `?${bboxQuery}` : ''}`;
         if (typeof fetchJsonWithRetry === 'function') return fetchJsonWithRetry(url);
         const res = await fetch(url);

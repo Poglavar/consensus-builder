@@ -72,7 +72,7 @@
     const view = () => root.BetsUI || null;
     const bridge = () => root.BetsTrading || null;
     const sheet = () => root.BetsSheet || null;
-    const backendBase = () => (typeof root.getBackendBase === 'function' ? root.getBackendBase().replace(/\/$/, '') : 'https://api.urbangametheory.xyz');
+    const backendBase = () => root.getBackendBase().replace(/\/$/, '');
 
     function money(amountText) {
         return root.BetsUI.money(amountText, state.row?.asset || bridge().asset());

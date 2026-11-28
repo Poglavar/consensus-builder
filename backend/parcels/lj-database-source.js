@@ -1,4 +1,5 @@
 import { databaseSourceError, isDatabaseSourceError } from './database-source-error.js';
+import { parseBbox } from './source-contract.js';
 import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 
 const MAX_LIMIT = 5000;
@@ -22,21 +23,6 @@ function parseLimit(rawValue) {
     }
 
     return Math.min(parsed, MAX_LIMIT);
-}
-
-function parseBbox(rawValue) {
-    if (!rawValue || typeof rawValue !== 'string') {
-        return null;
-    }
-    const parts = rawValue.split(',').map(Number);
-    if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))) {
-        return null;
-    }
-    const [minLon, minLat, maxLon, maxLat] = parts;
-    if (minLon >= maxLon || minLat >= maxLat) {
-        return null;
-    }
-    return { minLon, minLat, maxLon, maxLat };
 }
 
 function buildFeature(row, ownershipData = null) {

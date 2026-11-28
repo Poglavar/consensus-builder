@@ -199,7 +199,7 @@
         const requestId = ++overlayLoadRequestId;
         const backendBase = typeof global.resolveBackendBaseUrl === 'function'
             ? global.resolveBackendBaseUrl()
-            : 'http://localhost:3000';
+            : global.getBackendBase();
         const overlayStartedAt = nowMs();
         const response = await fetch(`${backendBase}/area-monitors/${monitorId}/overlay`);
         if (!response.ok) {

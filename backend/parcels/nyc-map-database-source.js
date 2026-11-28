@@ -1,4 +1,5 @@
 import { databaseSourceError, isDatabaseSourceError } from './database-source-error.js';
+import { parseBbox } from './source-contract.js';
 import { fetchPluto } from '../zoning/pluto.js';
 import { computeEnvelope } from '../zoning/envelope.js';
 import { SITE_REVIEWS } from '../zoning/reviews.js';
@@ -43,21 +44,6 @@ function parseOffset(rawValue) {
     }
 
     return parsed;
-}
-
-function parseBbox(rawValue) {
-    if (!rawValue || typeof rawValue !== 'string') {
-        return null;
-    }
-    const parts = rawValue.split(',').map(Number);
-    if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))) {
-        return null;
-    }
-    const [minLon, minLat, maxLon, maxLat] = parts;
-    if (minLon >= maxLon || minLat >= maxLat) {
-        return null;
-    }
-    return { minLon, minLat, maxLon, maxLat };
 }
 
 function normalizeOwnerKey(value) {

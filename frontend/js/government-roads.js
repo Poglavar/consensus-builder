@@ -2328,7 +2328,7 @@
         if (builder) {
             request = builder(bbox || '');
         } else {
-            const fallbackBase = (typeof window.getBackendBase === 'function') ? window.getBackendBase() : 'http://localhost:3000';
+            const fallbackBase = window.getBackendBase();
             const trimmed = typeof bbox === 'string' ? bbox.trim() : '';
             const url = trimmed ? `${fallbackBase}/planned-road?bbox=${encodeURIComponent(trimmed)}` : `${fallbackBase}/planned-road`;
             request = { url, base: fallbackBase };

@@ -1,4 +1,5 @@
 import { databaseSourceError, isDatabaseSourceError } from './database-source-error.js';
+import { parseBbox } from './source-contract.js';
 import { MAX_CELL_BBOX_KM2, wgs84BboxAreaKm2 } from '../utils/helpers.js';
 import { buildOwnershipSummary, pickOwnershipFields } from './oss-database-source.js';
 
@@ -128,21 +129,6 @@ function parseOffset(rawValue) {
         return Number.NaN;
     }
     return Number.parseInt(rawValue.trim(), 10);
-}
-
-function parseBbox(rawValue) {
-    if (!rawValue || typeof rawValue !== 'string') {
-        return null;
-    }
-    const parts = rawValue.split(',').map(Number);
-    if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))) {
-        return null;
-    }
-    const [minLon, minLat, maxLon, maxLat] = parts;
-    if (minLon >= maxLon || minLat >= maxLat) {
-        return null;
-    }
-    return { minLon, minLat, maxLon, maxLat };
 }
 
 function buildFeature(row, ownershipSummary = null) {

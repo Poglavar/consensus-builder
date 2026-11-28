@@ -6,11 +6,22 @@
 // loads nothing at all, with only ERR_CONNECTION_REFUSED to explain it. That has now happened twice
 // (building scans, then Croatian parcels), so each request builder gets a case here.
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
+const FRONTEND_JS = path.resolve(fileURLToPath(new URL('../../frontend/js', import.meta.url)));
 const source = readFileSync(new URL('../../frontend/js/data-source.js', import.meta.url), 'utf8');
 const environmentSource = readFileSync(new URL('../../frontend/js/environment.js', import.meta.url), 'utf8');
+
+function listFrontendScripts(dir) {
+    return readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) return entry.name === 'vendor' ? [] : listFrontendScripts(full);
+        return entry.isFile() && /\.(m?js)$/.test(entry.name) ? [full] : [];
+    });
+}
 
 // Boot data-source.js against a localhost page carrying ?backend=http://localhost:4179.
 function bootWithOverride(cityConfig, options = {}) {
@@ -163,5 +174,33 @@ describe('data source backend override', () => {
         const afterGetBackendBase = body.slice(body.indexOf('\n    }') + 1);
         expect(afterGetBackendBase).not.toMatch(/\bLOCAL_BASE\b/);
         expect(afterGetBackendBase).not.toMatch(/\bUGT_BASE\b/);
+    });
+
+    it('keeps literal API origins out of app scripts outside data-source.js and standalone pages', () => {
+        // Standalone pages do not load data-source.js; app-funnel.js loads in <head> before it;
+        // source-list/parcel-source-settings/proposals/core retain fallbacks for isolated storage-key/unit calls.
+        const allowed = new Set([
+            'data-source.js',
+            'app-funnel.js',
+            'actor-explorer.js',
+            'hackathon-deck.js',
+            'hackathon-demo.js',
+            'source-explorer.js',
+            'tx-explorer.js',
+            'source-list.js',
+            'parcel-source-settings.js',
+            'proposals/core.js'
+        ]);
+        const literalOrigin = /['"`]https?:\/\/(?:localhost:3000|127\.0\.0\.1:3000|api\.urbangametheory\.xyz)['"`]/;
+        const offenders = [];
+        for (const file of listFrontendScripts(FRONTEND_JS)) {
+            const rel = path.relative(FRONTEND_JS, file).split(path.sep).join('/');
+            if (allowed.has(rel)) continue;
+            const stripped = readFileSync(file, 'utf8')
+                .replace(/\/\/[^\n]*/g, '')
+                .replace(/\/\*[\s\S]*?\*\//g, '');
+            if (literalOrigin.test(stripped)) offenders.push(rel);
+        }
+        expect(offenders).toEqual([]);
     });
 });

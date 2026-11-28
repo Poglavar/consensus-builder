@@ -1,0 +1,12 @@
+{
+  "frontend/js/three-mode.js": 14000,
+  "frontend/js/road-drawing.js": 4700,
+  "frontend/js/proposal-manager.js": 4500,
+  "frontend/js/parcel-layout.js": 3900,
+  "frontend/js/photoreal-mode.js": 3200,
+  "frontend/js/building-blocks.js": 3200,
+  "frontend/js/corridor-editor.js": 3100,
+  "frontend/js/government-roads.js": 3000,
+  "frontend/js/parcel-blocks.js": 2900,
+  "frontend/js/corridor-profile.js": 2600
+}

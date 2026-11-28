@@ -111,6 +111,22 @@ export function discoverQuery(query = {}) {
     };
 }
 
+// Parses a comma-separated WGS84 bbox string (`west,south,east,north`) for database parcel sources.
+export function parseBbox(rawValue) {
+    if (!rawValue || typeof rawValue !== 'string') {
+        return null;
+    }
+    const parts = rawValue.split(',').map(Number);
+    if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))) {
+        return null;
+    }
+    const [minLon, minLat, maxLon, maxLat] = parts;
+    if (minLon >= maxLon || minLat >= maxLat) {
+        return null;
+    }
+    return { minLon, minLat, maxLon, maxLat };
+}
+
 // A malformed box is a bad request; a box over the area or side limits is the area limit (400, code
 // AREA_LIMIT_CODE): a smaller box answers, so callers split it (source-binding.js tiles) by the code.
 export function validateBounds(bbox, maxKm2 = 25, limits = {}) {

@@ -630,8 +630,7 @@ async function fetchGUPRoads(force = false) {
         const params = typeof buildStreetRequestParams === 'function'
             ? buildStreetRequestParams(builderOptions)
             : null;
-        const base = typeof getBackendBase === 'function' ? getBackendBase() : '';
-        const url = params?.url || `${base ? base : 'http://localhost:3000'}/streets${bboxHTRS ? `?bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
+        const url = params?.url || `${getBackendBase()}/streets${bboxHTRS ? `?bbox=${encodeURIComponent(bboxHTRS)}` : ''}`;
         const data = await fetchJsonWithRetry(url);
         if (data && data.type === 'FeatureCollection' && Array.isArray(data.features)) {
             featureCollection = data;

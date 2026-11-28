@@ -147,7 +147,7 @@
         if (typeof global.resolveBackendBaseUrl === 'function') {
             return global.resolveBackendBaseUrl();
         }
-        return 'http://localhost:3000';
+        return global.getBackendBase();
     }
 
     function getCurrentCityId() {

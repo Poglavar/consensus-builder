@@ -11,7 +11,7 @@
     const client = api.create({
         storage: root.localStorage, sessionStorage: root.sessionStorage,
         uuid: () => root.crypto.randomUUID(), fetch: (...args) => root.fetch(...args),
-        baseUrl: () => typeof root.getBackendBase === 'function' ? root.getBackendBase() : 'https://api.urbangametheory.xyz',
+        baseUrl: () => root.getBackendBase(),
         simulationRun,
         context: () => ({ city: root.resolveCurrentCityCode?.() || null }),
         warn: message => console.warn(`[${new Date().toISOString()}] [bets-telemetry] ${message}`)
