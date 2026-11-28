@@ -63,7 +63,7 @@ export const test = base.extend<{
   uncaughtPageErrors: [async ({ observeContexts }, use) => {
     const errors: string[] = [];
     const contexts: BrowserContext[] = [];
-    const watch = (page: Page) => page.on('pageerror', error => errors.push(error.message));
+    const watch = (page: Page) => page.on('pageerror', error => errors.push(pageErrorText(error)));
     await observeContexts(context => {
       contexts.push(context);
       context.pages().forEach(watch);
@@ -116,8 +116,13 @@ async function seedStoredCity(page: Page, cityId: string | null): Promise<void> 
 // those existence checks into something that can actually catch a broken app.
 function failOnPageErrors(page: Page): string[] {
   const errors: string[] = [];
-  page.on('pageerror', (err) => errors.push(err.message));
+  page.on('pageerror', (err) => errors.push(pageErrorText(err)));
   return errors;
+}
+
+// The stack (message plus frames) says where a background throw came from; the message alone often cannot.
+function pageErrorText(error: Error): string {
+  return error.stack || error.message;
 }
 
 function assertNoPageErrors(errors: string[]): void {

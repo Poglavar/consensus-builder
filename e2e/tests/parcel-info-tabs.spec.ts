@@ -39,9 +39,11 @@ test.describe('Parcel info panel tabs @core', () => {
     await openDetails(page);
     await parcelTab(page, 'propose-tab').click();
     await expect(page.locator('#propose-tab')).toBeVisible();
-    // 15 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station;
-    // ownership Offer to buy, Offer to sell (standalone property offers, f4ebd7489).
-    await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(15);
+    // 16 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station;
+    // ownership Put up for sale, Offer to buy, Who holds it, offers (property market, c582eaa31).
+    await expect(page.locator('#propose-content .parcel-build-btn')).toHaveCount(16);
+    await expect(page.locator('#propose-content .parcel-ownership-btn')).toHaveCount(3);
+    await expect(page.locator('#propose-content .parcel-ownership-btn--holder')).toBeVisible();
   });
 
   test('a parcel with no proposals keeps an empty Designs tab', async ({ mockApi: page }) => {
@@ -100,7 +102,9 @@ test.describe('Parcel info panel tabs @core', () => {
     await parcelTab(page, 'tools-tab').click();
     const tools = page.locator('#tools-tab');
     await expect(tools).toBeVisible();
-    await expect(page.locator('#parcelMintStatus')).toContainText('Anchor');
+    // Every status names the anchor (not checked, checking, minted, none, couldn't check): the mock
+    // serves no local EVM RPC, so the check here ends in "Couldn't check the anchor on localhost".
+    await expect(page.locator('#parcelMintStatus')).toContainText(/anchor/i);
     await expect(page.locator('#mintAndClaimButton')).toHaveText('Mint anchor');
     await expect(page.locator('#mintAndClaimButton')).toBeDisabled();
     await expect(page.locator('#mintAndClaimButton')).toHaveClass(/\bbtn-primary\b/);

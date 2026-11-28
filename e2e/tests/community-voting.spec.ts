@@ -460,7 +460,10 @@ test('a Strong Suburbs street vote checks the plan against the street code it cl
   await expect(building).toContainText('Building way/201');
   // Four storeys and a mansard over the cap of 3 that the area under the house sets, without a named street.
   await expect(building.locator('li[data-status="fail"]').first()).toContainText("30 Storeys within the density cap: No 4 storeys proposed · The vote names no street: the cap is at most 3");
-  await expect(code.locator('details')).toContainText('35 Under the light planes from plots on other streets');
+  // Para 35's light planes are checked (8e103fa53); without a named street the plots on other streets are not known.
+  await expect(building.locator('li[data-status="unknown"]', { hasText: '35 Under the light planes from plots on other streets' }))
+    .toContainText('The vote names no street, so the plots on other streets are not known');
+  await expect(code.locator('details')).not.toContainText('35 Under the light planes');
   expect(densityReads.length).toBeGreaterThan(0);
   const downloaded = page.waitForEvent('download');
   await roster.locator('[data-roster-action="save"]').click();

@@ -156,8 +156,11 @@ for (const width of [1180, 390]) test(`Designs Browse keeps filtered draft and p
   await expect(sheet.locator('#designs-browse-tab')).toHaveAttribute('aria-selected', 'true');
   await expect(sheet.locator('#shareAppliedProposalsButton')).toBeVisible();
   // Lists (01268caee): publication and order are the only filters, behind the shared Filters button.
+  // The app-wide Read from select (3a62cd98a) sits beside them in the controls, not among the filters.
   await sheet.locator('.lists-filter-toggle').click();
-  await expect(sheet.locator('#lists-controls select')).toHaveCount(2);
+  await expect(sheet.locator('#lists-filter-panel select')).toHaveCount(2);
+  await expect(sheet.locator('#lists-controls select')).toHaveCount(3);
+  await expect(sheet.locator('#lists-controls select[data-lists-read-from]')).toBeVisible();
   const status = sheet.locator('select[data-list-filter="publication"]');
   await expect(status).toBeVisible();
   expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).textContent?.trim())))
@@ -198,7 +201,9 @@ test('phone menus fit the viewport and dismiss; Designs separates publication fr
     expect(box!.y + box!.height).toBeLessThanOrEqual(844);
     if (id === 'proposals') {
       await sheet.locator('.lists-filter-toggle').click();
-      await expect(sheet.locator('#lists-controls select')).toHaveCount(2);
+      // Publication and order filters, plus the app-wide Read from select (3a62cd98a).
+      await expect(sheet.locator('#lists-filter-panel select')).toHaveCount(2);
+      await expect(sheet.locator('#lists-controls select')).toHaveCount(3);
       const status = sheet.locator('select[data-list-filter="publication"]');
       await expect(status).toBeVisible();
       expect(await status.locator('option').evaluateAll(options => options.map(option => (option as HTMLOptionElement).value)))

@@ -173,7 +173,7 @@ test.describe('Plan arithmetic @features', () => {
     const row = (label: RegExp) => table.locator('tr').filter({ has: page.locator('th[scope="row"]', { hasText: label }) }).locator('td');
     await expect(row(/^Buildings/)).toHaveCount(3);
     const buildings = await row(/^Buildings/).allInnerTexts();
-    const remaining = await row(/^of which existing/).allInnerTexts();
+    const remaining = await row(/^of which existing that remain/).allInnerTexts();
     const added = await row(/^of which new/).allInnerTexts();
     // The present state is the existing building; each plan clears it and stands with its own.
     expect([buildings[0], remaining[0], added[0]].map(text => text.split(' ')[0])).toEqual(['1', '1', '0']);

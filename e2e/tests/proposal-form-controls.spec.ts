@@ -96,7 +96,9 @@ test('publication and search filters narrow the design list by title and author'
   const titles = list.locator('#proposal-list-host .lists-item__title');
   await expect(titles).toHaveCount(3);
   await list.locator('.lists-filter-toggle').click();
-  await expect(list.locator('#lists-controls select')).toHaveCount(2);
+  // Publication and order, plus the app-wide Read from select (3a62cd98a).
+  await expect(list.locator('#lists-controls select')).toHaveCount(3);
+  await expect(list.locator('select[data-lists-read-from]')).toBeVisible();
   await expect(list.locator('#agreementsButton, #mintedAgreementsButton')).toHaveCount(0);
   await selectNativeOption(list.locator('select[data-list-filter="publication"]'), 'draft');
   await expect(titles).toHaveCount(2);

@@ -229,6 +229,12 @@ test.describe('simulation log links @features', () => {
       if (!userAgent) throw new Error('The local user agent is unavailable');
       return { proposalId: proposal.proposalId, userAgentId: userAgent.id, userAgentName: userAgent.name };
     }, title);
+    // The saved design opens in the click stack after it is applied (proposals/create.js), and that
+    // folds away any open sheet: wait for it, or it closes the Activity panel opened below.
+    await expect.poll(() => page.evaluate(() => {
+      const w = window as any;
+      return w.ProposalSelection?.getKey?.() || w.currentlyHighlightedProposalId;
+    })).toBe(fixture.proposalId);
 
     await openActivityPanel(page);
     const explorer = page.locator('#activity-sheet');

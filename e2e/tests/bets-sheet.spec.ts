@@ -75,7 +75,8 @@ async function connectMarketCreator(page: Page, funded = false): Promise<void> {
 const addressWithoutView = (page: Page) => page.evaluate(() => {
   const params = new URLSearchParams(location.search);
   params.delete('at');
-  for (const key of ['existing', 'permitted', 'proposed', 'existingScope', 'proposedForm', 'permittedForm', 'permittedMap', 'permittedScope', 'zoningAreas']) params.delete(key);
+  // The planning display settings (planning/scene.js) stand in every app address; the app's own list, so a new one needs no edit here.
+  for (const key of Object.keys((window as any).PlanningScene.defaults)) params.delete(key);
   return `${location.pathname}?${params}`;
 });
 

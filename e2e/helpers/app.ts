@@ -11,6 +11,19 @@ export async function waitForMapReady(page: Page): Promise<void> {
     const tiles = document.querySelectorAll('.leaflet-tile-pane img');
     return tiles.length > 0;
   }, { timeout: 15_000 });
+  // The map and its first tiles appear while later app scripts (proposals/bootstrap.js,
+  // proposal-drafts.js) may still be loading, e.g. after an unawaited reload such as the workspace
+  // "Try again": wait for the app boot as well (map-core.js defines whenAppBooted with the map).
+  await page.evaluate(() => (window as any).whenAppBooted());
+}
+
+/**
+ * Wait until two frames have rendered. Sheet layout on phones is finished by ResizeObserver
+ * callbacks (mobile-dock-sheet.js reportOccupancy toggles the bottom bar), which run in the frame's
+ * rendering step: a boundingBox read between layout and that step sees the sheet 60 px off.
+ */
+export async function afterFrames(page: Page): Promise<void> {
+  await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
 }
 
 /**

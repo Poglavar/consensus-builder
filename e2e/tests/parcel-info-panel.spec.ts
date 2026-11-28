@@ -83,9 +83,10 @@ test.describe('Parcel inspector @core', () => {
     await openParcel(page);
     await parcelTab(page, 'propose-tab').click();
     await expect(page.locator('#propose-content .parcel-build-palette')).toBeVisible();
-    // 15 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station;
-    // ownership Offer to buy, Offer to sell (standalone property offers, f4ebd7489).
-    await expect(page.locator('.parcel-build-btn')).toHaveCount(15);
+    // 16 tools: 8 design tiles; transport Road, Road in parcel, Track, Road station, Track station;
+    // ownership Put up for sale, Offer to buy, Who holds it, offers (property market, c582eaa31).
+    await expect(page.locator('.parcel-build-btn')).toHaveCount(16);
+    await expect(page.locator('.parcel-ownership-btn--holder')).toBeVisible();
     await expect(page.locator('#propose-tab #parcelBuilderButton')).toHaveCount(0);
     await parcelTab(page, 'tools-tab').click();
     await expect(page.locator('#tools-tab #parcelBuilderButton')).toBeVisible();

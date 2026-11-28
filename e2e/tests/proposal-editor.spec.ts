@@ -148,9 +148,10 @@ test.describe('SimCity proposal lifecycle @core', () => {
 
     const palette = page.locator('.parcel-build-palette');
     await expect(palette).toBeVisible();
-    // Rules, structures and transport tools, and the two standalone property-offer tiles (Offer to
-    // buy, Offer to sell; f4ebd7489); no retired Create proposal button. Stations are two tiles.
-    await expect(palette.locator('.parcel-build-btn')).toHaveCount(15);
+    // Rules, structures and transport tools, and the three ownership tiles (Offer to buy, Put up for
+    // sale, Who holds it; c582eaa31); no retired Create proposal button. Stations are two tiles.
+    await expect(palette.locator('.parcel-build-btn')).toHaveCount(16);
+    await expect(palette.locator('.parcel-ownership-btn--holder')).toBeVisible();
     await expect(page.locator('#createProposalFromParcelButton')).toHaveCount(0);
 
     await palette.locator('.parcel-build-btn--park').click();

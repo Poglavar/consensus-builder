@@ -92,10 +92,10 @@ test('the structure editor uploads a model and saves its footprint', async ({ mo
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
 
-  const saved = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal, proposalId);
   expect(uploaded.fileName).toBe('test-building.glb');
   expect(Buffer.from(uploaded.modelData.split(',')[1], 'base64')).toEqual(model);
-  expect(saved).toMatchObject({
+  // Done closes the editor at once; the edit commits to the record asynchronously.
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal, proposalId)).toMatchObject({
     modelUrl: '/uploads/models/editor-park.glb', modelName: 'test-building.glb', source: 'upload',
     geometry: { type: 'Polygon' }
   });

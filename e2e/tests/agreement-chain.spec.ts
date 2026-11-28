@@ -448,9 +448,12 @@ test.describe('Agreements on chain @core', () => {
     await ownKey.locator('[data-agreement-own-key]').fill('own-pinata-jwt');
     await ownKey.locator('[data-action-id="pin"]').click();
     await expect(ownKey).toHaveCount(0);
-    await expect(page.locator('#ephemeral-message-container')).toContainText('The agreement program is not deployed on Solana devnet yet.', { timeout: 30_000 });
+    // The dialog closes before the pins go out, and the first mint's "not deployed" notice may still
+    // be up, so wait for Pinata's calls themselves.
     const tree = [secondCid, agreementRow.content.planCid, ...index.plans.get(agreementRow.content.planCid)!.content.designCids];
-    expect(pinata).toEqual(tree.map(cid => `Bearer own-pinata-jwt ${cid}`));
+    await expect.poll(() => pinata, { timeout: 30_000 }).toEqual(tree.map(cid => `Bearer own-pinata-jwt ${cid}`));
+    await expect(page.locator('#ephemeral-message-container')).toContainText('The agreement program is not deployed on Solana devnet yet.', { timeout: 30_000 });
+    await expect(mint).toBeEnabled({ timeout: 30_000 });
     expect(index.pins.size).toBe(pinsBefore);
     expect(await page.evaluate(() => window.localStorage.getItem('cb_own_pinata_jwt'))).toBeNull();
     expect(index.requests.filter(request => request.method === 'POST' && request.path.endsWith('/onchain'))).toEqual([]);

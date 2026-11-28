@@ -1,5 +1,6 @@
 import { test, expect } from '../helpers/fixtures';
 import { openCity } from '../helpers/runtime';
+import { afterFrames } from '../helpers/app';
 
 for (const width of [1280, 390, 320]) {
   test(`settings keeps its brand and build visible while Advanced scrolls at ${width}px`, async ({ mockApi: page }, testInfo) => {
@@ -8,7 +9,7 @@ for (const width of [1280, 390, 320]) {
     const panel = page.locator('#settings-sheet'), body = panel.locator(':scope > .settings-content');
     await expect(panel).toBeVisible();
     expect(await body.locator(':scope > [data-section]').evaluateAll(nodes => nodes.map(node => (node as HTMLElement).dataset.section)))
-      .toEqual(['appearance', 'assumptions', 'help', 'advanced']);
+      .toEqual(['appearance', 'read-source', 'assumptions', 'help', 'advanced']);
     await expect(body.locator('details')).toHaveCount(1);
     const advanced = body.locator('details'); await expect(advanced).toHaveJSProperty('open', false);
     await body.evaluate(el => { el.scrollTop = 0; });
@@ -21,6 +22,7 @@ for (const width of [1280, 390, 320]) {
     expect(Math.max(...rowBoxes.map(b => b.middle)) - Math.min(...rowBoxes.map(b => b.middle))).toBeLessThan(2);
     expect(await panel.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
     const footer = panel.locator('.settings-footer'); await expect(footer).toBeVisible();
+    await afterFrames(page);
     const footerBefore = await footer.boundingBox(), brandBefore = await brand.boundingBox();
     await page.screenshot({ path: testInfo.outputPath('overview.png') });
     await advanced.locator('> summary').click();

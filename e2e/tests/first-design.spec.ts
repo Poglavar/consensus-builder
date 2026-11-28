@@ -5,7 +5,8 @@ test('a phone map click leads to a saved park at the top of Designs', async ({ m
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await openCity(page);
-  await expect(page.locator('#map-shell-bottom-right').getByRole('button')).toHaveCount(3);
+  // Lists, Activity, Bets and Market (the property market sheet, c582eaa31).
+  await expect(page.locator('#map-shell-bottom-right').getByRole('button')).toHaveCount(4);
   await clickMapPoint(page, 15.9822, 45.80025);
   await expandStackSection(page, 'parcels');
   const park = page.locator('#click-stack').getByRole('button', { name: 'Park', exact: true });

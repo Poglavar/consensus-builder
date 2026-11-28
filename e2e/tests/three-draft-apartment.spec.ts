@@ -31,12 +31,17 @@ async function closeSheets(page: Page) {
 }
 
 // Use a polygon from the rendered floor plan itself, rather than a guessed canvas coordinate.
+// Floor plans start hidden whenever they are (re)built, until the next frame's level-of-detail
+// pass shows them, so the visible floor is found and projected in one read, polled until it exists.
 async function apartmentPoint(page: Page) {
-  return page.evaluate(() => {
+  let point = null as { x: number, y: number } | null;
+  await expect.poll(async () => (point = await page.evaluate(() => {
     const w = window as any;
     const { scene, camera, renderer } = w.getThreeModeInternals();
-    const group = scene.getObjectByName('FloorPlans').children.find((item: any) => item.userData?.proposalId);
-    const floor = group.children.filter((item: any) => item.visible && item.userData?.cbFloorPlanFloor && item.userData.apartmentRegions?.length).at(-1);
+    const visibleFloors = (group: any) => group.children.filter((item: any) => item.visible && item.userData?.cbFloorPlanFloor && item.userData.apartmentRegions?.length);
+    const group = scene.getObjectByName('FloorPlans')?.children.find((item: any) => item.userData?.proposalId && visibleFloors(item).length);
+    if (!group) return null;
+    const floor = visibleFloors(group).at(-1);
     const ring = floor.userData.apartmentRegions[0].polygons[0][0];
     const local = new w.THREE.Vector3(
       ring.reduce((sum: number, point: number[]) => sum + point[0], 0) / ring.length,
@@ -46,7 +51,8 @@ async function apartmentPoint(page: Page) {
     floor.localToWorld(local);
     const ndc = local.project(camera), rect = renderer.domElement.getBoundingClientRect();
     return { x: rect.left + (ndc.x + 1) * rect.width / 2, y: rect.top + (1 - ndc.y) * rect.height / 2 };
-  });
+  }))).not.toBeNull();
+  return point!;
 }
 
 test('a private proposed residential building selects apartments in X-ray without a building outline', async ({ mockApi: page }) => {
@@ -105,9 +111,11 @@ test('a private proposed residential building selects apartments in X-ray withou
   });
   expect(cutaway).toBe(Number((await select.inputValue()).split('::')[0]));
 
-  const actions = panel.getByRole('button', { name: /Offer to (buy|sell) apartment/i });
+  // Offer and holder actions were renamed with the property market UI (c582eaa31).
+  const actions = panel.getByRole('button', { name: /^(Offer to buy|Put up for sale)$/ });
+  await expect(actions).toHaveCount(2);
   for (const action of await actions.all()) await expect(action).toBeDisabled();
-  await expect(panel.getByRole('button', { name: /Find apartment offers/i })).toBeDisabled();
+  await expect(panel.getByRole('button', { name: 'Who holds it, offers', exact: true })).toBeDisabled();
   await expect(panel.getByRole('button', { name: 'Copy apartment link' })).toBeDisabled();
   await expect(panel.getByRole('status')).toContainText('Publish this design');
   await page.setViewportSize({ width: 390, height: 844 });

@@ -36,6 +36,9 @@ test.describe('Proposal creation and map lifecycle @features', () => {
       if(type !== 'bus') await page.getByRole('dialog',{name:'Track station',exact:true}).locator(`[data-station-level="${type}"]`).click();
       await clickMapPoint(page, 15.9822, 45.80025);
       await expect.poll(() => page.evaluate(type => (window as any).proposalStorage.getAllProposals().filter((p: any) => p.structureProposal?.stationType === type).length, type)).toBe(1);
+      // The record is stored first and applied by the awaited apply that follows (proposal-editor-shell.js
+      // instantCreateProposalFromDraftInner), so wait for the apply rather than reading the record once.
+      await expect.poll(() => page.evaluate(type => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.stationType === type)?.applied, type)).toBe(true);
       const station = await page.evaluate(type => (window as any).proposalStorage.getAllProposals().find((p: any) => p.structureProposal?.stationType === type), type);
       expect(station.applied).toBe(true);
       expect(station.title).toBeTruthy();

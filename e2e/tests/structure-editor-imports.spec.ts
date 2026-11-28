@@ -78,9 +78,9 @@ test('the GeoJSON boundary control replaces and saves the structure outline', as
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
 
-  const saved = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.geometry, proposalId);
-  expect(saved).toBeDefined();
-  expect(saved).toEqual(boundary.geometry);
+  // Done closes the editor at once; the edit commits to the record asynchronously.
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.geometry, proposalId))
+    .toEqual(boundary.geometry);
 });
 
 test('a whole-park enclosure can be removed from its selected card and saved', async ({ mockApi: page }) => {
@@ -123,7 +123,10 @@ test('park Lamp, Seesaw, and Slide tools place selectable objects that persist',
 
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
-  const decorations = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.decorationDesign, proposalId);
+  // Done closes the editor at once; the edit commits to the record asynchronously.
+  const readDecorations = () => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.decorationDesign, proposalId);
+  await expect.poll(async () => (await readDecorations())?.slides?.length ?? 0).toBe(1);
+  const decorations = await readDecorations();
   for (const [kind, coordinate] of [['lamps', lamp], ['seesaws', seesaw], ['slides', slide]] as const) {
     expect(decorations[kind]).toHaveLength(1);
     expect(decorations[kind][0].bearing).toBe(0);
@@ -166,8 +169,9 @@ test('tree height controls stay inside the selected kind range and save the fina
 
   await editor.locator('[data-action="save"]').click();
   await expect(editor).toHaveCount(0);
-  const decorations = await page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.decorationDesign, proposalId);
-  expect(decorations.trees).toEqual([{ coordinate: tree, kind: 'broadleaf', heightM: 13 }]);
+  // Done closes the editor at once; the edit commits to the record asynchronously.
+  await expect.poll(() => page.evaluate(id => (window as any).proposalStorage.getProposal(id)?.structureProposal?.decorationDesign?.trees, proposalId))
+    .toEqual([{ coordinate: tree, kind: 'broadleaf', heightM: 13 }]);
 });
 
 // Furniture models stay on this device (0429fb09f): nothing is uploaded until the design is published.

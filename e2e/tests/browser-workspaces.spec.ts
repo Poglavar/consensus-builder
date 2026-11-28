@@ -52,6 +52,9 @@ for (const width of [390, 1280]) test(`a duplicate tab waits for the owner and r
     await retry.click();
     await expect.poll(() => duplicate.evaluate(() => (window as any).BrowserWorkspace?.status)).toBe('ready');
     await waitForMapReady(duplicate);
+    // The Try again reload is not awaited as a navigation, and the map and its tiles appear while
+    // later app scripts (proposal-drafts.js) are still loading: wait for the app boot (map-core.js).
+    await duplicate.evaluate(() => (window as any).whenAppBooted());
     expect(await duplicate.evaluate(() => ({
       workspace: (window as any).BrowserWorkspace.id,
       value: (window as any).PersistentStorage.getItem('workspaceProbe'),

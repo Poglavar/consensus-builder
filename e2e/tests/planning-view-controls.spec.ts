@@ -242,6 +242,9 @@ test('Buildings and massing shares its button and section loading states when op
   }));
   // A second role loading packs into the next third; the answer arriving clears Permitted's.
   await page.evaluate(() => (window as any).PlanningViews.configure('existing', 'solid'));
+  // Showing Built starts the map's own building-cell reads at once. Requests that overlap share one
+  // byte total (planning/loading.js beginTransfer), so let those finish before the test's body starts.
+  await expect.poll(() => page.evaluate(() => (window as any).PlanningLoading.state().existing)).toBe(false);
   await page.evaluate(() => {
     const w = window as any;
     w.PlanningLoading.set('existing', 'test', true);

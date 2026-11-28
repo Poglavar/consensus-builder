@@ -1,5 +1,5 @@
 import { test, expect } from '../helpers/fixtures';
-import { waitForMapReady, clickMapAt } from '../helpers/app';
+import { waitForMapReady, clickMapAt, afterFrames } from '../helpers/app';
 import { selectors } from '../helpers/selectors';
 
 // The toolbar and dock buttons share the sheet controller in frontend/js/ui/map-shell.js.
@@ -86,10 +86,12 @@ test.describe('Map shell sheets @features', () => {
       await page.setViewportSize({ width, height });
       await layersButton.press('Enter');
       await expect(layers).toBeVisible();
+      await afterFrames(page);
       const layerBox = (await layers.boundingBox())!;
       await layers.getByRole('button', { name: 'Buildings and massing', exact: true }).press('Enter');
       await expect(layers).toBeHidden();
       await expect(buildings).toBeVisible();
+      await afterFrames(page);
       const buildingBox = (await buildings.boundingBox())!;
       if (width >= 768) {
         // Docked beside the view strip, so the 2D/3D/photo tiles stay clickable with a sheet open.

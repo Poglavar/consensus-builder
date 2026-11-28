@@ -141,7 +141,7 @@ test.describe('Proposal actions @features', () => {
 
     const success = page.locator('#parcel-mint-success-modal');
     await expect(success).toBeVisible({ timeout: 15000 });
-    await expect(success).toContainText('The parcel is anchored');
+    await expect(success).toContainText('The parcel’s anchor is minted');
     expect(uploads).toEqual([]);
     await expect(success.locator('a[href*="explorer.solana.com/tx/"]')).toBeVisible();
     await success.getByRole('button', { name: 'OK', exact: true }).click();
