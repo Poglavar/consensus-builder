@@ -93,6 +93,18 @@ function raisedExisting(intent, site, buildings) {
     return publish(intent, { goal: 'buildings', site, buildingProposal: { typologyType: 'block', parameters: raised.parameters(settings) }, geometry: { buildings: features } });
 }
 
+// The buildings of a Based on existing buildings design that reach beyond its site, by the rule the
+// apply check uses (RaisedExistingBuildings.outsideSite, the editor's red parts and banner): a building
+// at least half inside is redrawn whole, so one straddling its plot boundary leaves ground outside the
+// site, and such a design is not published or put on the map until its site covers them.
+// [{ buildingId, areaM2 }], empty for any other design.
+export function existingOutsideSite(design) {
+    if (design?.buildingProposal?.parameters?.mode !== 'existing' || !design.site) return [];
+    const buildings = design.geometry?.buildings || [];
+    return runtime.raisedExisting.outsideSite(buildings, design.site, turf, runtime.tolerances, Number(design.toleranceM) || 0)
+        .map(item => ({ buildingId: buildings[item.index]?.properties?.sourceBuildingId ?? null, areaM2: Math.round(item.areaM2 * 100) / 100 }));
+}
+
 // A typed change to a Based on existing buildings design, kept in step with its saved parameters
 // (the editor rebuilds from them on reopen). Its one control that maps cleanly is the storeys of an
 // exact rule: set_floors for the whole design redraws every building through the shared builder,

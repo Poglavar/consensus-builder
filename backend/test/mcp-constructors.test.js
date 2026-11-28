@@ -1,7 +1,7 @@
 // Check typed MCP construction against the shared app geometry and retained constraints.
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
-import { buildTypedDesign, validateTrackDesign } from '../agents/mcp-constructors.js';
+import { buildTypedDesign, existingOutsideSite, validateTrackDesign } from '../agents/mcp-constructors.js';
 import { appTurf as turf, constructorRuntime, intentDesign, intentEditing, corridorRuntime } from '../agents/mcp-geometry.js';
 import { cidOfObject } from '../cid.js';
 const require = createRequire(import.meta.url);
@@ -553,6 +553,18 @@ describe('MCP Based on existing buildings', () => {
         expect(areas).toMatchObject({ buildingsExtended: 1, floorAreaM2: stats.grossFloorAreaM2, keptFloorAreaM2: stats.keptFloorAreaM2 });
         // 9 m at 3 m storeys was 3 storeys; it now has 5, so it keeps three fifths and adds two.
         expect(areas.keptFloorAreaM2 / areas.floorAreaM2).toBeCloseTo(3 / 5, 6);
+    });
+
+    it('names the redrawn buildings that reach beyond the site, as the editor shows them before Done', () => {
+        // Three quarters inside, so redrawn whole: its east quarter stands outside the site.
+        const straddling = box(15.00185, 45.0002, 0.0002, { id: 4, source: 'osm', height_m: 9 });
+        const design = buildTypedDesign({ ...intent, existing: { rule: 'exact', floors: 3 }, roof: 'mansard' }, { ...options, existingBuildings: [stock[0], straddling] });
+        const outside = existingOutsideSite(design);
+        expect(outside.map(item => item.buildingId)).toEqual(['osm:4']);
+        const quarter = turf.area(box(15.002, 45.0002, 0.00005, {})) * 4;
+        expect(outside[0].areaM2).toBeGreaterThan(0.9 * quarter);
+        expect(outside[0].areaM2).toBeLessThan(1.1 * quarter);
+        expect(existingOutsideSite(buildTypedDesign({ ...intent, existing: { rule: 'exact', floors: 3 } }, { ...options, existingBuildings: stock }))).toEqual([]);
     });
 
     it('refuses what the editor cannot make', () => {

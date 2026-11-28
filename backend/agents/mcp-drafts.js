@@ -5,7 +5,7 @@ import { createMcpComparison } from './mcp-compare.js';
 import { previewArtifact } from './mcp-preview.js';
 import { parcelSourceIdOf } from './mcp-read-tools.js';
 import { editedDesign, valueAt } from './mcp-edit.js';
-import { buildTypedDesign, modifyRaisedExisting, validateTrackDesign } from './mcp-constructors.js';
+import { buildTypedDesign, existingOutsideSite, modifyRaisedExisting, validateTrackDesign } from './mcp-constructors.js';
 import { trustedMetadata } from './mcp-results.js';
 import { cityDrivingSide } from '../scripts/lib/frontend-city-money.mjs';
 import { MAX_SOURCE_BINDING_PARCELS } from '../parcels/source-binding.js';
@@ -205,6 +205,12 @@ export function createMcpDraftTools({ read, appOrigin, resolveDraftReference, re
         // starts as the editor's 20 x 20 m default inside it, which a caller cannot tell from the result.
         if (kind === 'building' && (args.typology ?? 'freeform') === 'freeform' && !intent.footprint && args.coverage == null)
             drafted.warnings.push('The building is the default 20 x 20 m footprint inside the site; pass footprint (the building outline) or coverage to shape it.');
+        // As the Block editor's banner says before Done: an existing building redrawn whole that reaches
+        // beyond the site keeps the design a draft until the land under it is in the site.
+        const outside = existingOutsideSite(checked.content);
+        if (outside.length) drafted.warnings.push(`Buildings reaching beyond the site: ${outside.length}, ${Math.round(outside.reduce((sum, item) => sum + item.areaM2, 0) * 10) / 10} m² outside `
+            + `(${outside.map(item => `${item.buildingId ?? 'unnamed'} ${item.areaM2} m²`).join(', ')}). The draft is kept, but it can be published or put on the map only once the land under them is in its site: `
+            + 'add the parcels they reach into to parcelIds, or pass an outline that covers them, and draft again.');
         return drafted;
     }
     // The existing buildings under a Based on existing buildings site, as the Block editor loads
