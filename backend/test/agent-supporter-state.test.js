@@ -59,7 +59,10 @@ describe('supporter on-chain eligibility', () => {
         const out = await readSupportEligibility({ connection, wallet, persona, agreements: list, env: { SOLANA_RPC_MAX_ACCOUNTS: '2' } });
         expect(out.closedMarketCids).toEqual([cidOf(0)]);
         expect(out.alreadySupportedCids).toEqual([cidOf(1)]);
+        expect(out.unopenedMarketCids).toEqual([cidOf(2)]);
         expect(out.agreements.map(item => item.cid)).toEqual([cidOf(1), cidOf(2)]);
+        // Batched reads only: never falls back to N per-candidate getAccountInfo calls.
+        expect(connection.getAccountInfo).not.toHaveBeenCalled();
         // Every agreement account is read under the verified cluster, its market at the sponsor-bound PDA.
         const chainReads = connection.getMultipleAccountsInfoAndContext.mock.calls.map(([keys]) => keys.map(key => key.toBase58()));
         expect(chainReads.flat()).toEqual(expect.arrayContaining(list.map(item => item.account)));
@@ -119,9 +122,12 @@ describe('re-check before funding or signing', () => {
     const [target] = agreements();
     const decision = type => ({ type, agreementCid: target.cid, account: target.account });
 
-    it('lets a stake through on an Active agreement whose market is open or not created yet', async () => {
+    it('lets a stake through on an Active agreement whose market is open or not created yet and forwards context via onContext', async () => {
         for (const entries of [[agreementEntry(target.cid)], [agreementEntry(target.cid), marketEntry(target.account)]]) {
-            await expect(assertSupportEligibility({ connection: rpc(entries), decision: decision('stake') })).resolves.toBeUndefined();
+            let seen = null;
+            await expect(assertSupportEligibility({ connection: rpc(entries), decision: decision('stake'), onContext: ctx => { seen = ctx; } })).resolves.toBeUndefined();
+            expect(seen?.agreement?.address).toBe(target.account);
+            expect(Boolean(seen?.market)).toBe(entries.length === 2);
         }
     });
 

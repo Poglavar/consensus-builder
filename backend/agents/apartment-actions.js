@@ -7,6 +7,7 @@
 // rerun signs nothing twice. roundStats reads a round's states and counts with the browser's own model
 // (frontend/js/apartment-round.js), for the MCP's ugt_inspect_agreement.
 import { createRequire } from 'node:module';
+import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -30,6 +31,53 @@ async function send(connection, instructions, signer, sendAndConfirm) {
 export function readRoundInventory(connection, { account, content }) {
     if (!content?.funding?.apartments) return Promise.resolve([]);
     return pledge.readApartmentInventory(connection, account, content.sponsor, content.funding, agreementRecord);
+}
+
+/**
+ * Batched version of readRoundInventory across many rounds: reads every round's unit accounts in one
+ * getMultipleAccountsBatched call and every reserved deposit position in one second batch (2 RPCs
+ * total instead of 2 per round). Returns Map(account -> rows).
+ */
+export async function readRoundsInventory(connection, rounds = [], { env = process.env } = {}) {
+    const out = new Map();
+    const pending = [];
+    const unitKeys = [];
+    for (const round of rounds || []) {
+        if (!round?.content?.funding?.apartments) { out.set(round.account, []); continue; }
+        const offers = pledge.apartmentOffers(round.content.funding, round.content.sponsor, agreementRecord);
+        if (!offers.length) { out.set(round.account, []); continue; }
+        pending.push({ round, offers, start: unitKeys.length });
+        for (const offer of offers) unitKeys.push(new web3.PublicKey(offer.account));
+    }
+    if (!unitKeys.length) return out;
+    const batchSize = accountsPerRequest(env);
+    const unitInfos = await getMultipleAccountsBatched(connection, unitKeys, { batchSize });
+    const held = [];
+    for (const entry of pending) {
+        const infos = unitInfos.slice(entry.start, entry.start + entry.offers.length);
+        const rows = pledge.apartmentInventoryRows(entry.offers, infos, entry.round.account, entry.round.content.sponsor);
+        out.set(entry.round.account, rows);
+        for (const row of rows) if (row.position) held.push(row);
+    }
+    if (held.length) {
+        const positionInfos = await getMultipleAccountsBatched(connection, held.map(row => new web3.PublicKey(row.position)), { batchSize });
+        const programId = pledge.constants.PROGRAM_ID;
+        held.forEach((row, i) => {
+            const info = positionInfos[i];
+            if (!info?.data || info.owner?.toBase58?.() !== programId) throw new Error('Apartment deposit position could not be verified.');
+            const paid = pledge.decodeDonationPosition(info.data);
+            if (!paid || paid.owner !== row.buyer || Buffer.from(paid.donationId).toString('hex') !== row.unitKey) {
+                throw new Error('Apartment deposit position could not be verified.');
+            }
+            if (paid.refunded) {
+                row.clearedPosition = row.position;
+                row.status = 'unlisted';
+                row.position = null;
+                row.buyer = null;
+            }
+        });
+    }
+    return out;
 }
 
 /**

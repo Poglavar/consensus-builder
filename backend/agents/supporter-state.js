@@ -5,7 +5,7 @@ import { PublicKey } from '@solana/web3.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { eligibleSupportAgreements } from './supporter-picker.js';
 import { AGREEMENT_STATUS } from './agreement-minter.js';
-import { readAgreementMarket, readHeldPosition } from './bettor.js';
+import { readAgreementMarket, readAgreementMarkets } from './bettor.js';
 
 const require = createRequire(import.meta.url);
 const web3 = require('@solana/web3.js');
@@ -28,39 +28,53 @@ export async function readSupportEligibility({ connection, wallet, persona, agre
     const wantsMarket = actions.some(action => String(action).toLowerCase() === 'stake');
     const wantsPledges = actions.some(action => String(action).toLowerCase() === 'pledge');
     const owner = wallet ? new PublicKey(wallet) : null;
-    const supported = new Set(), closed = new Set();
+    const supported = new Set(), closed = new Set(), unopened = new Set();
+    const batchSize = accountsPerRequest(env);
+    let connectionReady = connection;
 
-    if (wantsMarket) {
+    if (wantsMarket && candidates.length) {
+        const contexts = await readAgreementMarkets(connection, candidates.map(agreement => agreement.account), { env });
+        connectionReady = contexts.get(candidates[0].account).connection;
+        const openWithMarket = [];
         for (const agreement of candidates) {
-            const context = await readAgreementMarket(connection, agreement.account);
-            const raw = context.market;
-            if (!raw) continue;
+            const context = contexts.get(agreement.account);
+            const raw = context?.market;
+            if (!raw) { unopened.add(agreement.cid); continue; }
             if (raw.resolved) { closed.add(agreement.cid); continue; }
-            if (!owner) continue;
-            if (await readHeldPosition(context, owner, market.constants.SIDE_YES)) supported.add(agreement.cid);
+            openWithMarket.push({ agreement, context });
+        }
+        if (owner && openWithMarket.length) {
+            const positionPdas = openWithMarket.map(({ context }) => market.getPositionPda(context.address, owner, market.constants.SIDE_YES)[0]);
+            const positionInfos = await getMultipleAccountsBatched(connectionReady, positionPdas, { batchSize });
+            openWithMarket.forEach(({ agreement, context }, index) => {
+                if (market.readPositionAccount(positionInfos[index], context.address, owner, market.constants.SIDE_YES)) supported.add(agreement.cid);
+            });
         }
     }
 
-    if (wantsPledges && owner) {
+    if (wantsPledges && owner && candidates.length) {
         const reads = candidates.map(agreement => {
             const [book] = pledge.getPledgeBookPda(agreement.account);
             return { agreement, address: pledge.getPledgeCommitmentPda(book, owner)[0] };
         });
-        const connectionReady = wantsMarket && candidates.length
-            ? (await readAgreementMarket(connection, candidates[0].account)).connection
-            : connection;
-        const infos = await getMultipleAccountsBatched(connectionReady, reads.map(read => read.address), { batchSize: accountsPerRequest(env) });
+        const infos = await getMultipleAccountsBatched(connectionReady, reads.map(read => read.address), { batchSize });
         reads.forEach((read, index) => {
             const value = decode(infos[index], pledge.decodePledgeCommitment, pledge.constants.PROGRAM_ID);
             if (value && [pledge.constants.PLEDGE_ACTIVE, pledge.constants.PLEDGE_FULFILLED].includes(value.status)) supported.add(read.agreement.cid);
         });
     }
-    return { agreements: candidates.filter(agreement => !closed.has(agreement.cid)), alreadySupportedCids: [...supported], closedMarketCids: [...closed] };
+    return {
+        agreements: candidates.filter(agreement => !closed.has(agreement.cid)),
+        alreadySupportedCids: [...supported],
+        closedMarketCids: [...closed],
+        unopenedMarketCids: [...unopened]
+    };
 }
 
 // Recheck the agreement and market immediately before a trade. The transaction's program checks are
 // authoritative, but this avoids signing against a stale terminal agreement or noncanonical account.
-export async function assertSupportEligibility({ connection, decision }) {
+// Optional `onContext` receives the freshly verified market context so a stake can reuse it without re-reading.
+export async function assertSupportEligibility({ connection, decision, onContext = null }) {
     const context = await readAgreementMarket(connection, decision.account);
     if (context.agreement.cid !== decision.agreementCid) {
         throw new Error(`Support target ${decision.agreementCid} does not match agreement account ${decision.account}; no action submitted`);
@@ -69,4 +83,5 @@ export async function assertSupportEligibility({ connection, decision }) {
         throw new Error(`Support target ${decision.agreementCid} is ${context.agreement.status} on-chain; no action submitted`);
     }
     if (context.market?.resolved) throw new Error(`Support target ${decision.agreementCid} market is resolved; no action submitted`);
+    onContext?.(context);
 }

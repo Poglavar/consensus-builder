@@ -21,12 +21,14 @@ function transientSendError(error) {
  * @param {import('@solana/web3.js').Connection} connection
  * @param {import('@solana/web3.js').Transaction} transaction
  * @param {import('@solana/web3.js').Signer[]} signers first signer pays the fee
- * @param {{ commitment?: 'confirmed'|'finalized', pollMs?: number, maxMs?: number,
+ * @param {{ commitment?: 'confirmed'|'finalized', pollMs?: number, initialPollMs?: number, maxMs?: number,
+ *           heightCheckAfterMs?: number, heightCheckIntervalMs?: number,
  *           broadcastAttempts?: number, rebroadcastMs?: number }} [options]
  * @returns {Promise<string>} the signature, once it has reached `commitment`
  */
 export async function sendAndConfirmPolling(connection, transaction, signers, {
-    commitment = 'confirmed', pollMs = 1500, maxMs = 120000,
+    commitment = 'confirmed', pollMs = 2500, initialPollMs = Math.min(2000, pollMs), maxMs = 120000,
+    heightCheckAfterMs = Math.min(15000, pollMs * 6), heightCheckIntervalMs = Math.min(10000, pollMs * 4),
     broadcastAttempts = 3, rebroadcastMs = 5000, now = Date.now, wait = sleep
 } = {}) {
     if (!signers?.length) throw new Error('sendAndConfirmPolling: at least one signer is required');
@@ -40,6 +42,7 @@ export async function sendAndConfirmPolling(connection, transaction, signers, {
     const started = now();
     let broadcasts = 0;
     let lastBroadcast = started;
+    let lastHeightCheck = -Infinity;
     let sendError = null;
     const broadcast = async () => {
         broadcasts += 1;
@@ -59,6 +62,8 @@ export async function sendAndConfirmPolling(connection, transaction, signers, {
         }
     };
     await broadcast();
+    // Solana slots take ~400 ms and confirmed finality ~1.5-3 s; polling at t=0 wastes an RPC call.
+    if (initialPollMs > 0) await wait(initialPollMs);
     const reached = (status) => status && (status.confirmationStatus === 'finalized' || status.confirmationStatus === commitment
         || (commitment === 'confirmed' && status.confirmationStatus === 'confirmed'));
     // While the blockhash lives, the node's recent status cache holds this transaction's status, so the
@@ -76,12 +81,17 @@ export async function sendAndConfirmPolling(connection, transaction, signers, {
         if (reached(status)) return signature;
         if (sendError && !status && !transientSendError(sendError)) throw sendError;
 
-        const height = await connection.getBlockHeight(commitment);
-        if (height > lastValidBlockHeight) {
-            // The blockhash is dead; one last look so a confirmation that arrived while we asked for
-            // the height is not misreported as expiry.
-            if (reached(await readStatus({ history: true }))) return signature;
-            throw new Error(`transaction ${signature} expired: block height ${height} > ${lastValidBlockHeight} without confirmation`);
+        const elapsed = now() - started;
+        // A blockhash lives ~150 blocks (~60 s); skip getBlockHeight during fast confirmations.
+        if (elapsed >= heightCheckAfterMs && now() - lastHeightCheck >= heightCheckIntervalMs) {
+            lastHeightCheck = now();
+            const height = await connection.getBlockHeight(commitment);
+            if (height > lastValidBlockHeight) {
+                // The blockhash is dead; one last look so a confirmation that arrived while we asked for
+                // the height is not misreported as expiry.
+                if (reached(await readStatus({ history: true }))) return signature;
+                throw new Error(`transaction ${signature} expired: block height ${height} > ${lastValidBlockHeight} without confirmation`);
+            }
         }
         if (now() - started > maxMs) {
             throw new Error(`transaction ${signature} not confirmed after ${maxMs} ms (status ${status?.confirmationStatus ?? 'none'}) — check the explorer before retrying`);

@@ -66,12 +66,12 @@ export async function discoverAgreements({ index, cities, log = () => {} }) {
  * so it stays unminted (chainStatus null). One with no recorded mint is still read, since the chain, not
  * the index, proves a mint.
  */
-export async function readAgreementStatuses(agreements, connection, { env = process.env, programId = AGREEMENT_PROGRAM_ID } = {}) {
+export async function readAgreementStatuses(agreements, connection, { env = process.env, programId = AGREEMENT_PROGRAM_ID, decodedOut = null } = {}) {
     const withAccount = (agreements || []).filter(agreement => agreement.account && !RETIRED_AGREEMENT_PROGRAM_IDS.includes(agreement.recordedProgramId));
     if (!withAccount.length) return agreements;
     const infos = await getMultipleAccountsBatched(connection, withAccount.map(agreement => new PublicKey(agreement.account)), { batchSize: accountsPerRequest(env) });
     const program = new PublicKey(programId);
-    const statuses = withAccount.map((agreement, index) => {
+    const decoded = withAccount.map((agreement, index) => {
         const info = infos[index];
         if (!info?.data) return null;
         if (!info.owner || !new PublicKey(info.owner).equals(program)) throw new Error(`agreement ${agreement.cid}: account ${agreement.account} is not owned by the agreement program`);
@@ -80,9 +80,13 @@ export async function readAgreementStatuses(agreements, connection, { env = proc
         if (state.cid !== agreement.cid || state.authority !== agreement.sponsor) {
             throw new Error(`agreement ${agreement.cid}: account ${agreement.account} holds ${state.cid} of ${state.authority}`);
         }
-        return state.status.toLowerCase();
+        return state;
     });
-    withAccount.forEach((agreement, index) => { agreement.chainStatus = statuses[index]; });
+    withAccount.forEach((agreement, index) => {
+        const state = decoded[index];
+        agreement.chainStatus = state ? state.status.toLowerCase() : null;
+        if (state && decodedOut) decodedOut.set(agreement.account, state);
+    });
     return agreements;
 }
 

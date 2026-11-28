@@ -8,7 +8,7 @@
 import { createRequire } from 'node:module';
 import { donationIdBytes } from './donor.js';
 import { AGREEMENT_STATUS, confirmAgreementFunding, executeAgreement, expireAgreement, readAgreementAccount, recordAgreementDecision } from './agreement-minter.js';
-import { readAgreementMarket } from './bettor.js';
+import { readAgreementMarket, readAgreementMarkets } from './bettor.js';
 import { confirmAsLensMember } from './chain-actions.js';
 
 const require = createRequire(import.meta.url);
@@ -416,10 +416,19 @@ export async function inspectSettlement({ connection, owner, agreement, lensKey 
         const donation = await read.readDonation(connection, agreement.account);
         if (donation && !donation.released) steps.push('release-donations');
     }
-    const [market, position] = await Promise.all([
-        read.readMarket(connection, agreement.account),
-        read.readPosition(connection, agreement.account, ownerKey)
-    ]);
+    let market;
+    let position;
+    if (!readers.readMarket && !readers.readPosition) {
+        // Reuse the already-decoded agreement account and read the market once (instead of 3 agreement + 2 market RPCs).
+        const context = (await readAgreementMarkets(connection, [agreement.account], { preloadedAgreements: new Map([[state.address, state]]) })).get(agreement.account);
+        market = context?.market ?? null;
+        position = market ? await lmsrClient.readPosition(context.connection, context.address, ownerKey, lmsrClient.constants.SIDE_YES) : null;
+    } else {
+        [market, position] = await Promise.all([
+            read.readMarket(connection, agreement.account),
+            read.readPosition(connection, agreement.account, ownerKey)
+        ]);
+    }
     const payout = yesPayout(market, position, outcome);
     if (market && !market.resolved) steps.push('resolve');
     if (payout > 0n) steps.push('claim');
@@ -516,10 +525,18 @@ export async function executeSettlement({
         }
     }
     if (has('claim')) {
-        const [market, position] = await Promise.all([
-            read.readMarket(connection, subject),
-            read.readPosition(connection, subject, ownerKeypair.publicKey)
-        ]);
+        let market;
+        let position;
+        if (!readers.readMarket && !readers.readPosition) {
+            const context = await readAgreementMarket(connection, subject);
+            market = context?.market ?? null;
+            position = market ? await lmsrClient.readPosition(context.connection, context.address, ownerKeypair.publicKey, lmsrClient.constants.SIDE_YES) : null;
+        } else {
+            [market, position] = await Promise.all([
+                read.readMarket(connection, subject),
+                read.readPosition(connection, subject, ownerKeypair.publicKey)
+            ]);
+        }
         if (yesPayout(market, position, item.outcome) > 0n) {
             current.claim = await perform({ type: 'claim', agreementCid: item.cid, side: 'yes' }, () => act.claimAgreementMarket({
                 connection, claimerKeypair: ownerKeypair, subject, side: 'yes', sendAndConfirm

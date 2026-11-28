@@ -13,5 +13,21 @@ export function createRpcMethodCounter() {
         }
     };
 
-    return { onRequest, snapshot: () => ({ ...counts }) };
+    const total = () => Object.values(counts).reduce((sum, n) => sum + n, 0);
+
+    return { onRequest, snapshot: () => ({ ...counts }), total };
+}
+
+/** Delta between two snapshots (after - before), omitting zero entries. */
+export function diffRpcCounts(before = {}, after = {}) {
+    const out = Object.create(null);
+    for (const [method, count] of Object.entries(after || {})) {
+        const delta = (Number(count) || 0) - (Number(before?.[method]) || 0);
+        if (delta > 0) out[method] = delta;
+    }
+    return out;
+}
+
+export function sumRpcCounts(counts = {}) {
+    return Object.values(counts || {}).reduce((sum, n) => sum + (Number(n) || 0), 0);
 }

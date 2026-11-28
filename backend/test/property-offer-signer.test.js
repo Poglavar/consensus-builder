@@ -218,6 +218,19 @@ describe('state holding', () => {
         await expect(stateHolding({ connection: chain.connection, keypair: memberKp, asset: FLAT, holder: buyer, basis: 'declared', nowSeconds: NOW, sendAndConfirm })).rejects.toThrow(/already stated/);
         expect(sendAndConfirm).toHaveBeenCalledOnce();
     });
+
+    it('caches cluster genesis hash and property_offer program deployment checks per connection', async () => {
+        const row = offerRow(), chain = fakeChain(row);
+        const genesisSpy = vi.fn(chain.connection.getGenesisHash);
+        chain.connection.getGenesisHash = genesisSpy;
+        const sendAndConfirm = sender(() => chain.set({}));
+        await createOfferOnChain({ ...base(chain, row, sellerKp), nowSeconds: NOW, sendAndConfirm });
+        await createOfferOnChain({ ...base(chain, row, sellerKp), nowSeconds: NOW, sendAndConfirm });
+        await stateHolding({ connection: chain.connection, keypair: memberKp, asset: FLAT, holder: seller, basis: 'declared', nowSeconds: NOW, sendAndConfirm: sender() });
+        expect(genesisSpy).toHaveBeenCalledTimes(1);
+        const programChecks = chain.connection.getAccountInfo.mock.calls.filter(([key]) => new PublicKey(key).toBase58() === PROGRAM);
+        expect(programChecks).toHaveLength(1);
+    });
 });
 
 describe('createOnchainRecorder', () => {

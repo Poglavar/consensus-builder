@@ -12,7 +12,7 @@ function freshTransaction(payer) {
 function stubConnection({ statuses, heights = [100], lastValidBlockHeight = 150, sendErrors = [] }) {
     const statusQueue = [...statuses];
     const heightQueue = [...heights];
-    const calls = { sent: 0, statusPolls: 0, blockhashReads: 0, raws: [], signature: null, statusOptions: [] };
+    const calls = { sent: 0, statusPolls: 0, blockhashReads: 0, heightReads: 0, raws: [], signature: null, statusOptions: [] };
     return {
         calls,
         async getLatestBlockhash() {
@@ -34,6 +34,7 @@ function stubConnection({ statuses, heights = [100], lastValidBlockHeight = 150,
             return { value: [statusQueue.length > 1 ? statusQueue.shift() : statusQueue[0]] };
         },
         async getBlockHeight() {
+            calls.heightReads += 1;
             return heightQueue.length > 1 ? heightQueue.shift() : heightQueue[0];
         }
     };
@@ -69,7 +70,8 @@ describe('sendAndConfirmPolling', () => {
     it('reports expiry only after a final status check past the last valid block height', async () => {
         const payer = Keypair.generate();
         const connection = stubConnection({ statuses: [null], heights: [151], lastValidBlockHeight: 150 });
-        await expect(sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1 })).rejects.toThrow(/expired/);
+        // heightCheckAfterMs: 0 checks expiry on the very first poll (default delays block-height checks).
+        await expect(sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1, heightCheckAfterMs: 0 })).rejects.toThrow(/expired/);
         expect(connection.calls.statusPolls).toBe(2);
         // Only the last look, after the blockhash died, searches the history.
         expect(connection.calls.statusOptions).toEqual([undefined, { searchTransactionHistory: true }]);
@@ -78,7 +80,7 @@ describe('sendAndConfirmPolling', () => {
     it('does not call a transaction expired when the last look finds it confirmed', async () => {
         const payer = Keypair.generate();
         const connection = stubConnection({ statuses: [null, { confirmationStatus: 'confirmed' }], heights: [151], lastValidBlockHeight: 150 });
-        const signature = await sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1 });
+        const signature = await sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1, heightCheckAfterMs: 0 });
         expect(signature).toBe(connection.calls.signature);
     });
 
@@ -132,7 +134,7 @@ describe('sendAndConfirmPolling', () => {
     it('never mistakes an on-chain error in the last expiry check for success', async () => {
         const payer = Keypair.generate();
         const connection = stubConnection({ statuses: [null, { confirmationStatus: 'finalized', err: { InstructionError: [0, 'Custom'] } }], heights: [151] });
-        await expect(sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1 }))
+        await expect(sendAndConfirmPolling(connection, freshTransaction(payer), [payer], { pollMs: 1, heightCheckAfterMs: 0 }))
             .rejects.toThrow(/failed on chain/);
         expect(connection.calls.sent).toBe(1);
     });
@@ -146,5 +148,34 @@ describe('sendAndConfirmPolling', () => {
         })).rejects.toThrow(/not confirmed/);
         expect(connection.calls.sent).toBe(3);
         expect(connection.calls.blockhashReads).toBe(1);
+    });
+
+    it('waits initialPollMs before polling and skips getBlockHeight on fast confirmations', async () => {
+        let clock = 0;
+        const waits = [];
+        const payer = Keypair.generate();
+        const connection = stubConnection({ statuses: [{ confirmationStatus: 'confirmed' }], heights: [100] });
+        await sendAndConfirmPolling(connection, freshTransaction(payer), [payer], {
+            now: () => clock,
+            wait: async ms => { waits.push(ms); clock += ms; }
+        });
+        expect(waits).toEqual([2000]);
+        expect(connection.calls.statusPolls).toBe(1);
+        expect(connection.calls.heightReads).toBe(0);
+    });
+
+    it('gates getBlockHeight behind heightCheckAfterMs and heightCheckIntervalMs', async () => {
+        let clock = 0;
+        const payer = Keypair.generate();
+        // 11 nulls + 1 confirmed at 2500ms after 2000ms initial wait: clocks at 2000..27000
+        const statuses = [...Array(11).fill(null), { confirmationStatus: 'confirmed' }];
+        const connection = stubConnection({ statuses, heights: [100], lastValidBlockHeight: 150 });
+        await sendAndConfirmPolling(connection, freshTransaction(payer), [payer], {
+            rebroadcastMs: 60_000,
+            now: () => clock,
+            wait: async ms => { clock += ms; }
+        });
+        // First height check at 17000 (>= 15000); second at 27000 (>= 17000 + 10000).
+        expect(connection.calls.heightReads).toBe(2);
     });
 });

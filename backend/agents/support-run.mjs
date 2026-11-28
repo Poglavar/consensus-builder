@@ -22,6 +22,7 @@ import { buyAgreementShares, usdcToAtomic } from './bettor.js';
 import { failStaleRuns, getRun, startRun, updateRun, STALE_RUN_HOURS } from './ledger.js';
 import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } from './run-failure.js';
 import { createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter, diffRpcCounts, sumRpcCounts } from '../solana/rpc-method-counts.js';
 import { ensureBotSolFunding, fundBotAction, isFundingSourceShort } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
@@ -100,7 +101,8 @@ export async function executeSupport({ decision, connection, keypair, runId, poo
     if (amountAtomic > capAtomic) {
         throw new Error(`support amount ${decision.amount} USDC exceeds AGENT_SUPPORT_USDC_CAP`);
     }
-    await (adapters.assertSupportEligibility || assertSupportEligibility)({ connection, decision, pool });
+    let context = null;
+    await (adapters.assertSupportEligibility || assertSupportEligibility)({ connection, decision, pool, onContext: value => { context = value; } });
     await (adapters.fundBotAction || fundBotAction)({ action: decision, connection, pool, persona, runId });
     if (decision.type === 'pledge') {
         return (adapters.ensurePledgeBookAndSet || ensurePledgeBookAndSet)({
@@ -117,7 +119,9 @@ export async function executeSupport({ decision, connection, keypair, runId, poo
     if (decision.type === 'stake') {
         return (adapters.buyAgreementShares || buyAgreementShares)({
             connection, ownerKeypair: keypair, subject: decision.account,
-            stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic, sendAndConfirm: sendAndConfirmPolling
+            stakeMint: USDC_DEVNET, side: SIDE_YES, amountAtomic,
+            ...(context ? { context } : {}),
+            sendAndConfirm: sendAndConfirmPolling
         });
     }
     throw new Error(`unsupported support action ${decision.type}`);
@@ -133,7 +137,8 @@ async function main() {
     const index = createIndexClient({ apiBase, log });
     const pool = args.live ? createPool() : null;
     // Reads (existing support) happen in dry-run too; only --live signs anything.
-    const connection = createRpcConnection(rpcUrl, 'confirmed');
+    const rpcCounter = createRpcMethodCounter();
+    const connection = createRpcConnection(rpcUrl, 'confirmed', { onRpcRequest: rpcCounter.onRequest });
     const report = [];
     try {
         if (pool) {
@@ -149,6 +154,7 @@ async function main() {
             }
             let runStarted = false;
             const activities = [];
+            const runRpcBefore = rpcCounter.snapshot();
             try {
                 if (args.live) {
                     await startRun(pool, { runId, persona: persona.name, day, mode: 'live' });
@@ -167,7 +173,7 @@ async function main() {
                 const eligibility = await readSupportEligibility({ connection, wallet, persona, agreements });
                 if (eligibility.closedMarketCids.length) log(`${persona.name}: excluded ${eligibility.closedMarketCids.length} resolved market(s)`);
                 const choice = selectSupportAction({ day: runKey, persona, agreements: eligibility.agreements, wallet,
-                    excludeCids: eligibility.alreadySupportedCids });
+                    excludeCids: eligibility.alreadySupportedCids, unopenedMarketCids: eligibility.unopenedMarketCids });
                 log(`${persona.name}: ${choice.reason}`);
                 if (args.dryRun) {
                     if (choice.selected) console.log(JSON.stringify(choice.selected, null, 2));
@@ -183,6 +189,7 @@ async function main() {
                     outcome: choice.selected ? 'selected' : 'no-eligible-agreement'
                 } });
                 if (!choice.selected) {
+                    await updateRun(pool, runId, { summaryPatch: { rpcCounts: diffRpcCounts(runRpcBefore, rpcCounter.snapshot()) } });
                     report.push(`${persona.name}: no eligible agreement`);
                     continue;
                 }
@@ -210,23 +217,25 @@ async function main() {
                 const { entity: _entity, message: _message, ...outcome } = execution.outcome;
                 // A replayed adapter result found the support already on-chain: record a no-op, not an action.
                 const verdict = classifySupportExecution(outcome);
+                const rpcCounts = diffRpcCounts(runRpcBefore, rpcCounter.snapshot());
                 await updateRun(pool, runId, { stage: verdict.acted ? 'supported' : 'selected', status: 'done', summaryPatch: {
                     support: { type: selected.type, agreementCid: selected.agreementCid, account: selected.account, ...outcome },
-                    activities: verdict.acted ? activities : [], outcome: verdict.runOutcome
+                    activities: verdict.acted ? activities : [], rpcCounts, outcome: verdict.runOutcome
                 } });
                 report.push(verdict.acted
                     ? `${persona.name}: ${selected.type} ${selected.amount} USDC on ${selected.agreementCid}`
                     : `${persona.name}: ${selected.agreementCid} was already supported; no new transaction`);
             } catch (error) {
+                const rpcCounts = diffRpcCounts(runRpcBefore, rpcCounter.snapshot());
                 // The shared funding wallet is short: the run ends done/funding-short, not failed.
                 if (runStarted && isFundingSourceShort(error)) {
-                    await markAgentRunFundingShort(pool, runId, error, { summaryPatch: { role: 'supporter', activities } });
+                    await markAgentRunFundingShort(pool, runId, error, { summaryPatch: { role: 'supporter', activities, rpcCounts } });
                     report.push(`${persona.name}: skipped, funding wallet ${error.sourceWallet} is short of ${error.asset}`);
                     continue;
                 }
                 if (runStarted) {
                     try {
-                        await markAgentRunFailed(pool, runId, error, { summaryPatch: { role: 'supporter', activities } });
+                        await markAgentRunFailed(pool, runId, error, { summaryPatch: { role: 'supporter', activities, rpcCounts } });
                     } catch (recordError) {
                         console.error(`[support-run] could not record failure for ${runId}: ${safeFailureDiagnostic(recordError)}`);
                     }
@@ -235,6 +244,8 @@ async function main() {
             }
         }
     } finally {
+        const rpcCounts = rpcCounter.snapshot();
+        log(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
         if (pool) await pool.end();
     }
     const headline = `Support agents ${day}: ${report.join(' | ') || 'dry run complete'}`;

@@ -59,5 +59,74 @@
             silent: views.filter(view => !view.holder).map(view => view.member), stating: named.length };
     }
 
-    return { viewOf, lensView, MAX_SALES };
+    /**
+     * Batched breadth-first holder views for many `{ member, assetHash }` items. `getAccounts(addresses)`
+     * fetches a deduplicated batch of base58 addresses and returns a Map(address -> Uint8Array | null).
+     * Hop 0 fetches both each item's first-holder statement AND its hop-0 sale confirmation in the same
+     * single batch (both PDAs are deterministic), so assets with no sales cost one batched RPC total.
+     */
+    async function viewsOf({ items = [], getAccounts, statements, offers }) {
+        if (!items.length) return [];
+        const firstAddrs = items.map(item => statements.holdingAddress(item.member, item.assetHash).toBase58());
+        const hop0Addrs = items.map((item, i) => {
+            const nonce = offers.decisionNonce({ role: 0, assetHash: item.assetHash, holding: firstAddrs[i] });
+            return statements.confirmationAddress(item.member, nonce).toBase58();
+        });
+        const initial = await getAccounts([...new Set([...firstAddrs, ...hop0Addrs])]);
+        const views = items.map((item, i) => {
+            const first = firstAddrs[i];
+            const data = initial.get(first) || null;
+            if (!data) return { member: item.member, holder: null, holding: null, first: null, sales: [], pending: null, stale: null };
+            const statement = statements.readHolding(data);
+            if (!statement || statement.signer !== item.member || statement.fields.assetHash !== item.assetHash) {
+                return { member: item.member, holder: null, holding: null, first: null, sales: [], pending: null, stale: null, invalid: first };
+            }
+            return { member: item.member, holder: statement.fields.holder, holding: first, first: { address: first, ...statement.fields }, sales: [], pending: null, stale: null };
+        });
+
+        let active = items.map((item, i) => ({ item, view: views[i], confirmAddr: hop0Addrs[i] })).filter(entry => Boolean(entry.view.holding));
+        let confirmMap = initial;
+
+        for (let hop = 0; hop < MAX_SALES && active.length; hop++) {
+            if (hop > 0) {
+                active.forEach(entry => {
+                    const nonce = offers.decisionNonce({ role: 0, assetHash: entry.item.assetHash, holding: entry.view.holding });
+                    entry.confirmAddr = statements.confirmationAddress(entry.item.member, nonce).toBase58();
+                });
+                confirmMap = await getAccounts([...new Set(active.map(entry => entry.confirmAddr))]);
+            }
+            const withDecision = [];
+            for (const entry of active) {
+                const raw = confirmMap.get(entry.confirmAddr) || null;
+                if (!raw) continue;
+                const decision = offers.readDecisionAttestation(raw, entry.confirmAddr);
+                if (decision.signer !== entry.item.member || decision.fields.assetHash !== entry.item.assetHash
+                    || decision.fields.holding !== entry.view.holding || decision.fields.seller !== entry.view.holder) {
+                    entry.view.invalid = entry.confirmAddr;
+                    continue;
+                }
+                withDecision.push({ ...entry, decision });
+            }
+            if (!withDecision.length) break;
+            const offerMap = await getAccounts([...new Set(withDecision.map(entry => entry.decision.fields.offer))]);
+            const next = [];
+            for (const entry of withDecision) {
+                const { decision, view, confirmAddr } = entry;
+                const offerData = offerMap.get(decision.fields.offer) || null;
+                const offer = offerData ? offers.readPropertyOffer(offerData, decision.fields.offer) : null;
+                if (!offer || offer.cid !== decision.fields.cid) { view.invalid = confirmAddr; continue; }
+                const sale = { confirmation: confirmAddr, offer: offer.address, cid: offer.cid, seller: decision.fields.seller, buyer: decision.fields.buyer, status: offer.status, settledAt: offer.settledAt };
+                if (offer.status === 'Settled' && offer.buyer === decision.fields.buyer && offer.seller === view.holder) {
+                    view.sales.push(sale); view.holder = offer.buyer; view.holding = offer.address;
+                    next.push(entry);
+                    continue;
+                }
+                if (offer.status === 'Open' || offer.status === 'Committed') view.pending = sale; else view.stale = sale;
+            }
+            active = next;
+        }
+        return views;
+    }
+
+    return { viewOf, viewsOf, lensView, MAX_SALES };
 });

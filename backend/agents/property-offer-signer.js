@@ -23,12 +23,43 @@ const { PROPERTY_OFFER_PROGRAM_ID } = client.constants;
 const deadlineOf = content => Math.floor(Date.parse(content.expiresAt) / 1000);
 const refuse = message => { throw Object.assign(new Error(`${message}; nothing signed.`), { code: 'refused' }); };
 const chainNow = async connection => connection.getBlockTime(await connection.getSlot('confirmed'));
+const verifiedGenesis = new WeakMap();
+const verifiedProgram = new WeakMap();
+
+async function ensureGenesis(connection, cluster) {
+    if (cluster !== 'devnet') return;
+    let check = verifiedGenesis.get(connection);
+    if (!check) {
+        check = Promise.resolve(connection.getGenesisHash()).then(hash => {
+            if (hash !== DEVNET_GENESIS) throw new Error('The RPC network does not match Solana devnet.');
+        }).catch(error => {
+            verifiedGenesis.delete(connection);
+            throw error;
+        });
+        verifiedGenesis.set(connection, check);
+    }
+    await check;
+}
+
+async function ensureProgramDeployed(connection) {
+    let check = verifiedProgram.get(connection);
+    if (!check) {
+        check = Promise.resolve(connection.getAccountInfo(new web3.PublicKey(PROPERTY_OFFER_PROGRAM_ID))).then(program => {
+            if (!program?.executable) throw Object.assign(new Error('The property offer program is not deployed on this Solana network yet.'), { code: 'program-not-deployed' });
+        }).catch(error => {
+            verifiedProgram.delete(connection);
+            throw error;
+        });
+        verifiedProgram.set(connection, check);
+    }
+    await check;
+}
 
 async function network({ connection, keypair, cluster = 'devnet' }) {
     if (!connection?.getAccountInfo) throw new Error('a solana connection is required');
     if (!keypair?.publicKey) throw new Error('keypair is required');
     if (!['devnet', 'localnet'].includes(cluster)) throw new Error('Property offers currently support Solana devnet and localnet.');
-    if (cluster === 'devnet' && await connection.getGenesisHash() !== DEVNET_GENESIS) throw new Error('The RPC network does not match Solana devnet.');
+    await ensureGenesis(connection, cluster);
     return { connection, keypair, cluster, signer: keypair.publicKey.toBase58() };
 }
 
@@ -38,8 +69,7 @@ async function context({ connection, keypair, row, cluster, recordOnchain }) {
     if (!row?.cid || !row.content || Offer.cid(row.content) !== row.cid) throw new Error('The offer content does not match its published CID.');
     const net = await network({ connection, keypair, cluster: cluster || row.onchain?.cluster || 'devnet' });
     if (row.onchain?.cluster && row.onchain.cluster !== net.cluster) throw new Error(`The offer is indexed on ${row.onchain.cluster}, not ${net.cluster}.`);
-    const program = await connection.getAccountInfo(new web3.PublicKey(PROPERTY_OFFER_PROGRAM_ID));
-    if (!program?.executable) throw Object.assign(new Error('The property offer program is not deployed on this Solana network yet.'), { code: 'program-not-deployed' });
+    await ensureProgramDeployed(connection);
     const address = client.getOfferPda(row.cid, row.content.proposer)[0].toBase58();
     if (row.onchain?.account && row.onchain.account !== address) throw new Error('The chain address does not match the published offer.');
     return { ...net, row, recordOnchain, address };

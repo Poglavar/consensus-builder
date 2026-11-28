@@ -103,14 +103,16 @@ export function buildAddressBook({ env = {}, personas = [], x402FeePayer = DEFAU
         const wallet = typeof persona?.wallet === 'string' ? persona.wallet.trim() : '';
         const name = persona?.name;
         if (!wallet || !name) continue;
-        add({ address: wallet, label: `agent ${name}`, kind: 'wallet', persona: name });
+        const role = persona?.role || null;
+        add({ address: wallet, label: `agent ${name}`, kind: 'wallet', persona: name, role });
         add({
             address: deriveAssociatedTokenAddress(wallet, DEVNET_USDC_MINT),
             label: `agent ${name} USDC account`,
             kind: 'token-account',
             owner: wallet,
             mint: DEVNET_USDC_MINT,
-            persona: name
+            persona: name,
+            role
         });
     }
 
@@ -151,7 +153,7 @@ export function legendAddresses(book) {
         .map((entry) => entry.address);
 }
 
-// The scan set: our programs, our wallets and their token accounts. The x402 facilitator's fee
+// The full scan set: our programs, our wallets and their token accounts. The x402 facilitator's fee
 // payer is deliberately NOT scanned even though it is labelled — it signs every x402 payment on
 // devnet by anyone, so scanning it pulls strangers' test payments into our history (three
 // self-payments from an unrelated wallet showed up that way on 2026-09-16).
@@ -159,5 +161,22 @@ export function watchedAddresses(book) {
     const entries = book?.entries ?? [];
     return entries
         .filter((entry) => WATCHED_KINDS.includes(entry.kind) && entry.kind !== 'fee-payer' && (entry.kind !== 'program' || entry.ours === true))
+        .map((entry) => entry.address);
+}
+
+// The lean scan set for frequent 20-minute passes: our five programs (every protocol action by any
+// bot or user), the treasury wallet and its USDC account (incoming x402 payments), the shared funding
+// wallet and its USDC account (bot top-ups and faucet refills), and lens-member wallets (SAS
+// attestations). Persona wallets and their redundant USDC ATAs are swept on periodic full passes.
+export function coreWatchedAddresses(book, { fundingPersona = 'densifier-01' } = {}) {
+    const entries = book?.entries ?? [];
+    return entries
+        .filter((entry) => {
+            if (!WATCHED_KINDS.includes(entry.kind) || entry.kind === 'fee-payer') return false;
+            if (entry.kind === 'program') return entry.ours === true;
+            if (!entry.persona) return true; // treasury wallet + treasury USDC ATA
+            if (entry.persona === fundingPersona) return true; // shared SOL/USDC top-up wallet + ATA
+            return entry.kind === 'wallet' && entry.role === 'lens-member';
+        })
         .map((entry) => entry.address);
 }

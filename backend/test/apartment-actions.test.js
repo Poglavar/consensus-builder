@@ -3,11 +3,12 @@
 // reserved, and the lens operator's qualification must name the buyer.
 import { describe, expect, it, vi } from 'vitest';
 import { createRequire } from 'node:module';
-import { Keypair } from '@solana/web3.js';
-import { listApartments, qualifyApartmentBuyer, reserveApartment, roundAccepting, roundStats } from '../agents/apartment-actions.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
+import { listApartments, qualifyApartmentBuyer, readRoundsInventory, reserveApartment, roundAccepting, roundStats } from '../agents/apartment-actions.js';
 
 const require = createRequire(import.meta.url);
 const pledge = require('../../frontend/js/solana/pledge-client.js');
+const agreementRecord = require('../../frontend/js/agreement-record.js');
 
 const developer = Keypair.generate();
 const account = Keypair.generate().publicKey.toBase58();
@@ -86,5 +87,69 @@ describe('the lens operator qualifying a buyer', () => {
         const fetchImpl = vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ address: 'att', credential: 'cred', payload: { buyer: 'someone-else', counterpartyQualified: 1 } }) }));
         await expect(qualifyApartmentBuyer({ serviceUrl: 'http://lens', operatorToken: 'secret', cid: 'bafy', unitId: 'u1', buyer, fetchImpl })).rejects.toThrow(/does not name this buyer/);
         await expect(qualifyApartmentBuyer({ serviceUrl: 'http://lens', operatorToken: null, cid: 'bafy', unitId: 'u1', buyer, fetchImpl })).rejects.toThrow(/operator token/);
+    });
+});
+
+describe('batched inventory across multiple rounds', () => {
+    function encodeUnit({ dev, unitKeyHex, agreement, termsHashHex, deposit, buyer = PublicKey.default, position = PublicKey.default, qualification = PublicKey.default }) {
+        const buf = Buffer.alloc(241);
+        Buffer.from([11, 70, 40, 231, 17, 179, 185, 169]).copy(buf, 0);
+        new PublicKey(dev).toBuffer().copy(buf, 8);
+        Buffer.from(unitKeyHex, 'hex').copy(buf, 40);
+        new PublicKey(agreement).toBuffer().copy(buf, 72);
+        Buffer.from(termsHashHex, 'hex').copy(buf, 104);
+        buf.writeBigUInt64LE(BigInt(deposit), 136);
+        new PublicKey(buyer).toBuffer().copy(buf, 144);
+        new PublicKey(position).toBuffer().copy(buf, 176);
+        buf[208] = 255;
+        new PublicKey(qualification).toBuffer().copy(buf, 209);
+        return buf;
+    }
+
+    function encodePosition({ escrow, owner, donationIdHex, amount, refunded = false }) {
+        const buf = Buffer.alloc(114);
+        Buffer.from([126, 11, 141, 195, 219, 123, 134, 42]).copy(buf, 0);
+        new PublicKey(escrow).toBuffer().copy(buf, 8);
+        new PublicKey(owner).toBuffer().copy(buf, 40);
+        Buffer.from(donationIdHex, 'hex').copy(buf, 72);
+        buf.writeBigUInt64LE(BigInt(amount), 104);
+        buf[112] = refunded ? 1 : 0;
+        buf[113] = 255;
+        return buf;
+    }
+
+    it('reads all units across multiple rounds in one batch and all reserved deposit positions in a second batch', async () => {
+        const roundA = { account: Keypair.generate().publicKey.toBase58(), content: { ...content(2), funding: { ...content(2).funding, apartments: { projectId: 'proj-a', units: [unit('u1'), unit('u2')] } } } };
+        const roundB = { account: Keypair.generate().publicKey.toBase58(), content: { ...content(2), funding: { ...content(2).funding, apartments: { projectId: 'proj-b', units: [unit('u1'), unit('u2')] } } } };
+        const buyer = Keypair.generate().publicKey.toBase58();
+        const qual = Keypair.generate().publicKey.toBase58();
+        const programOwner = new PublicKey(pledge.constants.PROGRAM_ID);
+        const accounts = new Map();
+
+        const offersA = pledge.apartmentOffers(roundA.content.funding, roundA.content.sponsor, agreementRecord);
+        const offersB = pledge.apartmentOffers(roundB.content.funding, roundB.content.sponsor, agreementRecord);
+        // Round A u1: reserved; Round A u2: available; Round B u1: reserved (refunded -> unlisted); Round B u2: unlisted
+        const escrowA = pledge.getDonationEscrowPda(roundA.account)[0].toBase58();
+        const posA1 = pledge.getDonationPositionPda(escrowA, buyer, Buffer.from(offersA[0].unitKey, 'hex'))[0].toBase58();
+        accounts.set(offersA[0].account, { owner: programOwner, data: encodeUnit({ dev: roundA.content.sponsor, unitKeyHex: offersA[0].unitKey, agreement: roundA.account, termsHashHex: offersA[0].termsHash, deposit: offersA[0].deposit, buyer, position: posA1, qualification: qual }) });
+        accounts.set(posA1, { owner: programOwner, data: encodePosition({ escrow: escrowA, owner: buyer, donationIdHex: offersA[0].unitKey, amount: offersA[0].deposit, refunded: false }) });
+        accounts.set(offersA[1].account, { owner: programOwner, data: encodeUnit({ dev: roundA.content.sponsor, unitKeyHex: offersA[1].unitKey, agreement: roundA.account, termsHashHex: offersA[1].termsHash, deposit: offersA[1].deposit }) });
+
+        const escrowB = pledge.getDonationEscrowPda(roundB.account)[0].toBase58();
+        const posB1 = pledge.getDonationPositionPda(escrowB, buyer, Buffer.from(offersB[0].unitKey, 'hex'))[0].toBase58();
+        accounts.set(offersB[0].account, { owner: programOwner, data: encodeUnit({ dev: roundB.content.sponsor, unitKeyHex: offersB[0].unitKey, agreement: roundB.account, termsHashHex: offersB[0].termsHash, deposit: offersB[0].deposit, buyer, position: posB1, qualification: qual }) });
+        accounts.set(posB1, { owner: programOwner, data: encodePosition({ escrow: escrowB, owner: buyer, donationIdHex: offersB[0].unitKey, amount: offersB[0].deposit, refunded: true }) });
+
+        const connection = { getMultipleAccountsInfo: vi.fn(async keys => keys.map(k => accounts.get(k.toBase58()) || null)) };
+        const byAccount = await readRoundsInventory(connection, [roundA, roundB]);
+        expect(connection.getMultipleAccountsInfo).toHaveBeenCalledTimes(2);
+        expect(connection.getMultipleAccountsInfo.mock.calls[0][0]).toHaveLength(4);
+        expect(connection.getMultipleAccountsInfo.mock.calls[1][0]).toHaveLength(2);
+        expect(byAccount.get(roundA.account).map(r => [r.unitId, r.status, r.buyer])).toEqual([
+            ['u1', 'reserved', buyer], ['u2', 'available', null]
+        ]);
+        expect(byAccount.get(roundB.account).map(r => [r.unitId, r.status, r.buyer])).toEqual([
+            ['u1', 'unlisted', null], ['u2', 'unlisted', null]
+        ]);
     });
 });

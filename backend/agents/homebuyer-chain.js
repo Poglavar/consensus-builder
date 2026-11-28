@@ -11,14 +11,14 @@
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import { discoverAgreements, readAgreementStatuses } from './discovery.js';
-import { qualifyApartmentBuyer, readRoundInventory, reserveApartment } from './apartment-actions.js';
+import { qualifyApartmentBuyer, readRoundInventory, readRoundsInventory, reserveApartment } from './apartment-actions.js';
 import { apartmentQualification, refundContributions } from './chain-actions.js';
 import { donationIdBytes, ensureDonationEscrowAndDonate } from './donor.js';
 import { ensureBotUsdcFunding } from './funding.js';
 import { usdcToAtomic } from './bettor.js';
 import { policyConfig } from './policies/homebuyer.js';
 import { createPropertyOfferTools } from './mcp-property-offers.js';
-import { commitOffer, createOfferOnChain, createOnchainRecorder, expireOffer, memberView } from './property-offer-signer.js';
+import { commitOffer, createOfferOnChain, createOnchainRecorder, expireOffer } from './property-offer-signer.js';
 import { client as offerClient, validateOfferAccount } from '../property-offers/onchain.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { loadPlotMarkets, plotAssets } from './plot-market.js';
@@ -29,6 +29,7 @@ const pledge = require('../../frontend/js/solana/pledge-client.js');
 const agreementRecord = require('../../frontend/js/agreement-record.js');
 const Offer = require('../../frontend/js/property-offer-record.js');
 const Statements = require('../../frontend/js/solana/property-statements.js').configure({ web3 });
+const Holders = require('../../frontend/js/property-holders.js');
 pledge.configure({ web3 });
 
 const DEFAULT_APP_ORIGIN = 'https://urbangametheory.xyz';
@@ -64,9 +65,11 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
     if (!cities.length) throw new Error(`${persona.name}: a homebuyer names its cities (policy.cities)`);
     const { tradeRounds } = policyConfig(persona);
     const found = await readAgreementStatuses(await discoverAgreements({ index, cities, log }), connection);
+    const owner = wallet ? new web3.PublicKey(wallet) : null;
     const rounds = [];
     const refunds = [];
     const executed = [];
+    const activeEntries = [];
     for (const summary of found.filter(row => row.rule?.electorate === 'investors' && row.chainStatus)) {
         const row = await index.getAgreement(summary.cid);
         const content = row?.content;
@@ -79,7 +82,6 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
         if (recordError && ['active', 'executed'].includes(summary.chainStatus)) log(`${persona.name}: round ${summary.cid} skipped: ${recordError}`);
         // The newest executed apartment rounds (discovery is newest first): their flats are traded.
         if (!recordError && summary.chainStatus === 'executed' && apartments && executed.length < tradeRounds) executed.push({ summary, row, content });
-        const owner = wallet ? new web3.PublicKey(wallet) : null;
         if (owner && ['expired', 'cancelled'].includes(summary.chainStatus)) {
             const positions = plain ? await pledge.listDonationPositions(connection, summary.account, owner)
                 : await pledge.apartmentPositions(connection, summary.account, owner, content.funding, agreementRecord);
@@ -88,13 +90,33 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
             if (owed > 0n) refunds.push({ cid: summary.cid, account: summary.account, title: summary.name, chainStatus: summary.chainStatus, amount: String(owed) });
         }
         if (summary.chainStatus !== 'active' || recordError) continue;
-        const inventory = plain ? [] : await readRoundInventory(connection, { account: summary.account, content });
+        activeEntries.push({ summary, row, content, apartments, plain });
+    }
+    // Batch apartment inventory across all active AND executed rounds in one pass (2 RPCs total instead of 2 per round).
+    const inventoryTargets = [
+        ...activeEntries.filter(entry => !entry.plain).map(entry => ({ account: entry.summary.account, content: entry.content })),
+        ...executed.map(entry => ({ account: entry.summary.account, content: entry.content }))
+    ];
+    let inventoriesByAccount;
+    if (typeof readRoundsInventory === 'function' && typeof connection?.getMultipleAccountsInfo === 'function') {
+        inventoriesByAccount = await readRoundsInventory(connection, inventoryTargets);
+    } else {
+        inventoriesByAccount = new Map(await Promise.all(inventoryTargets.map(async target => [target.account, await readRoundInventory(connection, target)])));
+    }
+    // Batch plain-round own-donation checks into a single getMultipleAccounts call.
+    const plainActive = owner ? activeEntries.filter(entry => entry.plain) : [];
+    const plainDonationByAccount = new Map();
+    if (plainActive.length) {
+        const donationPdas = plainActive.map(entry => pledge.getDonationPositionPda(
+            pledge.getDonationEscrowPda(entry.summary.account)[0], owner, donationIdBytes(donationOperation(persona, entry.summary.cid))
+        )[0]);
+        const donationInfos = await getMultipleAccountsBatched(connection, donationPdas, { batchSize: accountsPerRequest() });
+        plainActive.forEach((entry, i) => { plainDonationByAccount.set(entry.summary.account, Boolean(donationInfos[i])); });
+    }
+    for (const { summary, row, content, apartments, plain } of activeEntries) {
+        const inventory = plain ? [] : (inventoriesByAccount.get(summary.account) || []);
         const byId = new Map((apartments?.units || []).map(unit => [unit.unitId, unit]));
-        let donatedByMe = false;
-        if (plain && owner) {
-            const id = pledge.getDonationPositionPda(pledge.getDonationEscrowPda(summary.account)[0], owner, donationIdBytes(donationOperation(persona, summary.cid)))[0];
-            donatedByMe = Boolean(await connection.getAccountInfo(id, 'confirmed'));
-        }
+        const donatedByMe = plain ? Boolean(plainDonationByAccount.get(summary.account)) : false;
         rounds.push({
             cid: summary.cid, account: summary.account, sponsor: content.sponsor, title: summary.name, planTitle: row.planTitle ?? null,
             city: content.city ?? summary.city, deadline: content.deadline, chainStatus: summary.chainStatus, plain,
@@ -108,7 +130,11 @@ export async function gatherHomes({ index, persona, connection, wallet, apiBase,
     }
     // The plots of its cities' plot markets (plot-market.json) trade beside the flats, held as their lens member states.
     const plots = plotAssets({ cities, personas, markets });
-    const flats = await readFlats({ connection, executed, plots, log: message => log(`${persona.name}: ${message}`) });
+    const flats = await readFlats({
+        connection, executed, plots,
+        readInventory: async (_conn, target) => inventoriesByAccount.get(target.account) ?? readRoundInventory(connection, target),
+        log: message => log(`${persona.name}: ${message}`)
+    });
     const offers = offerTools && flats.length ? await readFlatOffers({ connection, offerTools, cities, wallet, flats, log: message => log(`${persona.name}: ${message}`) }) : [];
     log(`${persona.name}: ${rounds.length} open round(s) (${rounds.reduce((sum, round) => sum + round.units.filter(unit => unit.status === 'available').length, 0)} apartment(s) available), ${refunds.length} deposit(s) to take back, `
         + `${flats.filter(flat => flat.asset.kind === 'flat').length} flat(s) of ${executed.length} executed round(s) and ${flats.filter(flat => flat.asset.kind === 'parcel').length} plot(s) `
@@ -137,19 +163,21 @@ export async function readFlats({ connection, executed, plots = [], env = proces
     }
     // Plots (plot-market.js plotAssets) have no round: their key and label stand in for it.
     for (const plot of plots) flats.push({ roundCid: null, roundTitle: plot.label, title: plot.title, city: plot.city, label: plot.label, asset: plot.asset, assetHash: plot.assetHash, lens: plot.lens });
-    const firsts = flats.map(flat => Statements.holdingAddress(flat.lens, flat.assetHash));
-    const infos = await getMultipleAccountsBatched(connection, firsts, { batchSize: accountsPerRequest(env) });
-    const known = new Map(firsts.map((address, i) => [address.toBase58(), infos[i]?.data ? new Uint8Array(infos[i].data) : null]));
-    const getAccount = async address => known.has(address) ? known.get(address)
-        : ((await connection.getAccountInfo(new web3.PublicKey(address), 'confirmed'))?.data || null);
+    if (!flats.length) return [];
+    const batchSize = accountsPerRequest(env);
+    const getAccounts = async addresses => {
+        if (!addresses.length) return new Map();
+        const infos = await getMultipleAccountsBatched(connection, addresses.map(address => new web3.PublicKey(address)), { batchSize });
+        return new Map(addresses.map((address, i) => [address, infos[i]?.data ? new Uint8Array(infos[i].data) : null]));
+    };
+    const views = await Holders.viewsOf({
+        items: flats.map(flat => ({ member: flat.lens, assetHash: flat.assetHash })),
+        getAccounts, statements: Statements, offers: offerClient
+    });
     const out = [];
-    for (const flat of flats) {
-        try {
-            const view = await memberView({ connection, member: flat.lens, asset: flat.asset, getAccount });
-            out.push({ ...flat, holder: view.holder, holding: view.holding, pending: view.pending?.offer ?? null, stale: Boolean(view.stale || view.invalid) });
-        } catch (error) {
-            log(`${flat.asset.kind === 'parcel' ? 'plot' : 'flat'} ${flat.title} (${flat.roundCid ?? flat.asset.id}) unreadable (${error.message}); left out`);
-        }
+    for (const [i, flat] of flats.entries()) {
+        const view = views[i];
+        out.push({ ...flat, holder: view.holder, holding: view.holding, pending: view.pending?.offer ?? null, stale: Boolean(view.stale || view.invalid) });
     }
     return out;
 }

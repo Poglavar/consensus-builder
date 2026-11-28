@@ -31,11 +31,15 @@ export function eligibleSupportAgreements(agreements, { wallet = null, personaNa
     return (agreements || []).filter(agreement => isOthersOpen(agreement, { wallet, personaName, now }) && !excluded.has(agreement.cid));
 }
 
-export function selectSupportAction({ day, persona, agreements, wallet = null, excludeCids = [], now = Date.now() } = {}) {
+export function selectSupportAction({ day, persona, agreements, wallet = null, excludeCids = [], unopenedMarketCids = [], now = Date.now() } = {}) {
     if (!day) throw new Error('day is required');
     if (!persona?.name) throw new Error('persona.name is required');
+    const actions = normalizedActions(persona);
+    const stakeOnly = actions.length === 1 && actions[0] === 'stake';
+    const unopened = new Set((unopenedMarketCids || []).map(String));
     const excluded = Array.from(new Set((excludeCids || []).map(String)));
-    const eligible = eligibleSupportAgreements(agreements, { wallet, personaName: persona.name, excludeCids: excluded, now });
+    const rawEligible = eligibleSupportAgreements(agreements, { wallet, personaName: persona.name, excludeCids: excluded, now });
+    const eligible = stakeOnly ? rawEligible.filter(agreement => !unopened.has(agreement.cid)) : rawEligible;
     if (!eligible.length) {
         return {
             selected: null,
@@ -43,7 +47,9 @@ export function selectSupportAction({ day, persona, agreements, wallet = null, e
             excludedCids: excluded,
             reason: excluded.length
                 ? `No open agreement by another actor remains unsupported (${excluded.length} already supported).`
-                : 'No open agreement by another actor was available.'
+                : rawEligible.length
+                    ? 'No open agreement by another actor has an open market.'
+                    : 'No open agreement by another actor was available.'
         };
     }
     // support.focusCities: an open agreement in one of these cities is supported first.
@@ -54,8 +60,9 @@ export function selectSupportAction({ day, persona, agreements, wallet = null, e
         rank: stableNumber(`${day}:${persona.name}:${agreement.cid}`)
     })).sort((left, right) => left.rank - right.rank);
     const agreement = ranked[0].agreement;
-    const actions = normalizedActions(persona);
-    const type = actions[stableNumber(`${day}:${persona.name}:action`) % actions.length];
+    // Never pick stake on an agreement whose market has not been opened: fall back to its non-stake actions.
+    const availableActions = unopened.has(agreement.cid) ? actions.filter(action => action !== 'stake') : actions;
+    const type = availableActions[stableNumber(`${day}:${persona.name}:action`) % availableActions.length];
     const amount = String(persona.support?.amountUsdc || '0.10');
     const skipped = excluded.length ? `, skipping ${excluded.length} already supported` : '';
     const selected = {

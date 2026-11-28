@@ -9,7 +9,7 @@
 // anything is signed, a repeat signs nothing, and one item's failure never stops the others.
 import { createRequire } from 'node:module';
 import { discoverAgreements, readAgreementStatuses } from './discovery.js';
-import { readRoundInventory } from './apartment-actions.js';
+import { readRoundInventory, readRoundsInventory } from './apartment-actions.js';
 import { confirmSale, stateHolding } from './property-offer-signer.js';
 import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import { loadPlotMarkets, plotsOfMember } from './plot-market.js';
@@ -73,10 +73,21 @@ export async function stateRoundHolders({ connection, memberKeypair, rounds, bud
     const member = memberKeypair.publicKey.toBase58();
     const result = { stated: [], already: 0, deferred: 0, conflicts: [], failures: [] };
     const units = [];
+    let batchedInventories = null;
+    if (!deps.readRoundInventory && typeof readRoundsInventory === 'function' && typeof connection?.getMultipleAccountsInfo === 'function') {
+        try {
+            batchedInventories = await readRoundsInventory(connection, rounds, { env });
+        } catch {
+            // Fall back to per-round reads so one corrupt round does not block the others.
+            batchedInventories = null;
+        }
+    }
     for (const round of rounds) {
         try {
             const byId = new Map(round.content.funding.apartments.units.map(unit => [unit.unitId, unit]));
-            for (const item of await act.readRoundInventory(connection, { account: round.account, content: round.content })) {
+            const inventory = batchedInventories ? (batchedInventories.get(round.account) || [])
+                : await act.readRoundInventory(connection, { account: round.account, content: round.content });
+            for (const item of inventory) {
                 if (item.status !== 'reserved' || !item.buyer) continue;
                 const unit = byId.get(item.unitId);
                 const asset = { kind: 'flat', xrayBuilding: unit.xrayBuilding, unit: unit.unit, at: unit.at };

@@ -164,6 +164,24 @@ describe('inspecting an agreement', () => {
         const broken = { getAccountInfo: async () => { throw new Error('rpc down'); } };
         await expect(inspectSettlement({ connection: broken, owner: OWNER, agreement: item, lensKey: LENS, nowSeconds: NOW })).rejects.toThrow('rpc down');
     });
+
+    it('reads the agreement account once and reuses it for default market reads without extra agreement RPCs', async () => {
+        const item = { ...placeAgreement('dedup', { status: 'Executed', decision: 1 }), soleOwner: true };
+        const getAccountInfo = vi.fn(chain.connection.getAccountInfo.bind(chain.connection));
+        const getMultipleAccountsInfo = vi.fn(async keys => keys.map(() => null));
+        const getMultipleAccountsInfoAndContext = vi.fn(async () => { throw new Error('agreement should not be re-read via chain'); });
+        const connection = {
+            ...chain.connection,
+            getAccountInfo,
+            getMultipleAccountsInfo,
+            getMultipleAccountsInfoAndContext
+        };
+        const inspected = await inspectSettlement({ connection, owner: OWNER, agreement: item, lensKey: LENS, nowSeconds: NOW });
+        expect(inspected).toMatchObject({ state: 'closed', outcome: 'YES', steps: [] });
+        expect(getAccountInfo).toHaveBeenCalledTimes(1);
+        expect(getMultipleAccountsInfo).toHaveBeenCalledTimes(1);
+        expect(getMultipleAccountsInfoAndContext).not.toHaveBeenCalled();
+    });
 });
 
 describe('reclaiming the proposer\'s market seed (2026-11-12)', () => {

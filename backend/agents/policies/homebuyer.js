@@ -17,7 +17,8 @@
 import { agreementName, firstFitting, positiveDecimal, stableNumber } from './common.js';
 
 export const ROLE = 'homebuyer';
-export const NEEDS = { records: false, noPositions: false, yesPositions: false, pledges: false, homes: true };
+// Homebuyers trade apartments and property offers, never prediction markets: skip gatherInputs().
+export const NEEDS = { records: false, noPositions: false, yesPositions: false, pledges: false, markets: false, homes: true };
 
 const usdc = atomic => Number(atomic) / 1e6;
 const HOUR_MS = 3_600_000;

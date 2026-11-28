@@ -31,6 +31,7 @@ import { markAgentRunFailed, markAgentRunFundingShort, safeFailureDiagnostic } f
 import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker.js';
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter, diffRpcCounts, sumRpcCounts } from '../solana/rpc-method-counts.js';
 import { ensureBotSolFunding, fundBotAction, isFundingSourceShort } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
@@ -154,14 +155,16 @@ export function readAccounts(connection, addresses, env = process.env) {
 // turn k−1 signed. Every minted agreement's on-chain status, its market and both of the persona's
 // positions are read (any status); every policy input uses the freshly read chain state.
 async function gatherInputs({ index, persona, needs, connection, wallet }) {
-    const agreements = await readAgreementStatuses(await discoverAgreements({ index, cities: discoveryCities(persona), log }), connection);
+    const decodedAgreements = new Map();
+    const agreements = await readAgreementStatuses(await discoverAgreements({ index, cities: discoveryCities(persona), log }), connection, { decodedOut: decodedAgreements });
     let minted = agreements.filter(isMinted);
     if (minted.length > MAX_MINTED) {
         log(`${persona.name}: ${minted.length} minted agreements; reading markets for the newest ${MAX_MINTED}`);
         minted = minted.slice(0, MAX_MINTED);
     }
     const accounts = minted.map(agreement => agreement.account);
-    const contexts = await readAgreementMarkets(connection, accounts);
+    // Reuse the agreement accounts readAgreementStatuses just decoded instead of re-reading them from RPC.
+    const contexts = await readAgreementMarkets(connection, accounts, { preloadedAgreements: decodedAgreements });
     const markets = {};
     accounts.forEach(account => {
         const context = contexts.get(account);
@@ -177,17 +180,25 @@ async function gatherInputs({ index, persona, needs, connection, wallet }) {
     if (wallet) {
         const owner = new PublicKey(wallet);
         const withMarket = accounts.filter(account => markets[account]);
-        const positionPdas = withMarket.flatMap(account => {
-            const market = contexts.get(account).address;
-            return [SIDE_YES, SIDE_NO].map(side => marketClient.getPositionPda(market, owner, side)[0]);
-        });
-        const positionInfos = await readAccounts(connection, positionPdas);
-        withMarket.forEach((account, position) => {
-            const address = contexts.get(account).address;
-            const yes = marketClient.readPositionAccount(positionInfos[position * 2], address, owner, SIDE_YES);
-            const no = marketClient.readPositionAccount(positionInfos[position * 2 + 1], address, owner, SIDE_NO);
-            if (yes || no) positions[account] = { yes, no };
-        });
+        // Only read the position side(s) this policy trades (speculator holds none; contrarian NO; backer YES).
+        const sides = [...(needs.yesPositions ? [SIDE_YES] : []), ...(needs.noPositions ? [SIDE_NO] : [])];
+        if (sides.length && withMarket.length) {
+            const positionPdas = withMarket.flatMap(account => {
+                const market = contexts.get(account).address;
+                return sides.map(side => marketClient.getPositionPda(market, owner, side)[0]);
+            });
+            const positionInfos = await readAccounts(connection, positionPdas);
+            withMarket.forEach((account, index) => {
+                const address = contexts.get(account).address;
+                const entry = { yes: null, no: null };
+                sides.forEach((side, offset) => {
+                    const pos = marketClient.readPositionAccount(positionInfos[index * sides.length + offset], address, owner, side);
+                    if (side === SIDE_YES) entry.yes = pos;
+                    else entry.no = pos;
+                });
+                if (entry.yes || entry.no) positions[account] = entry;
+            });
+        }
         minted.forEach(agreement => {
             const held = positions[agreement.account];
             if (needs.noPositions && held?.no?.amount > 0n) chain.noPositionCids.push(agreement.cid);
@@ -264,7 +275,9 @@ export async function execute({ action, connection, keypair, caps, pool, persona
         await act.fundBotAction({ action, connection, pool, persona, runId });
         return act.buyAgreementShares({
             connection, ownerKeypair: keypair, subject: action.account, stakeMint: USDC_DEVNET,
-            side, amountAtomic: usdcToAtomic(action.amount), sendAndConfirm: sendAndConfirmPolling
+            side, amountAtomic: usdcToAtomic(action.amount),
+            ...(context?.connection ? { context } : {}),
+            sendAndConfirm: sendAndConfirmPolling
         });
     }
     if (action.type === 'sell' && (action.side === 'yes' || action.side === 'no')) {
@@ -353,7 +366,8 @@ async function main() {
     const apiBase = (args.api || process.env.AGENT_API_BASE || `http://localhost:${process.env.API_PORT || 3000}`).replace(/\/$/, '');
     // The Origin a homebuyer's offer-index writes send (the API admits writes from its own sites).
     const appOrigin = process.env.AGENT_APP_ORIGIN || 'https://urbangametheory.xyz';
-    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed');
+    const rpcCounter = createRpcMethodCounter();
+    const connection = createRpcConnection(process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com', 'confirmed', { onRpcRequest: rpcCounter.onRequest });
     const index = createIndexClient({ apiBase, log });
     const persona = loadSocietyPersona(args.persona, ...(args.personas ? [path.resolve(args.personas)] : []));
     const policy = await import(/* @vite-ignore */ new URL(`./policies/${persona.role}.js`, import.meta.url).href);
@@ -384,6 +398,7 @@ async function main() {
             }
             let runStarted = false;
             const activities = [];
+            const turnRpcBefore = rpcCounter.snapshot();
             try {
                 if (live) {
                     await startRun(pool, { runId: turn.runId, persona: persona.name, day, mode: 'live' });
@@ -406,7 +421,9 @@ async function main() {
                 let decisionResult = existing?.summary?.decisionResult || null;
                 let decision = null;
                 if (!action) {
-                    const inputs = await gatherInputs({ index, persona, needs: policy.NEEDS, connection, wallet });
+                    const inputs = policy.NEEDS.markets === false
+                        ? { agreements: [], markets: {}, positions: {}, chainStatuses: {}, chain: { noPositionCids: [], yesPositionCids: [], pledges: {} }, recordFailures: 0 }
+                        : await gatherInputs({ index, persona, needs: policy.NEEDS, connection, wallet });
                     const homes = policy.NEEDS.homes ? await gatherHomes({ index, persona, connection, wallet, apiBase, appOrigin, log }) : null;
                     const runs = live ? await listPersonaRuns(pool, persona.name) : [];
                     const history = societyHistory({ runs, chain: inputs.chain, simulated });
@@ -455,8 +472,9 @@ async function main() {
                 const options = (decision?.options || []).slice(0, 5).map(option => ({ agreementCid: option.agreementCid, type: option.action.type, rationale: option.action.rationale }));
                 if (!action) {
                     const outcome = decision?.capped ? 'cap-reached' : 'no-action';
+                    const rpcCounts = diffRpcCounts(turnRpcBefore, rpcCounter.snapshot());
                     await updateRun(pool, turn.runId, { stage: 'selected', status: 'done', summaryPatch: {
-                        decisionResult, society: { action: null, acted: false, options }, outcome
+                        decisionResult, society: { action: null, acted: false, options }, rpcCounts, outcome
                     } });
                     report.push(`${label}: ${outcome}`);
                     if (decision?.capped) break;
@@ -483,7 +501,8 @@ async function main() {
                 });
                 const { message: _message, entity: _entity, asset: _asset, cityId: _cityId, ...result } = execution.outcome;
                 const acted = Boolean(result.signature || result.stakeSignature || result.resolveSignature) && result.replayed !== true;
-                const summary = { society: { action, acted, options, execution: result }, activities: acted ? activities : [], outcome: acted ? 'completed' : 'replayed' };
+                const rpcCounts = diffRpcCounts(turnRpcBefore, rpcCounter.snapshot());
+                const summary = { society: { action, acted, options, execution: result }, activities: acted ? activities : [], rpcCounts, outcome: acted ? 'completed' : 'replayed' };
                 await updateRun(pool, turn.runId, { stage: acted ? 'acted' : 'selected', status: 'done', summaryPatch: summary });
                 const used = societyTurnSpent(summary);
                 spent.actions += used.actions; spent.usdc += used.usdc;
@@ -491,15 +510,16 @@ async function main() {
                     ? `${label}: ${action.type}${action.side ? ` ${action.side.toUpperCase()}` : ''}${action.amount ? ` ${action.amount} USDC` : ''}${action.payout ? ` (${action.payout} USDC back)` : ''} on ${action.agreementCid ?? action.asset?.id}`
                     : `${label}: ${action.agreementCid ?? action.asset?.id} already in that state on-chain; no new transaction`);
             } catch (error) {
+                const rpcCounts = diffRpcCounts(turnRpcBefore, rpcCounter.snapshot());
                 // The shared funding wallet is short: record it and go on (a later turn may need no USDC).
                 if (runStarted && isFundingSourceShort(error)) {
-                    await markAgentRunFundingShort(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities } });
+                    await markAgentRunFundingShort(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities, rpcCounts } });
                     report.push(`${label}: skipped, funding wallet ${error.sourceWallet} is short of ${error.asset}`);
                     continue;
                 }
                 if (runStarted) {
                     try {
-                        await markAgentRunFailed(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities } });
+                        await markAgentRunFailed(pool, turn.runId, error, { summaryPatch: { role: persona.role, activities, rpcCounts } });
                     } catch (recordError) {
                         console.error(`[society-run] could not record failure for ${turn.runId}: ${safeFailureDiagnostic(recordError)}`);
                     }
@@ -508,6 +528,8 @@ async function main() {
             }
         }
     } finally {
+        const rpcCounts = rpcCounter.snapshot();
+        log(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
         if (pool) await pool.end();
     }
     const headline = `Society ${persona.name} (${persona.role}) ${day}${args.slot ? ` ${args.slot}` : ''}: ${report.join(' | ') || 'nothing to do'} · spent ${spent.actions}/${caps.maxActions} actions, ${spent.usdc.toFixed(2)}/${caps.maxUsdc.toFixed(2)} USDC${live ? '' : ' (dry run, nothing written)'}`;

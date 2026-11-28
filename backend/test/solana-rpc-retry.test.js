@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { PublicKey } from '@solana/web3.js';
 import { createRetryingRpcFetch, createRpcConnection, createRequestPacer, rpcMinIntervalMs } from '../solana/rpc.js';
-import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
+import { createRpcMethodCounter, diffRpcCounts, sumRpcCounts } from '../solana/rpc-method-counts.js';
 
 const rpcUrl = 'https://rpc.example.test/provider-secret-key';
 const rpcRequest = (method, params = []) => JSON.stringify({ jsonrpc: '2.0', id: 7, method, params });
@@ -122,6 +122,16 @@ describe('bounded Solana RPC retries', () => {
         await retry(rpcUrl, { method: 'POST', body });
 
         expect(rpcCounter.snapshot()).toEqual({ getTransaction: 2, getBalance: 2 });
+        expect(rpcCounter.total()).toBe(4);
+    });
+
+    it('computes per-turn RPC deltas and totals via diffRpcCounts and sumRpcCounts', () => {
+        const before = { getAccountInfo: 2, getMultipleAccounts: 3 };
+        const after = { getAccountInfo: 2, getMultipleAccounts: 5, getBalance: 1 };
+        const delta = diffRpcCounts(before, after);
+        expect(delta).toEqual({ getMultipleAccounts: 2, getBalance: 1 });
+        expect(sumRpcCounts(delta)).toBe(3);
+        expect(sumRpcCounts(null)).toBe(0);
     });
 
     it('uses the configured fetch through a real web3 Connection request', async () => {

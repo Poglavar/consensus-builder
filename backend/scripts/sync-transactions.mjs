@@ -31,6 +31,7 @@ function usage() {
         '',
         '  --run                Perform the sync (scan, fetch what is missing, store it).',
         '  --dry-run            Scan and report how many signatures are missing; fetch nothing.',
+        '  --full               Scan every persona wallet and USDC token account (default: core set, full every 6 h).',
         `  --limit N            Signatures to request per watched address  [${DEFAULT_SIGNATURE_SCAN_LIMIT}]`,
         `  --spacing MS         Pause between getParsedTransactions chunks   [${FETCH_CHUNK_SPACING_MS}]`,
         '  --help               Show this message.',
@@ -43,12 +44,13 @@ function usage() {
 }
 
 function parseArgs(argv) {
-    const args = { run: false, dryRun: false, limit: DEFAULT_SIGNATURE_SCAN_LIMIT, spacing: FETCH_CHUNK_SPACING_MS, help: false };
+    const args = { run: false, dryRun: false, full: false, limit: DEFAULT_SIGNATURE_SCAN_LIMIT, spacing: FETCH_CHUNK_SPACING_MS, help: false };
     for (let i = 0; i < argv.length; i += 1) {
         const arg = argv[i];
         if (arg === '--help' || arg === '-h') args.help = true;
         else if (arg === '--run') args.run = true;
         else if (arg === '--dry-run') args.dryRun = true;
+        else if (arg === '--full') args.full = true;
         else if (arg === '--limit') {
             const value = Number.parseInt(argv[++i], 10);
             if (!Number.isFinite(value) || value <= 0) throw new Error(`--limit needs a positive integer, got "${argv[i]}"`);
@@ -94,6 +96,7 @@ async function main() {
             limit: args.limit,
             spacing: args.spacing,
             dryRun: args.dryRun,
+            ...(args.full ? { fullScan: true } : {}),
             rpcCounter,
             log
         });

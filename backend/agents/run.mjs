@@ -59,7 +59,8 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { createPool } from '../db/connection.cjs';
-import { Keypair } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
+import { accountsPerRequest, getMultipleAccountsBatched } from '../solana/account-batching.js';
 import * as turf from '@turf/turf';
 import { fetchCandidateParcels } from './parcel-source.js';
 import { findProposalPlan, contestParcels, parcelsFromSource, pickedParcelIds, rivalAgreementCids, runKeyFor, seedFor, slotLabel, windowIn } from './area-plan.js';
@@ -77,6 +78,7 @@ import { buildPickRequests, parsePicks, estimateBatchCostUsd, runPickBatch, pick
 import { usdcToAtomic, openAgreementMarket } from './bettor.js';
 import { getRun, startRun, updateRun, recordCosts, dailySpendUsd, assertUnderCap, dailyCapUsd, listRuns, failStaleRuns, STALE_RUN_HOURS } from './ledger.js';
 import { createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter, sumRpcCounts } from '../solana/rpc-method-counts.js';
 import { ensureBotSolFunding, ensureBotUsdcFunding, isFundingSourceShort } from './funding.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import {
@@ -102,6 +104,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const actionEngineApi = require('../../frontend/js/agent-action-engine.js');
 const { locationOf } = require('../../frontend/js/economic-sources.js');
+const agreementClient = require('../../frontend/js/solana/agreement-client.js');
 
 export const STAGES = ['planned', 'chosen', 'designed', 'proposed', 'minted', 'recorded', 'staked'];
 const CONTROLLERS = ['algorithm', 'llm'];
@@ -300,10 +303,29 @@ export async function settleStage({
         const summary = e.run?.summary ?? {};
         const settlements = { ...(summary.settlements ?? {}) };
         const owned = ownedAgreementsFromRuns(runs, persona.name, owner).filter(agreement => agreement.sourceRunId !== e.runId);
+        // Batch-read all of this persona's open agreement accounts in one RPC instead of one getAccountInfo per agreement.
+        let batchReaders = readers;
+        const readableOwned = owned.filter(agreement => !agreement.retired && agreement.account);
+        if (!readers.readAgreement && readableOwned.length > 1 && typeof connection?.getMultipleAccountsInfo === 'function') {
+            const programKey = new PublicKey(agreementClient.constants.AGREEMENT_PROGRAM_ID);
+            const infos = await getMultipleAccountsBatched(connection, readableOwned.map(agreement => new PublicKey(agreement.account)), { batchSize: accountsPerRequest(env) });
+            const byAccount = new Map(readableOwned.map((agreement, index) => [agreement.account, infos[index]]));
+            batchReaders = {
+                ...readers,
+                readAgreement: async (_conn, account) => {
+                    const info = byAccount.get(account);
+                    if (!info?.data) return null;
+                    if (!info.owner || !new PublicKey(info.owner).equals(programKey)) {
+                        throw Object.assign(new Error(`agreement account ${account} is not owned by the agreement program`), { code: 'agreement-wrong-program' });
+                    }
+                    return agreementClient.readAgreement(Uint8Array.from(info.data), account);
+                }
+            };
+        }
         const inspections = [];
         for (const agreement of owned) {
             try {
-                inspections.push(await inspectSettlement({ connection, owner, agreement, lensKey: lens.key, memberKeys: Object.keys(memberSigners), readers }));
+                inspections.push(await inspectSettlement({ connection, owner, agreement, lensKey: lens.key, memberKeys: Object.keys(memberSigners), readers: batchReaders }));
             } catch (err) {
                 log(`${persona.name} settlement: could not read ${agreement.cid} ${agreement.account}: ${safeFailureDiagnostic(err)}`);
                 failures.push(`${persona.name} settlement inspect ${agreement.cid}: ${safeFailureDiagnostic(err)}`);
@@ -661,6 +683,7 @@ async function main() {
     const failures = [];
     const report = [];
     const startedRuns = new Set();
+    const rpcCounter = createRpcMethodCounter();
     let housingLock = null;
     try {
         // ---- stage 1: plan (every persona) ----------------------------------------------------
@@ -786,12 +809,14 @@ async function main() {
             }
             if (args.dryRun) {
                 await settleStage({
-                    pool, connection: createRpcConnection(rpcUrl, 'confirmed'), index, lens, entries, dryRun: true, controller,
+                    pool, connection: createRpcConnection(rpcUrl, 'confirmed', { onRpcRequest: rpcCounter.onRequest }), index, lens, entries, dryRun: true, controller,
                     plannedActions: summarizeExecutionPlan(entries.map(entry => ({
                         persona: entry.persona, run: { summary: { picks: decisions.get(entry.persona.name)?.picks ?? [] } }
                     }))).actionCount,
                     failures, report
                 });
+                const rpcCounts = rpcCounter.snapshot();
+                log(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
                 log('dry run: nothing written, no model called, nothing signed');
                 return;
             }
@@ -828,13 +853,15 @@ async function main() {
             if (args.dryRun) {
                 // The model is not called in a dry run, so assume each persona uses its full daily quota.
                 await settleStage({
-                    pool, connection: createRpcConnection(rpcUrl, 'confirmed'), index, lens, entries, dryRun: true, controller,
+                    pool, connection: createRpcConnection(rpcUrl, 'confirmed', { onRpcRequest: rpcCounter.onRequest }), index, lens, entries, dryRun: true, controller,
                     plannedActions: summarizeExecutionPlan(entries.map(entry => ({
                         persona: entry.persona,
                         run: { summary: { picks: Array.from({ length: entry.persona.dailyProposals ?? 1 }, (_, index) => ({ pickId: `planned-${index + 1}` })) } }
                     }))).actionCount,
                     failures, report
                 });
+                const rpcCounts = rpcCounter.snapshot();
+                log(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
                 log('dry run: nothing written, no model called, nothing signed');
                 return;
             }
@@ -918,7 +945,7 @@ async function main() {
         const policy = executionPolicy(process.env);
         const executionPlan = assertExecutionPlan(summarizeExecutionPlan(entries, policy), policy);
         log(`execution policy: ${executionPlan.actionCount}/${policy.maxActions} signed actions · ≤ ${executionPlan.maxUsdc.toFixed(2)}/${policy.maxUsdc.toFixed(2)} USDC · ≤ ${executionPlan.maxMarketSeedUsdc.toFixed(5)}/${policy.maxMarketSeedUsdc.toFixed(5)} devnet USDC market seed`);
-        const connection = createRpcConnection(rpcUrl, 'confirmed');
+        const connection = createRpcConnection(rpcUrl, 'confirmed', { onRpcRequest: rpcCounter.onRequest });
 
         // A persona the shared funding wallet cannot top up sits this run out (done, funding-short).
         for (const entry of [...entries]) {
@@ -1094,9 +1121,11 @@ async function main() {
             report.push(`${persona.name}: ${picks.length} picks · ${Object.keys(designs).length} designs · ${Object.keys(agreements).length} agreements · ${Object.keys(mints).length} minted · ${Object.keys(onchain).length} recorded · ${marketTrades} market trade(s) · ${skippedOwnTrades} own-market trade(s) skipped · $${(summary.pickCostUsd ?? 0).toFixed(4)}`);
         }
     } catch (error) {
+        const rpcCounts = rpcCounter.snapshot();
+        log(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
         for (const runId of startedRuns) {
             const current = await getRun(pool, runId);
-            if (current?.status === 'running') await markAgentRunFailed(pool, runId, error);
+            if (current?.status === 'running') await markAgentRunFailed(pool, runId, error, { summaryPatch: { rpcCounts } });
         }
         throw error;
     } finally {
@@ -1104,9 +1133,18 @@ async function main() {
             try { await housingLock.query('SELECT pg_advisory_unlock(57401, hashtext($1))', ['affordabot']); }
             finally { housingLock.release(); }
         }
+        if (args.live && startedRuns.size === 1) {
+            const rpcCounts = rpcCounter.snapshot();
+            if (sumRpcCounts(rpcCounts) > 0) {
+                const [onlyRunId] = startedRuns;
+                await updateRun(pool, onlyRunId, { summaryPatch: { rpcCounts } }).catch(() => {});
+            }
+        }
         await pool.end();
     }
 
+    const rpcCounts = rpcCounter.snapshot();
+    log(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
     const headline = `UGT proposing bots ${day}: ${report.join(' | ') || 'nothing to do'}`;
     log(headline);
     if (failures.length) {

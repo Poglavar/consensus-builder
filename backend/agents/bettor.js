@@ -45,15 +45,21 @@ function verifyBinding(raw, agreement) {
 }
 
 /** Fresh, batched, genesis-verified agreement and sponsor-bound market reads. */
-export async function readAgreementMarkets(connection, subjects = [], { marketAddress = null } = {}) {
+export async function readAgreementMarkets(connection, subjects = [], { marketAddress = null, env = process.env, preloadedAgreements = null } = {}) {
     if (!connection || typeof connection.getAccountInfo !== 'function') throw new Error('a Solana connection is required');
     const unique = [...new Set(subjects.filter(Boolean))];
     const chain = agreementChain(connection);
-    const observed = unique.length ? await chain.readAccounts(unique, { batchSize: accountsPerRequest() }) : [];
+    const batchSize = accountsPerRequest(env);
+    const missing = preloadedAgreements ? unique.filter(subject => !preloadedAgreements.has(subject)) : unique;
+    const fetched = missing.length ? await chain.readAccounts(missing, { batchSize }) : [];
+    const fetchedByAddress = new Map(missing.map((subject, index) => [subject, fetched[index]]));
     const connectionReady = await chain.connection();
-    const entries = observed.map((row, index) => {
-        if (!row || row.problem || !row.account) throw failure(`Agreement chain account is unavailable (${row?.problem || 'missing'}).`, 'AGREEMENT_UNAVAILABLE');
-        const agreement = row.account, subject = unique[index];
+    const entries = unique.map(subject => {
+        const agreement = preloadedAgreements?.get(subject) ?? (() => {
+            const row = fetchedByAddress.get(subject);
+            if (!row || row.problem || !row.account) throw failure(`Agreement chain account is unavailable (${row?.problem || 'missing'}).`, 'AGREEMENT_UNAVAILABLE');
+            return row.account;
+        })();
         if (agreement.address !== subject || agreementAccountOf(agreement.cid, agreement.authority) !== subject) {
             throw failure('Agreement identity does not match its canonical chain account.', 'AGREEMENT_IDENTITY_MISMATCH');
         }
@@ -62,7 +68,7 @@ export async function readAgreementMarkets(connection, subjects = [], { marketAd
             : market.getMarketPda(subject, agreement.authority, { stakeMint: DEVNET_USDC_MINT, b: DEFAULT_B, closesAt: agreement.deadline, graceSeconds: GRACE_SECONDS, maxPosition: MAX_POSITION });
         return { connection: connectionReady, agreement, address, market: null };
     });
-    const infos = await getMultipleAccountsBatched(connectionReady, entries.map(entry => entry.address), { batchSize: accountsPerRequest() });
+    const infos = await getMultipleAccountsBatched(connectionReady, entries.map(entry => entry.address), { batchSize });
     for (const [index, entry] of entries.entries()) {
         entry.market = verifyBinding(market.readMarketAccount(infos[index], entry.address), entry.agreement);
     }
@@ -110,13 +116,13 @@ async function checkTrade({ agreement, market: raw, connection }, owner) {
 /** Buy the shares affordable under `amountAtomic`; exact LMSR math supplies shares and maxCost. */
 export async function buyAgreementShares({
     connection, ownerKeypair, subject, marketAddress, stakeMint = DEVNET_USDC_MINT, side, amountAtomic,
-    programId, sendAndConfirm = web3.sendAndConfirmTransaction
+    programId, context: preloadedContext = null, sendAndConfirm = web3.sendAndConfirmTransaction
 } = {}) {
     if (!ownerKeypair?.publicKey) throw new Error('ownerKeypair (a web3 Keypair) is required');
     if (typeof amountAtomic !== 'bigint' || amountAtomic <= 0n) throw new Error('amountAtomic must be a positive bigint budget');
     if (stakeMint !== DEVNET_USDC_MINT) throw new Error('Agent agreement markets use devnet USDC.');
     const sideText = sideName(side);
-    const context = await readAgreementMarket(connection, subject, { marketAddress });
+    const context = preloadedContext || await readAgreementMarket(connection, subject, { marketAddress });
     const { address, market: raw } = context;
     const owner = ownerKeypair.publicKey;
     await checkTrade(context, owner);

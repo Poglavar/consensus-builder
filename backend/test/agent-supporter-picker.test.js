@@ -90,6 +90,20 @@ describe('supporter selection', () => {
         const terminal = agreements.map(item => ({ ...item, chainStatus: 'executed' }));
         expect(selectSupportAction({ day: '2026-10-22', persona, agreements: terminal, now: NOW }).selected).toBeNull();
     });
+
+    it('never picks stake on an agreement whose market is not open, and skips unopened markets for stake-only personas', () => {
+        const unopenedMarketCids = agreements.map(item => item.cid);
+        // Across many days, a multi-action supporter falls back to pledge or donate — never stake.
+        for (const day of ['2026-10-22', '2026-10-23', '2026-10-24', '2026-10-25', '2026-10-26', '2026-10-27']) {
+            const pick = selectSupportAction({ day, persona, agreements, wallet: WALLET, now: NOW, unopenedMarketCids });
+            expect(pick.selected).not.toBeNull();
+            expect(['pledge', 'donate']).toContain(pick.selected.type);
+        }
+        const stakeOnly = { name: 'staker', support: { actions: ['stake'] } };
+        expect(selectSupportAction({ day: '2026-10-22', persona: stakeOnly, agreements, now: NOW, unopenedMarketCids }).selected).toBeNull();
+        const oneOpen = selectSupportAction({ day: '2026-10-22', persona: stakeOnly, agreements, now: NOW, unopenedMarketCids: ['a', 'b'] });
+        expect(oneOpen.selected).toMatchObject({ type: 'stake', agreementCid: 'c' });
+    });
 });
 
 describe('support execution verdict', () => {

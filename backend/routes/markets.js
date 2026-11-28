@@ -32,10 +32,20 @@ const CACHE_TTL_MS = 20_000;
 const MAX_AGREEMENTS = 2000;
 const WORLD_KEY = 'world';
 
+const verifiedMarketConnections = new WeakMap();
+
 async function assertMarketNetwork(connection) {
-    if (await connection.getGenesisHash() !== DEVNET_GENESIS_HASH) {
-        throw new Error('Agreement markets require Solana devnet.');
+    let check = verifiedMarketConnections.get(connection);
+    if (!check) {
+        check = Promise.resolve(connection.getGenesisHash()).then(hash => {
+            if (hash !== DEVNET_GENESIS_HASH) throw new Error('Agreement markets require Solana devnet.');
+        }).catch(error => {
+            verifiedMarketConnections.delete(connection);
+            throw error;
+        });
+        verifiedMarketConnections.set(connection, check);
     }
+    await check;
 }
 
 export const AGREEMENTS_SQL = currentPlanAgreementSelect({ predicate: 'a.city = $1', orderBy: 'a.created_at DESC', limit: '$2' });

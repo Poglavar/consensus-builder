@@ -509,6 +509,23 @@ describe('syncAgreementLifecycle', () => {
         expect(await syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true })).toMatchObject({ scanned: 0, events: [], inserted: 0 });
         expect(fake.searched).toEqual([]);
     });
+
+    it('reuses a terminal transaction already archived in consensus.solana_transaction with zero RPC transaction lookups', async () => {
+        const { index, fake, CID_B, ACC_B, CID_C, ACC_C } = threeAgreements();
+        // Provide stored transactions in consensus.solana_transaction for ACC_A (executed) and ACC_C (cancelled).
+        const archived = new Map([
+            [ACC_A, [{ signature: 'A-exec', slot: 879, raw: { meta: { err: null, logMessages: logsOf([executedEvent({ agreement: ACC_A, cid: CID_A })]) } } }]],
+            [ACC_C, [{ signature: 'C-cancel', slot: 870, raw: { meta: { err: null, logMessages: logsOf([refundEvent('AgreementCancelled', { agreement: ACC_C, cid: CID_C, at: CANCELLED_AT })]) } } }]]
+        ]);
+        index.pool.answer(/FROM consensus\.solana_transaction/, (_sql, params) => ({ rows: archived.get(params[1]) || [] }));
+        const result = await syncAgreementLifecycle({ pool: index.pool, chain: fake.chain, apply: true, now: NOW });
+        expect(result).toMatchObject({ scanned: 3, reconciled: 3, terminal: 2, inserted: 4, missingEvidence: [], failed: [] });
+        expect(fake.searched).toEqual([]);
+        expect(index.rows.get(CID_A).onchain.endedAt).toBe(iso(EXECUTED_AT));
+        expect(index.rows.get(CID_C).onchain.endedAt).toBe(iso(CANCELLED_AT));
+        expect(index.rows.get(CID_B).onchain.status).toBe('active');
+        expect(fake.read).toEqual([ACC_A, ACC_B, ACC_C]);
+    });
 });
 
 // ---- the CLI -----------------------------------------------------------------------------------------

@@ -13,6 +13,8 @@ import { parseArgs } from 'node:util';
 import dotenv from 'dotenv';
 import { createPool } from '../db/connection.cjs';
 import { AGREEMENT_CLUSTERS, createAgreementChain } from '../agreements/onchain.js';
+import { createRpcConnection } from '../solana/rpc.js';
+import { createRpcMethodCounter, diffRpcCounts, sumRpcCounts } from '../solana/rpc-method-counts.js';
 import { buildLandOracleRunStats, landOracleStatsPath, writeRunStatsAtomic } from '../operations/run-stats.js';
 import { runLandEventJob, timestampedLog } from './land-event-job.js';
 
@@ -73,15 +75,21 @@ async function main() {
     dotenv.config({ path: path.join(HERE, '..', '.env'), quiet: true });
     const pool = createPool();
     pool.on('error', error => timestampedLog(`idle pg client error: ${error.message}`));
-    const chain = createAgreementChain({ cluster: opts.cluster });
+    const rpcCounter = createRpcMethodCounter();
+    const rpcUrl = AGREEMENT_CLUSTERS[opts.cluster].rpcUrl(process.env);
+    const connection = createRpcConnection(rpcUrl, 'confirmed', { onRpcRequest: rpcCounter.onRequest });
+    const chain = createAgreementChain({ cluster: opts.cluster, connection });
     timestampedLog(`${opts.apply ? 'APPLY' : 'DRY RUN'} on ${opts.cluster}${opts.once ? ', one pass' : `, a pass every ${opts.interval}s`}`);
 
     async function pass() {
         const startedAt = new Date().toISOString();
+        const rpcBefore = rpcCounter.snapshot();
         const job = await runLandEventJob({ pool, chain, apply: opts.apply });
+        const rpcCounts = diffRpcCounts(rpcBefore, rpcCounter.snapshot());
+        timestampedLog(`RPC methods: ${JSON.stringify(rpcCounts)} (total ${sumRpcCounts(rpcCounts)})`);
         if (job.error) timestampedLog(`pass FAILED: ${job.error.message}`);
         if (opts.apply) {
-            const stats = buildLandOracleRunStats({ startedAt, endedAt: new Date().toISOString(), result: job.result, error: job.error, dryRun: false });
+            const stats = buildLandOracleRunStats({ startedAt, endedAt: new Date().toISOString(), result: job.result, error: job.error, dryRun: false, rpcCounts });
             try {
                 writeRunStatsAtomic(landOracleStatsPath(process.env), stats);
             } catch (error) {

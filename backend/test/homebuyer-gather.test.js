@@ -10,10 +10,14 @@ vi.mock('../agents/discovery.js', () => ({
     discoverAgreements: vi.fn(async () => []),
     readAgreementStatuses: vi.fn(async rows => rows)
 }));
-vi.mock('../agents/apartment-actions.js', () => ({
-    qualifyApartmentBuyer: vi.fn(), reserveApartment: vi.fn(),
-    readRoundInventory: vi.fn(async (_connection, { content }) => content.funding.apartments.units.map(unit => ({ unitId: unit.unitId, status: 'available', buyer: null })))
-}));
+vi.mock('../agents/apartment-actions.js', () => {
+    const readRoundInventory = vi.fn(async (_connection, { content }) => content.funding.apartments.units.map(unit => ({ unitId: unit.unitId, status: 'available', buyer: null })));
+    return {
+        qualifyApartmentBuyer: vi.fn(), reserveApartment: vi.fn(),
+        readRoundInventory,
+        readRoundsInventory: vi.fn(async (connection, rounds) => new Map(await Promise.all(rounds.map(async round => [round.account, await readRoundInventory(connection, round)]))))
+    };
+});
 const discovery = await import('../agents/discovery.js');
 const { gatherHomes } = await import('../agents/homebuyer-chain.js');
 

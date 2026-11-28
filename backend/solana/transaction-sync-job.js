@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { randomUUID } from 'crypto';
-import { buildAddressBook, watchedAddresses } from './address-book.js';
+import { buildAddressBook, coreWatchedAddresses, watchedAddresses } from './address-book.js';
 import { createRpcMethodCounter } from './rpc-method-counts.js';
 import {
     syncTransactions,
@@ -67,6 +67,13 @@ export async function runTransactionSync(options = {}) {
     }
 }
 
+// Four full sweeps a day (00:00, 06:00, 12:00, 18:00 UTC) scan every persona wallet and USDC ATA to
+// catch any direct external transfer; the other 20-minute passes scan only the core set (~11 addresses
+// instead of ~35), cutting daily getSignaturesForAddress volume by ~65% without missing protocol or x402 activity.
+export function isFullScanSlot(date = new Date()) {
+    return date.getUTCMinutes() < 20 && date.getUTCHours() % 6 === 0;
+}
+
 async function runTransactionSyncLocked({
     pool,
     connection,
@@ -75,6 +82,8 @@ async function runTransactionSyncLocked({
     limit = DEFAULT_SIGNATURE_SCAN_LIMIT,
     spacing = FETCH_CHUNK_SPACING_MS,
     dryRun = false,
+    fullScan = null,
+    now = () => new Date(),
     cluster = TRANSACTION_SYNC_CLUSTER,
     retryDelays = JOB_RPC_RETRY_DELAYS,
     jobName = 'transaction-sync',
@@ -84,9 +93,10 @@ async function runTransactionSyncLocked({
     count = countTransactions
 } = {}) {
     const book = buildAddressBook({ env, personas });
-    const watched = watchedAddresses(book);
+    const startedAt = now();
+    const useFull = fullScan === null ? isFullScanSlot(startedAt) : Boolean(fullScan);
+    const watched = useFull ? watchedAddresses(book) : coreWatchedAddresses(book);
     const runId = randomUUID();
-    const startedAt = new Date();
     await pool.query(`
         INSERT INTO consensus.transaction_sync_run (run_id, job_name, started_at, status, dry_run)
         VALUES ($1, $2, $3, 'running', $4)
@@ -97,7 +107,7 @@ async function runTransactionSyncLocked({
     let after = null;
     try {
         before = await count(pool, cluster);
-        log(`store holds ${before} ${cluster} transactions; scanning ${watched.length} watched addresses (limit ${limit}, chunk spacing ${spacing}ms)${dryRun ? ' — DRY RUN, nothing will be fetched or written' : ''}`);
+        log(`store holds ${before} ${cluster} transactions; scanning ${watched.length} ${useFull ? 'watched' : 'core watched'} addresses (limit ${limit}, chunk spacing ${spacing}ms)${dryRun ? ' — DRY RUN, nothing will be fetched or written' : ''}`);
 
         result = await sync({
             pool,

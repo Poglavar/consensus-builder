@@ -3,7 +3,7 @@
 // and logs and returns the counters. syncTransactions and the store count are stubs.
 
 import { describe, expect, it } from 'vitest';
-import { runTransactionSync } from '../solana/transaction-sync-job.js';
+import { isFullScanSlot, runTransactionSync } from '../solana/transaction-sync-job.js';
 import { createRpcMethodCounter } from '../solana/rpc-method-counts.js';
 import { DEFAULT_SIGNATURE_SCAN_LIMIT, FETCH_CHUNK_SPACING_MS, JOB_RPC_RETRY_DELAYS } from '../solana/tx-store.js';
 
@@ -137,5 +137,27 @@ describe('runTransactionSync', () => {
         expect(result.status).toBe('failed');
         expect(result.errorStack).toContain('at fake');
         expect([...s.runs.values()][0].status).toBe('failed');
+    });
+
+    it('uses core addresses on normal 20-min passes and full addresses on 6-hour full-scan slots or explicit fullScan', async () => {
+        const OTHER_WALLET = 'HZde4bPhD1NFSDXxgLE2UfMjBCAfXLBm5HpB9Dks4auu';
+        const personas = { personas: [{ name: 'homebuyer-01', role: 'homebuyer', wallet: OTHER_WALLET }] };
+
+        expect(isFullScanSlot(new Date('2026-11-28T00:05:00Z'))).toBe(true);
+        expect(isFullScanSlot(new Date('2026-11-28T06:19:59Z'))).toBe(true);
+        expect(isFullScanSlot(new Date('2026-11-28T06:20:00Z'))).toBe(false);
+        expect(isFullScanSlot(new Date('2026-11-28T01:00:00Z'))).toBe(false);
+
+        const coreRun = stubs();
+        await runTransactionSync({ ...coreRun.options, personas, now: () => new Date('2026-11-28T01:05:00Z') });
+        expect(coreRun.seen.watched).not.toContain(OTHER_WALLET);
+
+        const slotRun = stubs();
+        await runTransactionSync({ ...slotRun.options, personas, now: () => new Date('2026-11-28T12:00:00Z') });
+        expect(slotRun.seen.watched).toContain(OTHER_WALLET);
+
+        const explicitFull = stubs();
+        await runTransactionSync({ ...explicitFull.options, personas, now: () => new Date('2026-11-28T01:05:00Z'), fullScan: true });
+        expect(explicitFull.seen.watched).toContain(OTHER_WALLET);
     });
 });

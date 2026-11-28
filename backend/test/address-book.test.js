@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
     buildAddressBook,
     watchedAddresses,
+    coreWatchedAddresses,
     legendAddresses,
     deriveAssociatedTokenAddress,
     shortAddress,
@@ -205,5 +206,40 @@ describe('watchedAddresses', () => {
 
     it('tolerates a missing book', () => {
         expect(watchedAddresses(undefined)).toEqual([]);
+        expect(coreWatchedAddresses(undefined)).toEqual([]);
+    });
+});
+
+describe('coreWatchedAddresses', () => {
+    const LENS_WALLET = 'm8gLfyPspP6ABSNA4ZMFYCzzRGjNLBmrKKwKrGqbUfR';
+    const OTHER_WALLET = 'HZde4bPhD1NFSDXxgLE2UfMjBCAfXLBm5HpB9Dks4auu';
+    const OTHER_USDC = deriveAssociatedTokenAddress(OTHER_WALLET, DEVNET_USDC_MINT);
+
+    it('watches our five programs, treasury, funding persona and lens-member wallets, skipping other persona wallets and ATAs', () => {
+        const book = buildAddressBook({
+            env: { X402_PAY_TO: TREASURY },
+            personas: [
+                { name: 'densifier-01', role: 'proposer', wallet: PERSONA_WALLET },
+                { name: 'lifecycle-01', role: 'lens-member', wallet: LENS_WALLET },
+                { name: 'homebuyer-01', role: 'homebuyer', wallet: OTHER_WALLET }
+            ]
+        });
+        const core = coreWatchedAddresses(book);
+        expect(core).toEqual(expect.arrayContaining([
+            '4zadC1FgWPQLv6qv66mjEBthBqTvrmxL5oDcHQzNtkV1',
+            '79dH9KGrbffN37Hv1mbyUWdbHAVcCt6o2Z1VZ3c745Bn',
+            'DY4zKtE1hucUHsQGDhQmBaH3ZdAaeusnmj9HzVtpmYnK',
+            'HrK4gvMqpYNvYSidaMLywy9mknQUatMig2fnWcG2UVyH',
+            AGREEMENT_PROGRAM_ID,
+            TREASURY,
+            TREASURY_USDC,
+            PERSONA_WALLET,
+            PERSONA_USDC,
+            LENS_WALLET
+        ]));
+        expect(core).not.toContain(OTHER_WALLET);
+        expect(core).not.toContain(OTHER_USDC);
+        // Full watchedAddresses still includes every persona wallet and ATA.
+        expect(watchedAddresses(book)).toEqual(expect.arrayContaining([OTHER_WALLET, OTHER_USDC]));
     });
 });

@@ -127,6 +127,39 @@ export function decodeTerminalEvent(payload) {
     return event;
 }
 
+function terminalEventFromTransaction(tx, { signature, slot = null, account, outcome, programId }) {
+    if (!tx || tx.meta?.err) return null;
+    for (const payload of programDataLogs(tx.meta?.logMessages, programId)) {
+        let event = null;
+        try { event = decodeTerminalEvent(payload); } catch { event = null; }
+        if (event && event.outcome === outcome && event.agreement === account) {
+            return { signature, slot: tx.slot ?? slot ?? null, event };
+        }
+    }
+    return null;
+}
+
+/**
+ * Look for the terminal transaction in our local transaction mirror (consensus.solana_transaction)
+ * first, saving getSignaturesForAddress + getTransaction RPC calls when tx-sync already stored it.
+ */
+export async function findStoredTerminalTransaction(pool, { cluster, account, outcome, programId, limit = TERMINAL_SEARCH_LIMIT }) {
+    if (!pool || typeof pool.query !== 'function') return null;
+    const { rows } = await pool.query(`
+        SELECT signature, slot, raw
+        FROM consensus.solana_transaction
+        WHERE cluster = $1 AND $2 = ANY(touched_addresses)
+        ORDER BY slot DESC NULLS LAST
+        LIMIT $3`, [cluster, account, limit]);
+    for (const row of rows || []) {
+        const found = terminalEventFromTransaction(row.raw, {
+            signature: row.signature, slot: row.slot != null ? Number(row.slot) : null, account, outcome, programId
+        });
+        if (found) return found;
+    }
+    return null;
+}
+
 /**
  * The successful transaction that left `account` in `outcome`: the newest of its signatures whose
  * logs carry the agreement program's terminal event for this account. { signature, slot, event } or null.
@@ -136,14 +169,8 @@ export async function findTerminalTransaction(connection, { account, outcome, pr
     for (const entry of signatures || []) {
         if (entry.err) continue;
         const tx = await connection.getTransaction(entry.signature, { commitment: 'confirmed', maxSupportedTransactionVersion: 0 });
-        if (!tx || tx.meta?.err) continue;
-        for (const payload of programDataLogs(tx.meta?.logMessages, programId)) {
-            let event = null;
-            try { event = decodeTerminalEvent(payload); } catch { event = null; }
-            if (event && event.outcome === outcome && event.agreement === account) {
-                return { signature: entry.signature, slot: tx.slot ?? entry.slot ?? null, event };
-            }
-        }
+        const found = terminalEventFromTransaction(tx, { signature: entry.signature, slot: entry.slot ?? null, account, outcome, programId });
+        if (found) return found;
     }
     return null;
 }
@@ -403,7 +430,9 @@ export async function syncAgreementLifecycle({ pool, chain, apply = false, now =
             log(`${step}: ${reason} (miss ${misses})`);
             if (apply) await writeOnchain(pool, row.cid, { ...next, evidenceSearch: { misses, lastAt: new Date(now()).toISOString() } });
         };
-        const source = await findTerminalTransaction(await chain.connection(), {
+        const source = await findStoredTerminalTransaction(pool, {
+            cluster: chain.cluster, account: account.address, outcome: fresh.status, programId: chain.programId
+        }) || await findTerminalTransaction(await chain.connection(), {
             account: account.address, outcome: fresh.status, programId: chain.programId
         });
         if (!source) return missed(`${fresh.status}, but no ${TERMINAL_EVENTS[fresh.status].name} among the account's newest ${TERMINAL_SEARCH_LIMIT} transactions`);

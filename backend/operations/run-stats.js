@@ -5,7 +5,7 @@ export function landOracleStatsPath(env = process.env) {
     return env.LAND_ORACLE_RUN_STATS || path.resolve(process.cwd(), 'logs/land-oracle-stats.json');
 }
 
-export function buildLandOracleRunStats({ startedAt, endedAt, result = null, error = null, dryRun = false } = {}) {
+export function buildLandOracleRunStats({ startedAt, endedAt, result = null, error = null, dryRun = false, rpcCounts = null } = {}) {
     const missingEvidence = Array.isArray(result?.missingEvidence) ? result.missingEvidence.length : 0;
     const completed = !error && missingEvidence === 0;
     return {
@@ -25,6 +25,7 @@ export function buildLandOracleRunStats({ startedAt, endedAt, result = null, err
             reconciled: Number(result?.reconciled || 0),
             missingEvidence
         },
+        ...(rpcCounts ? { rpcCounts } : {}),
         error: error ? String(error.message || error) : (missingEvidence ? `${missingEvidence} terminal agreement(s) lack source evidence` : null)
     };
 }
