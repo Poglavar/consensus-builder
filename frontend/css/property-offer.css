@@ -65,6 +65,8 @@
 .property-market__price { justify-self: end; }
 .property-market__state { justify-self: start; }
 .property-market__title { grid-column: 1 / -1; }
+.property-market__parties { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--cb-space-1); }
+.property-market__asset { justify-self: start; }
 .property-market__status { margin: 0; color: var(--cb-text-muted); }
 .property-market__status:empty { display: none; }
 @media (max-width: 34rem) { .property-market__row { grid-template-columns: 1fr; } .property-market__price { justify-self: start; } }

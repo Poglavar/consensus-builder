@@ -82,6 +82,7 @@
         actors = global.ActorExplorer.mount(actorHost, {
             events: [], translate: t, showFilters: false,
             openEntity: entity => global.ActivityData.openEntity(entity),
+            assetHref: global.ActivityData.assetHref,
             onSelectActor: actor => {
                 if (actor) open({ filter: { actorId: actor.id || actor.wallet || actor.name }, actorSelection: true });
                 else clearScope();
@@ -103,7 +104,7 @@
             : log('count', '{{count}} events', { count: visible.length });
         content.setAttribute('aria-busy', String(loading));
         content.setAttribute('data-rendered-count', String(visible.length));
-        content.innerHTML = visible.length ? visible.map(event => global.ActorExplorer.activityRowHtml(event, { translate: t })).join('')
+        content.innerHTML = visible.length ? visible.map(event => global.ActorExplorer.activityRowHtml(event, { translate: t, assetHref: global.ActivityData.assetHref })).join('')
             : `<p class="no-logs">${escape(log('noMatch', 'No matching activity yet.'))}</p>`;
         global.ActivityData?.bindRowActions();
         if (state.view === 'actors' || actors) mountActors().setEvents(visible);

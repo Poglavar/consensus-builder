@@ -94,7 +94,7 @@ export function decide({ persona, seed, now = Date.now(), wallet = null, homes =
             if (round.units.some(unit => unit.buyer === wallet)) continue;
             for (const unit of round.units.filter(item => item.status === 'available' && usdc(item.depositUsdcAtomic) <= config.maxDepositUsdc)) {
                 choices.push({ kind: 'reserve', agreementCid: round.cid, action: { type: 'reserve-apartment', agreementCid: round.cid, account: round.account, agreementName: round.title,
-                    unitId: unit.unitId, label: unit.label, amount: String(usdc(unit.depositUsdcAtomic)), usdc: usdc(unit.depositUsdcAtomic), signedActions: 1,
+                    unitId: unit.unitId, label: unit.label, asset: { kind: 'flat', xrayBuilding: unit.xrayBuilding, unit: unit.unit, at: unit.at }, amount: String(usdc(unit.depositUsdcAtomic)), usdc: usdc(unit.depositUsdcAtomic), signedActions: 1,
                     rationale: `Reserve ${unit.label} in ${round.title}: deposit ${usdc(unit.depositUsdcAtomic)} USDC of its ${usdc(unit.priceUsdcAtomic)} USDC price.` } });
             }
         }
@@ -153,7 +153,7 @@ function offerMarket({ homes, wallet, now }) {
 function offerObligations({ market, config, wallet, now }) {
     const out = [];
     const name = offer => offer.content.title || offer.flat.title || offer.cid;
-    const base = (offer, step, extra) => ({ agreementCid: offer.cid, action: { type: step, offerCid: offer.cid, agreementCid: offer.cid, agreementName: name(offer), signedActions: 1, ...extra } });
+    const base = (offer, step, extra) => ({ agreementCid: offer.cid, action: { type: step, offerCid: offer.cid, agreementCid: offer.cid, agreementName: name(offer), city: offer.content.city, asset: offer.content.asset, signedActions: 1, ...extra } });
     for (const offer of market.offers) {
         const chain = offer.chain, price = BigInt(offer.content.price);
         // Its own offer, or one whose escrow it paid, past the deadline: anyone may end it; the escrow returns to the buyer.

@@ -31,7 +31,9 @@ describe('choices', () => {
     const only = kind => ({ weights: { reserve: 0, donate: 0, [kind]: 1 } });
     it('reserves an available apartment within its deposit limit, one per round and up to maxReservations', () => {
         const homes = { rounds: [round('r1', [unit(1, { deposit: '5000000' }), unit(2)])], refunds: [] };
-        expect(run(homes, only('reserve')).action).toMatchObject({ type: 'reserve-apartment', unitId: 'u2', usdc: 2, amount: '2' });
+        // The action names the flat it reserves, so its activity can link the flat in X-ray.
+        expect(run(homes, only('reserve')).action).toMatchObject({ type: 'reserve-apartment', unitId: 'u2', usdc: 2, amount: '2',
+            asset: { kind: 'flat', xrayBuilding: BUILDING, unit: '1::2', at: '43.8,77.09,19' } });
         const holding = { rounds: [round('r1', [unit(1, { status: 'reserved', buyer: ME }), unit(2)]), round('r2', [unit(3)])], refunds: [] };
         expect(run(holding, only('reserve')).action).toMatchObject({ agreementCid: 'r2', unitId: 'u3' });
         expect(run(holding, { ...only('reserve'), maxReservations: 1 }).action).toBeNull();
@@ -82,6 +84,8 @@ describe('flat offers (USDC)', () => {
         expect(run(homes(flats, [listing, bid, unminted]), none).action).toMatchObject({ type: 'mint-offer', offerCid: 'o-new', usdc: 0 });
         expect(run(homes(flats, [listing, bid]), none).action).toMatchObject({ type: 'take-offer', role: 'seller', offerCid: 'o-bid', usdc: 0 });
         expect(run(homes(flats, [listing]), none).action).toMatchObject({ type: 'take-offer', role: 'buyer', offerCid: 'o-list', lens: LENS, usdc: 2, amount: '2' });
+        // An offer step names the offer's flat and city, so its activity links the flat and counts in that city.
+        expect(run(homes(flats, [listing]), none).action).toMatchObject({ city: 'alatau', asset: flat('2').asset });
     });
     it('takes back the escrow of a listing it took that expired, but leaves another buyer\'s escrow to that buyer', () => {
         const flats = [flat('2', OTHER)];

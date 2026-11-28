@@ -5058,7 +5058,8 @@
                 "sourceSimulation": "Simulação",
                 "entity": {
                     "agreement": "Acordo {{id}}",
-                    "design": "Projeto {{id}}"
+                    "design": "Projeto {{id}}",
+                    "property-offer": "Oferta {{id}}"
                 },
                 "transaction": "Transação {{id}}",
                 "transactionFull": "Transação: {{id}}",
@@ -5097,6 +5098,7 @@
                 "batch": "Lote",
                 "openAgreement": "Abrir acordo",
                 "openDesign": "Abrir projeto",
+                "openOffer": "Abrir oferta",
                 "scopeAgreement": "Toda a atividade neste acordo"
             },
             "kindHuman": "Pessoas",
@@ -11181,6 +11183,7 @@
       "plots": "Parcelas",
       "requests": "Pedidos à lente",
       "side": "Lado",
+      "sold": "Vendido",
       "yourLens": "Em quem confia"
     },
     "memberViewNone": "Não declarou quem é o titular; declare o primeiro titular antes de confirmar.",

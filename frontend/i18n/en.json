@@ -6464,7 +6464,8 @@
                 "sourceSimulation": "Simulation",
                 "entity": {
                     "agreement": "Agreement {{id}}",
-                    "design": "Design {{id}}"
+                    "design": "Design {{id}}",
+                    "property-offer": "Offer {{id}}"
                 },
                 "transaction": "Transaction {{id}}",
                 "transactionFull": "Transaction: {{id}}",
@@ -6530,6 +6531,7 @@
                 "batch": "Batch",
                 "openAgreement": "Open agreement",
                 "openDesign": "Open design",
+                "openOffer": "Open offer",
                 "scopeAgreement": "All activity on this agreement"
             },
             "filtersAria": "Filter the activity log",
@@ -11130,6 +11132,7 @@
       "plots": "Plots",
       "requests": "Lens requests",
       "side": "Side",
+      "sold": "Sold",
       "yourLens": "Whom you trust"
     },
     "memberViewNone": "You have not stated who holds this; state the first holder before confirming.",

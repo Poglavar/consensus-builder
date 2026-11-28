@@ -6491,7 +6491,8 @@
                 "sourceSimulation": "Simulación",
                 "entity": {
                     "agreement": "Acuerdo {{id}}",
-                    "design": "Diseño {{id}}"
+                    "design": "Diseño {{id}}",
+                    "property-offer": "Oferta {{id}}"
                 },
                 "transaction": "Transacción {{id}}",
                 "transactionFull": "Transacción: {{id}}",
@@ -6557,6 +6558,7 @@
                 "batch": "Lote",
                 "openAgreement": "Abrir acuerdo",
                 "openDesign": "Abrir diseño",
+                "openOffer": "Abrir oferta",
                 "scopeAgreement": "Toda la actividad de este acuerdo"
             },
             "filtersAria": "Filtrar actividad",
@@ -11202,6 +11204,7 @@
       "plots": "Parcelas",
       "requests": "Solicitudes a la lente",
       "side": "Lado",
+      "sold": "Vendido",
       "yourLens": "En quién confías"
     },
     "memberViewNone": "No has declarado quién es el titular; declara el primer titular antes de confirmar.",

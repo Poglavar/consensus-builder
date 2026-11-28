@@ -6502,7 +6502,8 @@
                 "sourceSimulation": "Simulacija",
                 "entity": {
                     "agreement": "Sporazum {{id}}",
-                    "design": "Dizajn {{id}}"
+                    "design": "Dizajn {{id}}",
+                    "property-offer": "Ponuda {{id}}"
                 },
                 "transaction": "Transakcija {{id}}",
                 "transactionFull": "Transakcija: {{id}}",
@@ -6569,6 +6570,7 @@
                 "batch": "Serija",
                 "openAgreement": "Otvori sporazum",
                 "openDesign": "Otvori dizajn",
+                "openOffer": "Otvori ponudu",
                 "scopeAgreement": "Sva aktivnost na ovom sporazumu"
             },
             "filtersAria": "Filtriraj aktivnost",
@@ -11234,6 +11236,7 @@
       "plots": "Čestice",
       "requests": "Zahtjevi leći",
       "side": "Strana",
+      "sold": "Prodano",
       "yourLens": "Kome vjerujete"
     },
     "memberViewNone": "Niste izjavili tko je imatelj; izjavite prvog imatelja prije potvrde.",

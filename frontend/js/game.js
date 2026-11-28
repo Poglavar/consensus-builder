@@ -729,6 +729,8 @@ window.ActivityData = {
     },
     bindRowActions() { setupGameLogClickListeners(); },
     openEntity: openActivityEntity,
+    // The plot or flat a property action trades: the flat in X-ray, the plot on the map.
+    assetHref: (asset, cityId) => window.PropertyOfferDialog.assetHref(asset, cityId),
     apiBase: activityApiBase
 };
 
@@ -741,9 +743,9 @@ function allActivityEvents() {
     );
 }
 
-// An activity row's agreement or design (ActorExplorer: an .activity-entity-link button, or the
-// Actors view's openEntity): an agreement opens in its panel (this device's copy, else read from its
-// link's route), a design like a design from the proposal list.
+// An activity row's agreement, design or property offer (ActorExplorer: an .activity-entity-link button,
+// or the Actors view's openEntity): an agreement opens in its panel (this device's copy, else read from
+// its link's route), a design like a design from the proposal list, an offer in its offer sheet.
 async function openActivityEntity({ type, id } = {}) {
     if (!id) return;
     window.closeActivityPanel?.();
@@ -757,6 +759,8 @@ async function openActivityEntity({ type, id } = {}) {
             const local = window.DesignSync.localCopyOf(id);
             if (local) showProposalFromLog(local.proposalId);
             else await openServerProposalFromLog(id);
+        } else if (type === 'property-offer') {
+            window.PropertyOfferPanel.open((await window.PropertyOfferSync.importOffer(id)).id);
         }
     } catch (error) {
         console.error(`[${new Date().toISOString()}] [activity] the ${type} ${id} could not be opened`, error);

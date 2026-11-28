@@ -1926,7 +1926,7 @@ function getAgentLogEntries(agentId) {
     const recentEntries = agentEvents.slice(-20).reverse();
     return `
         <div class="agent-log-content">
-            ${recentEntries.map(event => window.ActorExplorer.activityRowHtml(event, { translate: translateGameText })).join('')}
+            ${recentEntries.map(event => window.ActorExplorer.activityRowHtml(event, { translate: translateGameText, assetHref: window.ActivityData.assetHref })).join('')}
             ${agentEvents.length > 20 ? `<div class="agent-log-more">... and ${agentEvents.length - 20} older entries</div>` : ''}
         </div>
     `;

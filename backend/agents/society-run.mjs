@@ -37,7 +37,7 @@ import { sendTelegram } from './telegram.js';
 import { isEntrypoint } from './entrypoint.js';
 import { discoverAgreements, isMinted, readAgreementStatuses } from './discovery.js';
 import { createIndexClient } from './publication-client.js';
-import { executeHomeAction, gatherHomes, HOME_ACTIONS, homeActivityEntity, homeActivityMessage } from './homebuyer-chain.js';
+import { executeHomeAction, gatherHomes, HOME_ACTIONS, homeActivity, homeActivityMessage } from './homebuyer-chain.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -475,12 +475,13 @@ async function main() {
                 const execution = await runtime.run(actor, {
                     source: 'live',
                     action: { type: action.type, agreementCid: action.agreementCid, account: action.account, amount: action.amount, side: action.side || null },
-                    execute: async () => ({
-                        ...(await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed, homes: { index, apiBase, appOrigin } })),
-                        entity: HOME_ACTIONS.has(action.type) ? homeActivityEntity(action) : { type: 'agreement', id: action.agreementCid }, message: activityMessage(persona, action)
-                    })
+                    execute: async () => {
+                        const done = await execute({ action, connection, keypair, caps, pool, persona, runId: turn.runId, resumed, homes: { index, apiBase, appOrigin } });
+                        // A homebuyer's activity also names the plot or flat it trades and, for an offer, its city.
+                        return { ...done, ...(HOME_ACTIONS.has(action.type) ? homeActivity(action, done) : { entity: { type: 'agreement', id: action.agreementCid } }), message: activityMessage(persona, action) };
+                    }
                 });
-                const { message: _message, entity: _entity, ...result } = execution.outcome;
+                const { message: _message, entity: _entity, asset: _asset, cityId: _cityId, ...result } = execution.outcome;
                 const acted = Boolean(result.signature || result.stakeSignature || result.resolveSignature) && result.replayed !== true;
                 const summary = { society: { action, acted, options, execution: result }, activities: acted ? activities : [], outcome: acted ? 'completed' : 'replayed' };
                 await updateRun(pool, turn.runId, { stage: acted ? 'acted' : 'selected', status: 'done', summaryPatch: summary });

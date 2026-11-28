@@ -153,6 +153,27 @@ describe('actor explorer view model', () => {
         expect(hostile).not.toContain('onclick="alert');
     });
 
+    it('opens a property offer and links the flat or plot it trades through the host', () => {
+        const flat = { kind: 'flat', xrayBuilding: 'alatau::osm::w1', unit: '4::2', at: '43.8,77.09,18' };
+        const event = { source: 'live', action: { type: 'take-offer' }, entity: { type: 'property-offer', id: 'bafoffer' }, asset: flat, cityId: 'alatau' };
+        const asked = [];
+        const assetHref = (asset, city) => { asked.push([asset, city]); return '/?xrayBuilding=a&unit=4::2'; };
+        const row = activityRowHtml(event, { assetHref });
+        expect(row).toContain('data-entity-type="property-offer" data-entity-id="bafoffer">Open offer</button>');
+        expect(row).toContain('<a class="cb-link activity-asset-link" href="/?xrayBuilding=a&amp;unit=4::2">View the flat in X-ray</a>');
+        expect(asked).toEqual([[flat, 'alatau']]);
+        expect(activityRowHtml({ ...event, asset: { kind: 'parcel', sourceId: 's', id: 'P1', at: '1,2,18' } }, { assetHref })).toContain('>Show the plot on the map</a>');
+        // The standalone page has no link builder, and an event about no plot or flat has nothing to link.
+        expect(activityRowHtml(event)).not.toContain('activity-asset-link');
+        expect(activityRowHtml({ ...event, asset: null }, { assetHref })).not.toContain('activity-asset-link');
+
+        const opened = [];
+        const element = mountExplorer({ events: [{ ...event, id: 'offer-1', actor: llm, recordedAt: '2026-11-27T19:00:00Z' }], openEntity: entity => opened.push(entity), assetHref, showActivityWithoutActor: true });
+        element.all().find(node => node.tagName === 'BUTTON' && node.textContent.startsWith('Offer ')).click();
+        expect(opened).toEqual([{ type: 'property-offer', id: 'bafoffer' }]);
+        expect(element.all().find(node => node.tagName === 'A' && node.textContent === 'View the flat in X-ray').href).toBe('/?xrayBuilding=a&unit=4::2');
+    });
+
     it('escapes live messages but keeps app-authored simulation markup and its turn', () => {
         const live = activityRowHtml({ source: 'live', message: '<img src=x onerror=alert(1)>', actor: { name: 'X' }, action: { type: 'donate' } });
         expect(live).toContain('&lt;img src=x');
@@ -182,7 +203,7 @@ describe('actor explorer view model', () => {
     it('has every row label in every locale, and no label the row no longer asks for', () => {
         const source = readFileSync(new URL('../../frontend/js/actor-explorer.js', import.meta.url), 'utf8');
         const keys = [...new Set([...source.matchAll(/\btr\('([A-Za-z]+)'/g)].map(match => match[1]))];
-        expect(keys).toEqual(expect.arrayContaining(['openAgreement', 'openDesign', 'scopeAgreement', 'details', 'turn']));
+        expect(keys).toEqual(expect.arrayContaining(['openAgreement', 'openDesign', 'openOffer', 'scopeAgreement', 'details', 'turn']));
         for (const lang of ['en', 'hr', 'es', 'sr']) {
             const row = JSON.parse(readFileSync(new URL(`../../frontend/i18n/${lang}.json`, import.meta.url), 'utf8')).gameDialogs.log.row || {};
             expect(keys.filter(key => !row[key]), `${lang} lacks`).toEqual([]);

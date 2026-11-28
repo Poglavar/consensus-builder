@@ -63,6 +63,11 @@ describe('unified agent action engine', () => {
         // A handler that knows better names the entity itself.
         expect(engineApi.createActivityEvent({ actor, action: { type: 'stake', agreementCid: AGREEMENT }, outcome: { ok: true, entity: { type: 'market', id: 'm1' } } }).entity)
             .toEqual({ type: 'market', id: 'm1' });
+        // A property action's handler also names the plot or flat it trades and its city; others carry neither.
+        const flat = { kind: 'flat', xrayBuilding: 'alatau::osm::w1', unit: '4::2', at: '43.8,77.09,18' };
+        expect(engineApi.createActivityEvent({ actor, action: { type: 'take-offer' }, outcome: { ok: true, entity: { type: 'property-offer', id: 'bafoffer' }, asset: flat, cityId: 'alatau' } }))
+            .toMatchObject({ entity: { type: 'property-offer', id: 'bafoffer' }, asset: flat, cityId: 'alatau' });
+        expect(about({ type: 'mint', agreementCid: AGREEMENT })).not.toHaveProperty('asset');
     });
 
     it('runs human, algorithmic and LLM controllers through the same handler contract', async () => {
